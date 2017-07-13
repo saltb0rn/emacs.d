@@ -1,0 +1,9 @@
+/*
+!\.gitignore
+!/images
+/images/*
+!/lisp
+/lisp/*~
+!/init.el
+!/site-lisp
+/site-lisp/*~
