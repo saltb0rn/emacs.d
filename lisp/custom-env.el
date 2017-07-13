@@ -11,8 +11,6 @@
  ;; If there is more than one, they won't work right.
  '(auto-save-default nil)
  '(ecb-options-version "2.50")
- '(fancy-splash-image (expand-file-name "images/aika.png" user-emacs-directory))
- '(url-proxy-services ("http" . "127.0.0.1:8118"))
  '(geiser-implementations-alist
    (quote
     (((regexp "\\.scm$")
@@ -62,4 +60,3 @@
 (setq python-shell-interpreter "python3")
 
 (provide 'custom-env)
-
