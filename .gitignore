@@ -1,0 +1,6 @@
+*
+!images
+lisp/*~
+!lisp/*
+!init.el
+!site-lisp/*
