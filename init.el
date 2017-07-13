@@ -32,10 +32,6 @@
 
 (require 'init-site-lisp)
 
-;;(require 'webkit)
-;; Need to fix the site-lisp/emacs-webkit package, but please learn RPC protol.
-;; To do so, read the python-epc package to understand RPC protol, and read emacs-webkit source code
-
 (require 'init-evil) ;; vim keys-binding
 
 (require 'init-ycmd) ;; youcompleteme
