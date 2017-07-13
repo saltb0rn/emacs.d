@@ -1,6 +1,7 @@
 /*
 !\.gitignore
 !/images
+/images/*\.*
 !/lisp
 /lisp/*~
 !/init.el
