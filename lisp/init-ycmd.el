@@ -5,7 +5,7 @@
 
 (add-hook 'after-init-hook #'global-ycmd-mode)
 (set-variable 'ycmd-server-command
-			  '("python3" "/home/saltb0rn/Software/ycmd/ycmd"))
+			  `("python3" ,(expand-file-name "site-lisp/ycmd/ycmd" user-emacs-directory)))
 
 ;; complete at point ----------------------------------------------------------
 (defun ycmd-setup-completion-at-point-function ()
