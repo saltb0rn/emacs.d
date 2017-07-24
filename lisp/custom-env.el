@@ -43,12 +43,11 @@
  '(inhibit-startup-screen nil)
  '(package-selected-packages
    (quote
-    (epc webkit fuck pdf-tool emms chinese-pyim fcitx fic-mode geiser paredit chinese-pyim-wbdict yaml-mode dockerfile-mode ace-window slime-company smiles-mode monokai-theme scheme-complete xwidgete org-plus-contrib org-multiple-keymap- company-web web-mode racket-mode ecb magit nyan-mode ace-pinyin company-ycmd ycmd slime ein-mum\
-	 amo ein whitespace-cleanup-mode rainbow-delimiters neotree evil pylint flymake-\
-	 python-pyflakes elpy el-get)))
+    (epc webkit emms fic-mode geiser paredit yaml-mode ace-window slime-company monokai-theme xwidgete org-plus-contrib org-multiple-keymap- company-web web-mode racket-mode ecb magit nyan-mode company-ycmd ycmd slime whitespace-cleanup-mode rainbow-delimiters evil pylint flymake-python-pyflakes flycheck flycheck-ycmd elpy el-get use-package tabbar)))
+ '(slime-auto-select-connection (quote always))
  '(slime-auto-start (quote always))
+ '(slime-company-completion (quote fuzzy))
  '(web-mode-indent-style 2))
-
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
