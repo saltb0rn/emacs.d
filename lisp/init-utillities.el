@@ -48,5 +48,7 @@
 	      (setq window nil
 		    term-buf nil))))))
 
+;;(global-set-key (kbd "<f4>") #'term-toggle)
+
 (provide 'init-utillities)
 ;;; TODO: Should I separate the utillities in different files.
