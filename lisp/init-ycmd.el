@@ -2,6 +2,7 @@
 (require-install 'company-ycmd)
 (require-install 'flycheck-ycmd)
 (require-install 'fic-mode)
+(require-install 'highlight-indentation)
 
 (add-hook 'after-init-hook #'global-ycmd-mode)
 (set-variable 'ycmd-server-command
@@ -25,11 +26,12 @@
   (setq flycheck-indication-mode nil))
 
 ;; (add-hook 'ycmd-mode-hook 'ycmd-eldoc-setup)
-(add-hook 'ycmd-mode-hook 'company-ycmd-setup)
-(add-hook 'ycmd-mode-hook 'flycheck-ycmd-setup)
-(add-hook 'ycmd-mode-hook 'fic-mode)
+(add-hook 'ycmd-mode-hook #'company-ycmd-setup)
+(add-hook 'ycmd-mode-hook #'flycheck-ycmd-setup)
+(add-hook 'ycmd-mode-hook #'fic-mode)
 (add-hook 'ycmd-mode-hook #'rainbow-delimiters-mode)
 (add-hook 'ycmd-mode-hook #'linum-mode)
+(add-hook 'ycmd-mode-hook #'highlight-indentation-mode)
 
 ;; keys binding
 (global-company-mode)
