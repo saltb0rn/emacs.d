@@ -40,10 +40,12 @@
      ((regexp "\\.sld$")
       chibi))))
  '(inhibit-default-init nil)
+ '(python-shell-interpreter "python3")
+ '(tramp-default-method "ssh")
  '(inhibit-startup-screen nil)
  '(package-selected-packages
    (quote
-    (epc webkit emms fic-mode geiser paredit yaml-mode ace-window slime-company monokai-theme xwidgete org-plus-contrib org-multiple-keymap- company-web web-mode racket-mode ecb magit nyan-mode company-ycmd ycmd slime whitespace-cleanup-mode rainbow-delimiters evil pylint flymake-python-pyflakes flycheck flycheck-ycmd elpy el-get use-package tabbar)))
+    (highlight-indent-guides epc webkit emms fic-mode geiser paredit yaml-mode ace-window slime-company monokai-theme xwidgete org-plus-contrib org-multiple-keymap- company-web web-mode racket-mode ecb magit nyan-mode company-ycmd ycmd slime whitespace-cleanup-mode rainbow-delimiters evil pylint flymake-python-pyflakes flycheck flycheck-ycmd elpy el-get use-package tabbar)))
  '(slime-auto-select-connection (quote always))
  '(slime-auto-start (quote always))
  '(slime-company-completion (quote fuzzy))
@@ -55,7 +57,5 @@
  ;; If there is more than one, they won't work right.
  )
 (put 'narrow-to-region 'disabled nil)
-
-(setq python-shell-interpreter "python3")
 
 (provide 'custom-env)
