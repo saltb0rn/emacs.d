@@ -64,6 +64,8 @@
 
 (require 'init-xwidget-browser-mode)
 
+(require 'init-magit)
+
 (require 'custom-env)
 
 (provide 'init)
