@@ -1,3 +1,12 @@
+;; This file is not about the package lisp for emacs.d, just about configuration for writing lisp.
+
+;; For elisp
+(setcdr (assoc "\\.el\\'" auto-mode-alist) 'lisp-interaction-mode)
+(add-hook 'lisp-interaction-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'lisp-interaction-mode-hook #'linum-mode)
+(add-hook 'lisp-interaction #'fic-mode)
+
+;; For common lisp
 (require-install 'slime)
 (require-install 'slime-company)
 
@@ -9,11 +18,14 @@
  '(slime-auto-start 'always)
  '(slime-auto-select-connection 'always))
 ;; use (add-hook 'lisp-mode-hook #'slime-mode) instead
-
 (add-hook 'slime-mode-hook #'rainbow-delimiters-mode)
 (add-hook 'slime-mode-hook #'prettify-symbols-mode)
 (add-hook 'slime-mode-hook #'linum-mode)
-;;(add-hook 'lisp-mode-hook #'slime-mode)
+;; (add-hook 'lisp-mode-hook #'slime-mode)
 
-(provide 'init-slime)
-;; TODO: Try to collect all kind of lisp (scheme ,emacs lisp and common-lisp) in lisp-mode
+;; For scheme and its dialect
+(require-install 'geiser)
+
+(package-install 'geiser)
+
+(provide 'init-lisp)

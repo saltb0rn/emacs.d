@@ -40,15 +40,15 @@
      ((regexp "\\.sld$")
       chibi))))
  '(inhibit-default-init nil)
- '(python-shell-interpreter "python3")
- '(tramp-default-method "ssh")
  '(inhibit-startup-screen nil)
  '(package-selected-packages
    (quote
-    (highlight-indent-guides epc webkit emms fic-mode geiser paredit yaml-mode ace-window slime-company monokai-theme xwidgete org-plus-contrib org-multiple-keymap- company-web web-mode racket-mode ecb magit nyan-mode company-ycmd ycmd slime whitespace-cleanup-mode rainbow-delimiters evil pylint flymake-python-pyflakes flycheck flycheck-ycmd elpy el-get use-package tabbar)))
+    (web-mode use-package tabbar slime-company rainbow-delimiters org-plus-contrib nyan-mode monokai-theme magit highlight-indent-guides geiser flycheck-ycmd fic-mode evil emms elpy ecb company-ycmd all-the-icons ace-window)))
+ '(python-shell-interpreter "python3")
  '(slime-auto-select-connection (quote always))
  '(slime-auto-start (quote always))
  '(slime-company-completion (quote fuzzy))
+ '(tramp-default-method "ssh" nil (tramp))
  '(web-mode-indent-style 2))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

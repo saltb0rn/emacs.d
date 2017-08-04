@@ -21,4 +21,4 @@
 
 (add-hook 'web-mode-hook 'linum-mode)
 
-(provide 'init-web-mode)
+(provide 'init-web)
