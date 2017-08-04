@@ -40,8 +40,6 @@
 
 (require 'init-emms)
 
-(require 'init-ace-window)
-
 (require 'init-python)
 
 (require 'init-lisp)

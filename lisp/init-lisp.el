@@ -9,9 +9,11 @@
 ;; For common lisp
 (require-install 'slime)
 (require-install 'slime-company)
-
 (setq inferior-lisp-program "/usr/bin/sbcl")
 (setq slime-contribs '(slime-fancy))
+;; Slime-company does not work for me anymore, so I just use slime-complete-symbol to complete
+;; The shortcut of slime-complete-symbol is M-TAB, just change it if it conflicts with your any other shortcuts. I use i3 as my window manager, so this just works for me.
+
 ;; M-x customize-group [ENT] slime
 ;; customize slime-auto-select-connection
 (custom-set-variables
@@ -25,7 +27,5 @@
 
 ;; For scheme and its dialect
 (require-install 'geiser)
-
-(package-install 'geiser)
 
 (provide 'init-lisp)
