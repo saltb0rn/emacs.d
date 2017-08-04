@@ -28,43 +28,23 @@
  ;; 'chinese-pyim-greatdict)
 (require 'init-utillities)
 
-(require 'init-elisp-mode)
+(require 'init-other-utils)
 
 (require 'init-site-lisp)
 
 (require 'init-evil) ;; vim keys-binding
 
-(require 'init-ycmd) ;; youcompleteme
+(require 'init-ycmd) ;; youcompleteme as complete backend
 
 (require 'init-ecb)
 
 (require 'init-emms)
 
-(require 'init-tabbar)
+(require 'init-python)
 
-(require 'init-all-the-icons)
+(require 'init-lisp)
 
-(require 'init-rainbow-delimiters)
-
-;;(require 'init-chinese-pyim)
-
-(require 'init-nyan-mode)
-
-(require 'init-slime)
-
-;;(require 'init-scheme)
-
-(require 'init-web-mode)
-
-(require 'init-ace-window)
-
-;; (require 'init-neotree) ;; file navigator
-
-(require 'init-monokai-theme)
-
-(require 'init-xwidget-browser-mode)
-
-(require 'init-magit)
+(require 'init-web)
 
 (require 'custom-env)
 
