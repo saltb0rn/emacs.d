@@ -43,7 +43,7 @@
  '(inhibit-startup-screen nil)
  '(package-selected-packages
    (quote
-    (web-mode use-package tabbar rainbow-delimiters org-plus-contrib nyan-mode monokai-theme magit highlight-indent-guides geiser flycheck-ycmd fic-mode evil emms elpy ecb company-ycmd all-the-icons ace-window)))
+    (web-mode use-package tabbar slime-company rainbow-delimiters org-plus-contrib nyan-mode monokai-theme magit highlight-indent-guides geiser flycheck-ycmd fic-mode evil emms elpy ecb company-ycmd all-the-icons ace-window)))
  '(python-shell-interpreter "python3")
  '(slime-auto-select-connection (quote always))
  '(slime-auto-start (quote always))
