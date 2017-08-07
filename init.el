@@ -34,7 +34,8 @@
 
 (require 'init-evil) ;; vim keys-binding
 
-(require 'init-ycmd) ;; youcompleteme as complete backend
+;;(require 'init-ycmd) ;; youcompleteme as complete backend
+;;I pause using ycmd because it conflicts with elpy
 
 (require 'init-ecb)
 

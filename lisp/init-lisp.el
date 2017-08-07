@@ -1,14 +1,15 @@
 ;; This file is not about the package lisp for emacs.d, just about configuration for writing lisp.
-
+(require-install 'highlight-indentation)
 ;; For elisp
 (setcdr (assoc "\\.el\\'" auto-mode-alist) 'lisp-interaction-mode)
 (add-hook 'lisp-interaction-mode-hook #'rainbow-delimiters-mode)
 (add-hook 'lisp-interaction-mode-hook #'linum-mode)
+(add-hook 'lisp-interaction-mode-hook #'highlight-indentation-mode)
 (add-hook 'lisp-interaction #'fic-mode)
 
 ;; For common lisp
 (require-install 'slime)
-(require-install 'slime-company)
+;;(require-install 'slime-company)
 (setq inferior-lisp-program "/usr/bin/sbcl")
 (setq slime-contribs '(slime-fancy))
 ;; Slime-company does not work for me anymore, so I just use slime-complete-symbol to complete
@@ -23,6 +24,8 @@
 (add-hook 'slime-mode-hook #'rainbow-delimiters-mode)
 (add-hook 'slime-mode-hook #'prettify-symbols-mode)
 (add-hook 'slime-mode-hook #'linum-mode)
+(add-hook 'slime-mode-hook #'highlight-indentation-mode)
+(add-hook 'slime-mode-hook #'fic-mode)
 ;; (add-hook 'lisp-mode-hook #'slime-mode)
 
 ;; For scheme and its dialect
