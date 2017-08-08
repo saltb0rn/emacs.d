@@ -41,9 +41,6 @@
       chibi))))
  '(inhibit-default-init nil)
  '(inhibit-startup-screen nil)
- '(package-selected-packages
-   (quote
-    (indium company-mode company-tern xref-js2 js2-refactor js2-mode coffee-mode web-mode use-package tabbar slime-company rainbow-delimiters org-plus-contrib nyan-mode monokai-theme magit highlight-indent-guides geiser flycheck-ycmd fic-mode evil emms elpy ecb dired+ company-ycmd all-the-icons ace-window)))
  '(python-shell-interpreter "python3")
  '(slime-auto-select-connection (quote always))
  '(slime-auto-start (quote always))
