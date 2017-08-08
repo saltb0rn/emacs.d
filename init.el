@@ -45,6 +45,8 @@
 
 (require 'init-lisp)
 
+(require 'init-js)
+
 (require 'init-web)
 
 (require 'custom-env)
