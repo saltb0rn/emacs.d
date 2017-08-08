@@ -58,4 +58,6 @@
  )
 (put 'narrow-to-region 'disabled nil)
 
+(global-set-key (kbd "C-SPC") nil)
+
 (provide 'custom-env)
