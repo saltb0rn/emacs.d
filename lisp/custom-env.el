@@ -44,20 +44,8 @@
  '(package-selected-packages
    (quote
     (xref-js2 web-mode use-package tabbar slime-company rainbow-delimiters org-plus-contrib nyan-mode monokai-theme magit js2-refactor indium highlight-indent-guides geiser flycheck-ycmd fic-mode evil emms elpy ecb dired+ company-ycmd company-tern coffee-mode all-the-icons ace-window)))
- '(python-shell-interpreter "python3")
- '(slime-auto-select-connection (quote always))
- '(slime-auto-start (quote always))
- '(slime-company-completion (quote fuzzy))
  '(tramp-default-method "ssh" nil (tramp))
  '(web-mode-indent-style 2))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
 (put 'narrow-to-region 'disabled nil)
-
 (global-set-key (kbd "C-SPC") nil)
-
 (provide 'custom-env)
