@@ -18,8 +18,9 @@
 ;; M-x customize-group [ENT] slime
 ;; customize slime-auto-select-connection
 (custom-set-variables
- '(slime-auto-start 'always)
- '(slime-auto-select-connection 'always))
+ '(slime-auto-select-connection (quote always))
+ '(slime-auto-start (quote always))
+ '(slime-company-completion (quote fuzzy)))
 ;; use (add-hook 'lisp-mode-hook #'slime-mode) instead
 (add-hook 'slime-mode-hook #'rainbow-delimiters-mode)
 (add-hook 'slime-mode-hook #'prettify-symbols-mode)

@@ -32,7 +32,8 @@
 
 (require 'init-site-lisp)
 
-(require 'init-evil) ;; vim keys-binding
+;;(require 'init-evil) ;; vim keys-binding
+;;I stop using evil just becase I don't use vim-like keybinding frequently anymore
 
 ;;(require 'init-ycmd) ;; youcompleteme as complete backend
 ;;I pause using ycmd because it conflicts with elpy
