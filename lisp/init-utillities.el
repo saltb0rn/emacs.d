@@ -62,7 +62,7 @@
 		  (setq window (split-window
 				nil
 				(* (round (window-total-height) 3) 2))
-			shell-buf (eshell))
+			shell-buf (ansi-term "/bin/bash"))
 		  (set-window-buffer window shell-buf)
 		  (set-window-buffer nil old-buf)))
 	    (progn
