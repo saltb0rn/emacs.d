@@ -26,6 +26,7 @@
 ;; term-toggle is a quick way to toggle term below the current window.
 ;; TODO: Set the window to frame bottom, disable the ask for killing terminal.
 ;; TODO: Better make term-toggle a mirror mode.
+
 (setf (symbol-function 'term-toggle)
       (lexical-let ((window nil)
 		    (term-buf nil))
@@ -47,6 +48,30 @@
 		  (delete-window window))
 	      (setq window nil
 		    term-buf nil))))))
+
+;;;; I don't use term-toggle anymore, use shell-toggle instead.
+
+(setf (symbol-function 'shell-toggle)
+      (lexical-let ((window nil)
+		    (shell-buf nil))
+	(lambda ()
+	  (interactive)
+	  (if (null window)
+	      (progn
+		(let ((old-buf (current-buffer)))
+		  (setq window (split-window
+				nil
+				(* (round (window-total-height) 3) 2))
+			shell-buf (eshell))
+		  (set-window-buffer window shell-buf)
+		  (set-window-buffer nil old-buf)))
+	    (progn
+	      (if (buffer-live-p shell-buf)
+		  (kill-buffer shell-buf))
+	      (if (window-live-p window)
+		  (delete-window window))
+	      (setq window nil
+		    shell-buf nil))))))
 
 ;;(global-set-key (kbd "<f4>") #'term-toggle)
 
