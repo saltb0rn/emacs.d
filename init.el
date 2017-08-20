@@ -52,4 +52,6 @@
 
 (require 'custom-env)
 
+(require 'for-debug) ;; Just use for practicing writing emacs lisp
+
 (provide 'init)

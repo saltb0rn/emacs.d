@@ -7,6 +7,10 @@
 	      (if (require 'nyan nil t)
 		  (nyan-mode 0))))
 
+;; Emoji display
+(require-install 'emojify)
+(add-hook 'after-init-hook #'global-emojify-mode)
+
 ;; Show the tabbar
 (require-install 'tabbar)
 (tabbar-mode)
