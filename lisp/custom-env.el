@@ -50,6 +50,7 @@
  '(slime-auto-start (quote always))
  '(slime-company-completion (quote fuzzy))
  '(tramp-default-method "ssh" nil (tramp))
+;; '(bidi-display-reordering nil) ;; remove on significant contributor to line scans
  '(web-mode-indent-style 2))
 (put 'narrow-to-region 'disabled nil)
 (global-set-key (kbd "C-SPC") nil)
@@ -60,3 +61,5 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+
+(setq-default bidi-display-reordering nil)
