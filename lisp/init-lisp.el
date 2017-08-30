@@ -3,7 +3,7 @@
 ;; For elisp
 (setcdr (assoc "\\.el\\'" auto-mode-alist) 'lisp-interaction-mode)
 (add-hook 'lisp-interaction-mode-hook #'rainbow-delimiters-mode)
-(add-hook 'lisp-interaction-mode-hook #'linum-mode)
+;;(add-hook 'lisp-interaction-mode-hook #'linum-mode)
 (add-hook 'lisp-interaction-mode-hook #'highlight-indentation-mode)
 (add-hook 'lisp-interaction #'fic-mode)
 
@@ -24,7 +24,7 @@
 ;; use (add-hook 'lisp-mode-hook #'slime-mode) instead
 (add-hook 'slime-mode-hook #'rainbow-delimiters-mode)
 (add-hook 'slime-mode-hook #'prettify-symbols-mode)
-(add-hook 'slime-mode-hook #'linum-mode)
+;;(add-hook 'slime-mode-hook #'linum-mode)
 (add-hook 'slime-mode-hook #'highlight-indentation-mode)
 (add-hook 'slime-mode-hook #'fic-mode)
 ;; (add-hook 'lisp-mode-hook #'slime-mode)

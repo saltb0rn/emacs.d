@@ -9,7 +9,7 @@
 (add-hook 'js2-mode-hook #'js2-imenu-extras-mode)
 (add-hook 'js2-mode-hook #'js2-refactor-mode)
 (add-hook 'js2-mode-hook #'indium-interaction-mode)
-(add-hook 'js2-mode-hook #'linum-mode)
+;;(add-hook 'js2-mode-hook #'linum-mode)
 (js2r-add-keybindings-with-prefix "C-c C-r")
 (define-key js-mode-map (kbd "C-k") #'js2r-kill)
 (add-hook 'js2-mode-hook #'(lambda ()
