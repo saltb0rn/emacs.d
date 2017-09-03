@@ -19,6 +19,6 @@
 (setq web-mode-enable-auto-pairing t)
 (setq web-mode-enable-engine-detection t)
 
-(add-hook 'web-mode-hook 'linum-mode)
+;;(add-hook 'web-mode-hook 'linum-mode)
 
 (provide 'init-web)
