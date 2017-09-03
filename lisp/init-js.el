@@ -22,6 +22,7 @@
 (define-key tern-mode-keymap (kbd "M-,") nil)
 
 (require-install 'coffee-mode)
-(custom-set-variables '(coffee-indent-like-python-mode t))
+(custom-set-variables '(coffee-indent-like-python-mode t)
+		      '(coffee-tab-width 4))
 
 (provide 'init-js)
