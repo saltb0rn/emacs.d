@@ -11,6 +11,7 @@
  ;; If there is more than one, they won't work right.
  '(auto-save-default nil)
  '(coffee-indent-like-python-mode t)
+ '(coffee-tab-width 4)
  '(ecb-options-version "2.50")
  '(geiser-implementations-alist
    (quote
@@ -44,13 +45,12 @@
  '(inhibit-startup-screen nil)
  '(package-selected-packages
    (quote
-    (emojify xref-js2 web-mode use-package tabbar slime-company rainbow-delimiters org-plus-contrib nyan-mode monokai-theme magit js2-refactor indium highlight-indent-guides geiser flycheck-ycmd fic-mode evil emms elpy ecb dired+ company-ycmd company-tern coffee-mode all-the-icons ace-window)))
+    (bison-mode emojify xref-js2 web-mode use-package tabbar rainbow-delimiters org-plus-contrib nyan-mode monokai-theme magit js2-refactor indium highlight-indent-guides geiser flycheck-ycmd fic-mode evil emms elpy ecb company-tern coffee-mode all-the-icons ace-window)))
  '(python-shell-interpreter "python3")
  '(slime-auto-select-connection (quote always))
  '(slime-auto-start (quote always))
  '(slime-company-completion (quote fuzzy))
  '(tramp-default-method "ssh" nil (tramp))
-;; '(bidi-display-reordering nil) ;; remove on significant contributor to line scans
  '(web-mode-indent-style 2))
 (put 'narrow-to-region 'disabled nil)
 (global-set-key (kbd "C-SPC") nil)
