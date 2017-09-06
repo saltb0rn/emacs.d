@@ -6,7 +6,8 @@
 
 (add-hook 'after-init-hook #'global-ycmd-mode)
 (set-variable 'ycmd-server-command
-			  `("python3" ,(expand-file-name "site-lisp/ycmd/ycmd" user-emacs-directory)))
+	      `("python3"
+		,(expand-file-name "site-lisp/ycmd/ycmd" user-emacs-directory)))
 
 ;; complete at point ----------------------------------------------------------
 (defun ycmd-setup-completion-at-point-function ()
@@ -30,7 +31,7 @@
 (add-hook 'ycmd-mode-hook #'flycheck-ycmd-setup)
 (add-hook 'ycmd-mode-hook #'fic-mode)
 (add-hook 'ycmd-mode-hook #'rainbow-delimiters-mode)
-(add-hook 'ycmd-mode-hook #'linum-mode)
+;; (add-hook 'ycmd-mode-hook #'linum-mode)
 (add-hook 'ycmd-mode-hook #'highlight-indentation-mode)
 
 ;; keys binding
@@ -38,5 +39,7 @@
 (global-flycheck-mode)
 (ycmd-toggle-force-semantic-completion)
 ;; (add-hook 'global-company-mode 'global-flycheck-mode)
+(custom-set-variables
+ '(python-shell-interpreter "python3"))
 
 (provide 'init-ycmd)

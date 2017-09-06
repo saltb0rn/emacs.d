@@ -45,7 +45,7 @@
  '(inhibit-startup-screen nil)
  '(package-selected-packages
    (quote
-    (bison-mode emojify xref-js2 web-mode use-package tabbar rainbow-delimiters org-plus-contrib nyan-mode monokai-theme magit js2-refactor indium highlight-indent-guides geiser flycheck-ycmd fic-mode evil emms elpy ecb company-tern coffee-mode all-the-icons ace-window)))
+    (slime bison-mode emojify xref-js2 web-mode use-package tabbar rainbow-delimiters org-plus-contrib nyan-mode monokai-theme magit js2-refactor indium highlight-indent-guides geiser flycheck-ycmd fic-mode evil emms elpy ecb company-tern coffee-mode all-the-icons ace-window)))
  '(python-shell-interpreter "python3")
  '(slime-auto-select-connection (quote always))
  '(slime-auto-start (quote always))
@@ -61,5 +61,4 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
-
 (setq-default bidi-display-reordering nil)
