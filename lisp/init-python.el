@@ -16,7 +16,10 @@
 		    (highlight-indentation-mode 0)
 		    (message "Turn the highlight-indentation-mode off")))))
 (custom-set-variables
- '(python-shell-interpreter "python3"))
+ '(python-shell-interpreter "python3")
+ '(elpy-rpc-backend "jedi")
+ '(elpy-rpc-python-command "python3")
+ )
 (elpy-enable)
 
 (provide 'init-python)
