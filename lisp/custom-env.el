@@ -53,6 +53,7 @@
  '(slime-company-completion (quote fuzzy))
  '(tramp-default-method "ssh" nil (tramp))
  '(tramp-syntax (quote default) nil (tramp))
+ '(org-pretty-entities t)
  '(web-mode-indent-style 2))
 (put 'narrow-to-region 'disabled nil)
 (global-set-key (kbd "C-SPC") nil)
