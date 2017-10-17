@@ -1,14 +1,78 @@
-;;; 该文件是用来配置系统的软件的,也就是每当换电脑/或者系统的时候,只要运行emacs一次就会自动配置好系统的环境
-(call-process "python3"
-	      nil
-	      t
-	      nil
-	      "/home/saltb0rn/Software/emacs.d/lisp/install-packages-for-elpy.py")
+;;; init-system-pkg.el --- My script to install system packages
 
-(shell-command (concat "echo " (shell-quote-argument (read-passwd "Password? "))
-		       " | sudo -S apt-get udpate"))
+;; Copyright (C) 2017 Salt Ho
 
-(shell-command "python3 /home/saltb0rn/Software/emacs.d/lisp/install-packages-for-elpy.py")
+;; Author: Salt Ho <asche34@outlook.com>
+;; Created: 17 Oct 2017
+;; Version: 1.0
+;; Package-Requires: nil
+;; Keywords: processes, unix
 
-(shell-command-to-string (concat "echo " (shell-quote-argument (read-passwd "Password? "))
-				 " | sudo -S apt-get update"))
+;;; Commentary:
+
+;; My script to install packages for system (Debian and Debian-based). Since it is not convince
+;; to install the softwares (which includes emacs) every time I use new computer or new system.
+;; So I write this script to solve this problem and practice writing Emacs lisp for fun
+;; due to freetime.
+
+;; About headers in the script, read from here:
+;; https://www.gnu.org/software/emacs/manual/html_node/elisp/Library-Headers.html#Library-Headers
+
+;; About comments conventions, read from here:
+;; https://www.gnu.org/software/emacs/manual/html_node/elisp/Comment-Tips.html
+
+;;; Code:
+
+;; This function named call-process is not handy to use
+;; (call-process
+;;  "python3"
+;;  nil
+;;  t
+;;  nil
+;;  "/home/saltb0rn/Software/emacs.d/lisp/install-packages-for-elpy.py")
+
+;; After some searches, I found that shell-command and shell-command are the functions
+;; that meet my requirements.
+;; (shell-command (concat "echo " (shell-quote-argument (read-passwd "Password? "))
+;;		       " | sudo -S apt-get udpate"))
+;; (shell-command "python3 /home/saltb0rn/Software/emacs.d/lisp/install-packages-for-elpy.py")
+
+;; (shell-command-to-string (concat "echo " (shell-quote-argument (read-passwd "Password? "))
+;;				 " | sudo -S apt-get update"))
+
+
+(defun mk_password_getter ()
+  (lexical-let ((password nil))
+    (lambda (&optional clean)
+      (cond
+       (clean (progn
+		(setq password nil)
+		password))
+       (password)
+       (t (progn
+	    (setq password
+		  (read-passwd "Permission needed, input password here: "))
+	    password))))))
+
+(setf
+ (symbol-function 'password_getter)
+ (mk_password_getter))
+
+
+(shell-command
+ (concat
+  "python3 install-packages-for-elpy.py "
+  (password_getter))
+ (current-buffer))
+
+(with-current-buffer
+    (current-buffer)
+    (shell-command-to-string
+     (concat
+      "python3 install-packages-for-elpy.py "
+      (password_getter))))
+
+
+
+
+;;; init-system-pkg.el ends here

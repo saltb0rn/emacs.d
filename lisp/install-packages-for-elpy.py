@@ -1,22 +1,31 @@
-'''
-def process_pip_on_system():
+import os
+import shlex
+from subprocess import (
+    CalledProcessError, DEVNULL, Popen, PIPE, run)
+import sys
+
+
+def execute(command, password=None):
+    if not isinstance(command, list):
+        command = shlex.split(command)
     try:
-        from pip import commands
-        pass
-    except ImportError:
-        import subprocess
-        ret = subprocess.run(
-            "sudo apt-get update && apt-get install python3-pip",
-            shell=True, check=True)
-        if not ret.returncode:
-            process_pip_on_system()
-'''
+        proc = run(command, check=True, stderr=DEVNULL)
+    except CalledProcessError:
+        proc = Popen(
+            ["sudo", "-S"]+command,
+            stdin=PIPE,
+            stderr=PIPE,
+            universal_newlines=True)
+        proc.communicate(password+"\n")
+    return proc.returncode
 
 
 def main():
-    import subprocess
-    subprocess.run("apt-get update", shell=True)
+    password = os.getenv("EMACS_INPUT")
+    assert execute("apt-get update", password) == 0
+    return execute("apt-get upgrade -y", password)
 
 
 if __name__ == "__main__":
+    os.environ["EMACS_INPUT"] = sys.argv[1]
     main()
