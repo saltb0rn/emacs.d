@@ -58,21 +58,12 @@
  (symbol-function 'password_getter)
  (mk_password_getter))
 
-
 (shell-command
  (concat
-  "python3 install-packages-for-elpy.py "
+  python-shell-interpreter
+  " install-packages-for-elpy.py "
   (password_getter))
- (current-buffer))
-
-(with-current-buffer
-    (current-buffer)
-    (shell-command-to-string
-     (concat
-      "python3 install-packages-for-elpy.py "
-      (password_getter))))
-
-
+ "*install-pkg*")
 
 
 ;;; init-system-pkg.el ends here
