@@ -170,7 +170,7 @@ if __name__ == "__main__":
                         help="The command you want to execute",
                         choices=["init", "pip", "upgrade"])
     parser.add_argument("-p", "--password", type=str,
-                        help="input the password (for root user)")
+                        help="Input the password (for root user)")
     args = parser.parse_args()
     if args.password:
         os.environ[PASSWORD_KEYNAME] = args.password

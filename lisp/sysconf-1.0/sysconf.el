@@ -65,7 +65,7 @@
 	  (newsym (intern (concat "sysconf-" symname)))
 	  ;; Do NOT use make-symbol since the newly allocated symbol is uninterned
 	  (func (lambda ()
-		  "Doctring later"
+		  "Docstring later"
 		  (interactive)
 		  (shell-command
 		   (concat
