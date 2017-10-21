@@ -131,7 +131,7 @@ def init_pkg():
     ])
     execute("apt-key adv --recv-key --keyserver keyserver.ubuntu.com D62FCE72")
     '''
-    execute(["apt-get", "install", "polipo"])
+    execute(["apt-get", "install", "polipo", "sbcl"])
     install_firefox()
 
 

@@ -54,4 +54,6 @@
 
 (require 'for-debug) ;; Just use for practicing writing emacs lisp
 
+(require 'sysconf)
+
 (provide 'init)

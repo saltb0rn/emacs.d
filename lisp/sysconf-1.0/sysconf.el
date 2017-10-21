@@ -53,14 +53,14 @@
        (password)
        (t (progn
 	    (setq password
-		  (read-passwd "Permission needed, input password here: "))
+		  (read-passwd "Permission Denied. Input password here: "))
 	    password))))))
 
 (setf
  (symbol-function 'password-getter)
  (mk-password-getter))
 
-(defmacro sysconf-* (cmdsym)
+(defmacro sysconf-* (cmdsym &optional docstring)
   `(let* ((symname (symbol-name ',cmdsym))
 	  (newsym (intern (concat "sysconf-" symname)))
 	  ;; Do NOT use make-symbol since the newly allocated symbol is uninterned
@@ -79,11 +79,14 @@
      (setf (symbol-function newsym)
 	   func)))
 
+;;;###autoload
 (sysconf-* init)
 
+;;;###autoload
 (sysconf-* pip)
 
+;;;###autoload
 (sysconf-* upgrade)
 
-
+(provide 'sysconf)
 ;;; sysconf.el ends here
