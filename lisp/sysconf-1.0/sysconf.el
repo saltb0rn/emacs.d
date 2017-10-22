@@ -1,5 +1,4 @@
-;;;  -*- lexical-binding: t -*-
-;;; sysconf.el --- My script to install system packages
+;;; sysconf.el --- My script to install system packages -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2017 Salt Ho
 
@@ -43,7 +42,7 @@
 
 
 (defun mk-password-getter ()
-  ;;  (lexical-let ((password nil))
+  ;; (lexical-let ((password nil))
   (let ((password nil))
     (lambda (&optional clean)
       (cond
@@ -60,7 +59,12 @@
  (symbol-function 'password-getter)
  (mk-password-getter))
 
-(defmacro sysconf-* (cmdsym &optional docstring)
+(defconst script-path
+  (expand-file-name
+   "sysconf.py"
+   (file-name-directory load-file-name)))
+
+(defmacro sysconf-* (cmdsym)
   `(let* ((symname (symbol-name ',cmdsym))
 	  (newsym (intern (concat "sysconf-" symname)))
 	  ;; Do NOT use make-symbol since the newly allocated symbol is uninterned
@@ -70,7 +74,9 @@
 		  (shell-command
 		   (concat
 		    python-shell-interpreter
-		    " sysconf.py "
+		    " "
+		    script-path
+		    " "
 		    "--password "
 		    (password-getter)
 		    " "
