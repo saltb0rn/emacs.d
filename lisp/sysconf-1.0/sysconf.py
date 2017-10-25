@@ -182,6 +182,8 @@ if __name__ == "__main__":
         "pip": init_pip
     }.get(args.command)
     retcode = exec_cmd()
+    print("Errors:")
     print(execute.tracebacks)
+    print("Results:")
     print(execute.outputs)
     sys.exit(retcode)

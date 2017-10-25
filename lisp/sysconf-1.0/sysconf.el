@@ -87,14 +87,17 @@
 		  (interactive)
 		  (if (process-status "sysconf")
 		      nil
-		    (start-process
-		     "sysconf"
-		     "*SYSCONF*"
-		     python-shell-interpreter
-		     script-path
-		     "--password"
-		     (password-getter)
-		     symname)))))
+		    (progn
+		      (start-process
+		       "sysconf"
+		       "*SYSCONF*"
+		       python-shell-interpreter
+		       script-path
+		       "--password"
+		       (password-getter)
+		       symname)
+		      (view-buffer (get-buffer "*SYSCONF*"))
+		      )))))
      (setf (symbol-function newsym) func)))
 
 ;;;###autoload
