@@ -88,14 +88,15 @@ def init_pip():
     )
     # install_command = commands_dict["install"]()
     packages_need_to_be_installed = [
+        "beautifulsoup4",
         # For elpy
         "elpy",
         "autopep8",
         "yapf",
         "virtualenv",
         # For ss
-        "shadowsocks",
-        "beautifulsoup4"
+        # "shadowsocks",
+        "git+https://github.com/shadowsocks/shadowsocks.git@master",
     ]
     packages_installed = [
         pkg.key for pkg in get_installed_distributions()
@@ -131,7 +132,8 @@ def init_pkg():
     ])
     execute("apt-key adv --recv-key --keyserver keyserver.ubuntu.com D62FCE72")
     '''
-    execute(["apt-get", "install", "polipo", "sbcl"])
+    execute(["add-apt-repository", "ppa:hda-me/proxychains-ng"])
+    execute(["apt-get", "install", "polipo", "sbcl", "proxychains-ng"])
     install_firefox()
 
 

@@ -41,6 +41,11 @@
 ;;				 " | sudo -S apt-get update"))
 
 
+(defconst script-path
+  (expand-file-name
+   "sysconf.py"
+   (file-name-directory load-file-name)))
+
 (defun mk-password-getter ()
   ;; (lexical-let ((password nil))
   (let ((password nil))
@@ -59,31 +64,38 @@
  (symbol-function 'password-getter)
  (mk-password-getter))
 
-(defconst script-path
-  (expand-file-name
-   "sysconf.py"
-   (file-name-directory load-file-name)))
-
 (defmacro sysconf-* (cmdsym)
   `(let* ((symname (symbol-name ',cmdsym))
 	  (newsym (intern (concat "sysconf-" symname)))
 	  ;; Do NOT use make-symbol since the newly allocated symbol is uninterned
+	  ;; (func (lambda ()
+	  ;;	  "Docstring later"
+	  ;;	  (interactive)
+	  ;;	  (shell-command
+	  ;;	   (concat
+	  ;;	    python-shell-interpreter
+	  ;;	    " "
+	  ;;	    script-path
+	  ;;	    " "
+	  ;;	    "--password "
+	  ;;	    (password-getter)
+	  ;;	    " "
+	  ;;	    symname)
+	  ;;	   "*sysconf*")))
 	  (func (lambda ()
 		  "Docstring later"
 		  (interactive)
-		  (shell-command
-		   (concat
-		    python-shell-interpreter
-		    " "
-		    script-path
-		    " "
-		    "--password "
-		    (password-getter)
-		    " "
-		    symname)
-		    "*sysconf*"))))
-     (setf (symbol-function newsym)
-	   func)))
+		  (if (process-status "sysconf")
+		      nil
+		    (start-process
+		     "sysconf"
+		     "*SYSCONF*"
+		     python-shell-interpreter
+		     script-path
+		     "--password"
+		     (password-getter)
+		     symname)))))
+     (setf (symbol-function newsym) func)))
 
 ;;;###autoload
 (sysconf-* init)
