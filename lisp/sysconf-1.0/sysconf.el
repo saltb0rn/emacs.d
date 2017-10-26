@@ -100,6 +100,9 @@
 		       symname)
 		      (set-process-filter (get-process "sysconf")
 					  #'(lambda (process output)
+					      (with-current-buffer "*SYSCONF*"
+						(let ((inhibit-read-only t))
+						  (insert output)))
 					      (view-buffer (get-buffer "*SYSCONF*")))))))))
      (setf (symbol-function newsym) func)))
 
