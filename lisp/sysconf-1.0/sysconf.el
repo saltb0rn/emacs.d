@@ -67,6 +67,7 @@
 (defmacro sysconf-* (cmdsym)
   `(let* ((symname (symbol-name ',cmdsym))
 	  (newsym (intern (concat "sysconf-" symname)))
+	  ;; Synchronous Process
 	  ;; Do NOT use make-symbol since the newly allocated symbol is uninterned
 	  ;; (func (lambda ()
 	  ;;	  "Docstring later"
@@ -82,6 +83,7 @@
 	  ;;	    " "
 	  ;;	    symname)
 	  ;;	   "*sysconf*")))
+	  ;; Asynchronous Process
 	  (func (lambda ()
 		  "Docstring later"
 		  (interactive)
@@ -96,8 +98,9 @@
 		       "--password"
 		       (password-getter)
 		       symname)
-		      (view-buffer (get-buffer "*SYSCONF*"))
-		      )))))
+		      (set-process-filter (get-process "sysconf")
+					  #'(lambda (process output)
+					      (view-buffer (get-buffer "*SYSCONF*")))))))))
      (setf (symbol-function newsym) func)))
 
 ;;;###autoload
