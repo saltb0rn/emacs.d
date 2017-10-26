@@ -1,6 +1,7 @@
 from __future__ import nested_scopes, print_function
 
 import argparse
+import datetime
 import itertools
 import os
 import platform
@@ -182,6 +183,7 @@ if __name__ == "__main__":
         "pip": init_pip
     }.get(args.command)
     retcode = exec_cmd()
+    print("Finished at %s" % datetime.datetime.now())
     print("Errors:")
     print(execute.tracebacks)
     print("Results:")
