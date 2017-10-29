@@ -5,10 +5,22 @@
 (setq *use-proxy* nil)
 
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
-;;(add-to-list 'package-archives '("melpa" . "http://www.mirrorservice.org/sites/melpa/packages/") t)
+;; (add-to-list 'package-archives '("melpa" . "http://www.mirrorservice.org/sites/melpa/packages/") t)
 (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
 
-;;; These are the way to wirte a hook and how to run hook(s) 
+;; The function that adds the subdirs to load-path
+(defun add-subdirs-to-load-path (parent-dir)
+  (let* ((default-directory parent-dir)) ; `default-directory' is the built-in variable
+    (setq load-path
+	  (append
+	   (remove-if-not
+	    #'(lambda (dir) (file-directory-p dir))
+	    (directory-files
+	     (expand-file-name parent-dir) ; Need optional argument if `default-directory' variable
+	     t "^[^\\.]"))		   ; is not used
+	   load-path))))
+
+;;; These are the way to wirte a hook and how to run hook(s)
 ;;; ==========================================================================
 (defvar package-refresh-contents-hook
   nil "Hook call after package-refresh-contents")

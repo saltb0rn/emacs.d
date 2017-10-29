@@ -14,6 +14,8 @@
  '(coffee-indent-like-python-mode t)
  '(coffee-tab-width 4)
  '(ecb-options-version "2.50")
+ '(elpy-rpc-backend "jedi")
+ '(elpy-rpc-python-command "python3")
  '(geiser-implementations-alist
    (quote
     (((regexp "\\.scm$")
@@ -44,6 +46,7 @@
       chibi))))
  '(inhibit-default-init nil)
  '(inhibit-startup-screen nil)
+ '(org-pretty-entities t)
  '(package-selected-packages
    (quote
     (company-jedi typing-game speed-type slime bison-mode emojify xref-js2 web-mode use-package tabbar rainbow-delimiters org-plus-contrib nyan-mode monokai-theme magit js2-refactor indium highlight-indent-guides geiser flycheck-ycmd fic-mode evil emms elpy ecb company-tern coffee-mode all-the-icons ace-window)))
@@ -53,11 +56,11 @@
  '(slime-company-completion (quote fuzzy))
  '(tramp-default-method "ssh" nil (tramp))
  '(tramp-syntax (quote default) nil (tramp))
- '(org-pretty-entities t)
  '(web-mode-indent-style 2))
+
 (put 'narrow-to-region 'disabled nil)
 (global-set-key (kbd "C-SPC") nil)
-(provide 'custom-env)
+
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -65,3 +68,5 @@
  ;; If there is more than one, they won't work right.
  '(cursor ((t (:background "#FFD700")))))
 (setq-default bidi-display-reordering nil)
+
+(provide 'custom-env)
