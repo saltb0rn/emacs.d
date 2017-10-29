@@ -13,7 +13,6 @@
 (package-initialize)
 
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
-(add-to-list 'load-path (expand-file-name "mypkgs" user-emacs-directory))
 
 ;; Display line number
 ;; (global-linum-mode)
@@ -33,11 +32,13 @@
 
 (require 'init-site-lisp)
 
-;;(require 'init-evil) ;; vim keys-binding
-;;I stop using evil just becase I don't use vim-like keybinding frequently anymore
+(require 'init-mypkgs)
+
+;; (require 'init-evil) ;; vim keys-binding
+;; I stop using evil just becase I don't use vim-like keybinding frequently anymore
 
 ;; (require 'init-ycmd) ;; youcompleteme as complete backend
-;;I pause using ycmd because it conflicts with elpy
+;; I pause using ycmd because it conflicts with elpy
 
 (require 'init-ecb)
 
@@ -53,8 +54,7 @@
 
 (require 'custom-env)
 
-(require 'for-debug) ;; Just use for practicing writing emacs lisp
-
-(require 'sysconf "sysconf-1.0/sysconf.el" t)
+;; (require 'sysconf "sysconf.el")
+(require 'sysconf) ;; Don't need to install the package for debugging during development
 
 (provide 'init)
