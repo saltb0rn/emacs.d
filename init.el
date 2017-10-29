@@ -13,6 +13,7 @@
 (package-initialize)
 
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
+(add-to-list 'load-path (expand-file-name "mypkgs" user-emacs-directory))
 
 ;; Display line number
 ;; (global-linum-mode)
@@ -54,6 +55,6 @@
 
 (require 'for-debug) ;; Just use for practicing writing emacs lisp
 
-(require 'sysconf nil t)
+(require 'sysconf "sysconf-1.0/sysconf.el" t)
 
 (provide 'init)
