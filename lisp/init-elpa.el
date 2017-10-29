@@ -1,5 +1,4 @@
 ;; Configure melpa source
-(require 'cl)
 (require 'package)
 
 (setq *latest-checked* nil)
