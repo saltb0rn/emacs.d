@@ -10,3 +10,4 @@
 !/init.el
 !/site-lisp
 /site-lisp/*~
+/mypkgs/*~
