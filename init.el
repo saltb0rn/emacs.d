@@ -22,10 +22,10 @@
 
 (require 'init-elpa)
 
-(ensure-package-installed
- 'org-plus-contrib
- 'use-package)
- ;; 'chinese-pyim-greatdict)
+;; (ensure-package-installed
+;;  'use-package
+;; 'chinese-pyim-greatdict)
+
 (require 'init-utillities)
 
 (require 'init-other-utils)
