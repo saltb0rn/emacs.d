@@ -47,10 +47,10 @@
  '(inhibit-default-init nil)
  '(inhibit-startup-screen nil)
  '(org-pretty-entities t)
+ `(url-proxy-services '(("http" . "127.0.0.1:8118")))
  '(package-selected-packages
    (quote
-    (company-jedi typing-game speed-type slime bison-mode emojify xref-js2 web-mode tabbar rainbow-delimiters org-plus-contrib nyan-mode monokai-theme magit js2-refactor indium highlight-indent-guides geiser flycheck-ycmd fic-mode evil emms elpy ecb company-tern coffee-mode all-the-icons ace-window)))
- '(python-shell-interpreter "python3")
+    (google-translate company-jedi typing-game speed-type slime bison-mode emojify xref-js2 web-mode tabbar rainbow-delimiters org-plus-contrib nyan-mode monokai-theme magit js2-refactor indium highlight-indent-guides geiser flycheck-ycmd fic-mode evil emms elpy ecb company-tern coffee-mode all-the-icons ace-window)))
  '(slime-auto-select-connection (quote always))
  '(slime-auto-start (quote always))
  '(slime-company-completion (quote fuzzy))
