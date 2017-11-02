@@ -40,11 +40,25 @@
 ;; (shell-command-to-string (concat "echo " (shell-quote-argument (read-passwd "Password? "))
 ;;				 " | sudo -S apt-get update"))
 
+;;(require 'emacs-proxy-ctl) ;; This is script has been adbandoned
 
-(defconst script-path
+(defgroup sysconf nil
+  "The Utilities To Setup Environment Quickly."
+  :version "1.0"
+  :prefix "sysconf-")
+
+(defconst default-script-path
   (expand-file-name
    "sysconf.py"
    (file-name-directory load-file-name)))
+
+(defcustom script-path
+  default-script-path
+  "The path to Python script"
+  :type 'string
+  :options '(custom-variable)
+  :group 'sysconf)
+
 
 (defun mk-password-getter ()
   ;; (lexical-let ((password nil))
