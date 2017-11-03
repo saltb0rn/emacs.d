@@ -59,24 +59,24 @@
   :options '(custom-variable)
   :group 'sysconf)
 
+(defcustom password-keyname
+  "PASSWORD"
+  "The environment variable name of passing `password' to py script"
+  :type 'string
+  :options '(custom-variable)
+  :group 'sysconf)
 
-(defun mk-password-getter ()
-  ;; (lexical-let ((password nil))
-  (let ((password nil))
-    (lambda (&optional clean)
-      (cond
-       (clean (progn
-		(setq password nil)
-		password))
-       (password)
-       (t (progn
-	    (setq password
-		  (read-passwd "Permission Denied. Input password here: "))
-	    password))))))
+(defun password-getter (&optional clean)
+  (cond
+   (clean (setenv password-keyname nil))
+   (t
+    (if (not (getenv password-keyname))
+	(setenv password-keyname (read-passwd "Permission Denied. Input `password' here: "))
+      (getenv password-keyname)))))
 
-(setf
- (symbol-function 'password-getter)
- (mk-password-getter))
+(defun clean-password ()
+  (interactive)
+  (password-getter t))
 
 (defmacro sysconf-* (cmdsym)
   `(let* ((symname (symbol-name ',cmdsym))
@@ -104,20 +104,23 @@
 		  (if (process-status "sysconf")
 		      nil
 		    (progn
-		      (start-process
-		       "sysconf"
-		       "*SYSCONF*"
-		       python-shell-interpreter
-		       script-path
-		       "--password"
-		       (password-getter)
-		       symname)
-		      (set-process-filter (get-process "sysconf")
-					  #'(lambda (process output)
-					      (with-current-buffer "*SYSCONF*"
-						(let ((inhibit-read-only t))
-						  (insert output)))
-					      (view-buffer (get-buffer "*SYSCONF*")))))))))
+		      (let ((process-connection-type t))
+			(password-getter)
+			(start-process
+			 "sysconf"
+			 "*SYSCONF*"
+			 python-shell-interpreter
+			 script-path
+			 "--passwordkey"
+			 password-keyname
+			 symname))
+		      (let ((proc (get-process "sysconf")))
+			(set-process-filter proc
+					    #'(lambda (process output)
+						(with-current-buffer "*SYSCONF*"
+						  (let ((inhibit-read-only t))
+							(insert output)))
+						(view-buffer (get-buffer "*SYSCONF*"))))))))))
      (setf (symbol-function newsym) func)))
 
 ;;;###autoload

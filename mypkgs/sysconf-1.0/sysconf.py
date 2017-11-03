@@ -19,6 +19,8 @@ INSTALL_IPYTHON_COMMAND = "apt-get install ipython{}".format(PYTHON_VERSION)
 # No Need the command to install Python since the script
 # will never run if Python is not installed first
 INSTALL_PIP_COMMAND = "apt-get install python{}-pip".format(PYTHON_VERSION)
+LINUX_DISTRO, DISTRO_VERSION, DISTRO_ALIAS = platform.linux_distribution()
+SUPPROT_DISTROS = ["Ubuntu", "LinuxMint"]
 
 
 def mk_execute():
@@ -62,18 +64,24 @@ def init():
     """
     Configurate my system softwares
     """
-    update_and_upgrade()
-    init_dotfile()
-    init_pip()
+    # update_and_upgrade()
     init_pkg()
+    init_pip()
+    init_dotfile()
 
 
 def init_dotfile():
     """
     Place dotfiles in the right place
+
+    Copy files with shutil module instead of os module
+    Create symbolic link with os module
+    I think create symbolic link is better,
+    the dotfiles and the location they should be placed:
+    Program            Location
+    i3wm               ~/.i3
+    pip                ~/.pip
     """
-    # Copy files with shutil module instead of os module
-    # Create symbolic link with os module
     pass
 
 
@@ -133,9 +141,42 @@ def init_pkg():
     ])
     execute("apt-key adv --recv-key --keyserver keyserver.ubuntu.com D62FCE72")
     '''
-    execute(["add-apt-repository", "ppa:hda-me/proxychains-ng"])
-    execute(["apt-get", "install", "polipo", "sbcl", "proxychains-ng"])
-    install_firefox()
+    if LINUX_DISTRO in SUPPROT_DISTROS:
+        execute(["add-apt-repository", "ppa:hda-me/proxychains-ng", "-y"])
+        execute(["apt-get" "update"])
+        execute([
+            "apt-get", "install", "compton",
+            "i3", "i3status", "lxappearance",
+            "sbcl", "suckless-tools", "python3-pip",
+            "polipo", "proxychains-ng", "rofi"
+        ])
+    else:
+        pass
+    # install_firefox()
+
+
+def init_service():
+    def root_(filename):
+        return os.path.join(os.path.abspath("."), "shfiles", filename)
+
+    def symlink_with_log(src, dst, target_is_directory=False):
+        try:
+            os.symlink(src, dst, target_is_directory)
+        except FileExistsError as err:
+            execute.tracebacks["result"].append(
+                {
+                    "retcode": 1,
+                    "errs": err.strerror,
+                    "command": "ln -s {src} {dst}".format(src=src, dst=dst)
+                }
+            )
+    if LINUX_DISTRO not in SUPPROT_DISTROS:
+        return
+    if LINUX_DISTRO in ["Ubuntu", "LinuxMint"]:
+        # For shadowsocks
+        # os.symlink("shfiles/shadowsocks", "/etc/shadowsocks")
+        symlink_with_log(root_("shadowsocks"), "/etc/shadowsocks")
+        execute("update-rc.d shadowsocks defaults")
 
 
 def install_firefox(path=None):
@@ -167,20 +208,21 @@ if __name__ == "__main__":
     if distro not in ["Ubuntu", "LinuxMint"]:
         sys.exit(-1)
     parser = argparse.ArgumentParser(
-        prog="EMACS input processor",
+        prog="sysconf",
         description='Process the input from EMACS.')
     parser.add_argument("command", type=str, metavar="COMMAND",
                         help="The command you want to execute",
                         choices=["init", "pip", "upgrade"])
-    parser.add_argument("-p", "--password", type=str,
-                        help="Input the password to the user)")
+    parser.add_argument("-pk", "--passwordkey", type=str,
+                        help="The name of variable to passing password")
     args = parser.parse_args()
-    if args.password:
-        os.environ[PASSWORD_KEYNAME] = args.password
+    if args.passwordkey:
+        PASSWORD_KEYNAME = args.passwordkey
+        # os.environ[PASSWORD_KEYNAME] = args.passwordkey
     exec_cmd = {
         "init": init,
         "upgrade": update_and_upgrade,
-        "pip": init_pip
+        "pip": init_pip,
     }.get(args.command)
     retcode = exec_cmd()
     print("Finished at %s" % datetime.datetime.now())
