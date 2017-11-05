@@ -23,6 +23,39 @@ LINUX_DISTRO, DISTRO_VERSION, DISTRO_ALIAS = platform.linux_distribution()
 SUPPROT_DISTROS = ["Ubuntu", "LinuxMint"]
 
 
+def root_(filename, last_dir=None):
+    """
+    Get the path to files/directories
+    """
+    args = [filename]
+    if isinstance(last_dir, str):
+        args.append(last_dir)
+    return os.path.join(os.path.abspath("."), *args)
+
+
+def symlink_with_log(src, dst, target_is_directory=False):
+    """
+    The `symlink_with_log' function is custom version to os.symlink
+    """
+    try:
+        command = "ln -s {src} {dst}".format(src=src, dst=dst)
+        os.symlink(src, dst, target_is_directory)
+    except FileExistsError as err:
+        execute.tracebacks["result"].append(
+            {
+                "retcode": 1,
+                "errs": err.strerror,
+                "command": command
+            })
+    else:
+        execute.outputs["result"].append(
+            {
+                "retcode": 0,
+                "outs": "",
+                "command": command
+            })
+
+
 def mk_execute():
     def execute(command):
         password = os.getenv(PASSWORD_KEYNAME, '')
@@ -82,7 +115,13 @@ def init_dotfile():
     i3wm               ~/.i3
     pip                ~/.pip
     """
-    pass
+    home = os.environ["HOME"]
+    symlink_with_log(root_("dotfiles", "i3"),
+                     os.path.join(home, ".i3"),
+                     True)
+    symlink_with_log(root_("dotfiles", "pip"),
+                     os.path.join(home, ".pip"),
+                     True)
 
 
 def init_pip():
@@ -146,9 +185,10 @@ def init_pkg():
         execute(["apt-get" "update"])
         execute([
             "apt-get", "install", "compton",
-            "i3", "i3status", "lxappearance",
-            "sbcl", "suckless-tools", "python3-pip",
-            "polipo", "proxychains-ng", "rofi"
+            "i3", "i3status", "i3blocks",
+            "lxappearance", "sbcl", "suckless-tools",
+            "python3-pip", "polipo", "proxychains-ng",
+            "rofi"
         ])
     else:
         pass
@@ -156,26 +196,13 @@ def init_pkg():
 
 
 def init_service():
-    def root_(filename):
-        return os.path.join(os.path.abspath("."), "shfiles", filename)
 
-    def symlink_with_log(src, dst, target_is_directory=False):
-        try:
-            os.symlink(src, dst, target_is_directory)
-        except FileExistsError as err:
-            execute.tracebacks["result"].append(
-                {
-                    "retcode": 1,
-                    "errs": err.strerror,
-                    "command": "ln -s {src} {dst}".format(src=src, dst=dst)
-                }
-            )
     if LINUX_DISTRO not in SUPPROT_DISTROS:
         return
     if LINUX_DISTRO in ["Ubuntu", "LinuxMint"]:
         # For shadowsocks
         # os.symlink("shfiles/shadowsocks", "/etc/shadowsocks")
-        symlink_with_log(root_("shadowsocks"), "/etc/shadowsocks")
+        symlink_with_log(root_("shadowsocks"), "shfiles", "/etc/shadowsocks")
         execute("update-rc.d shadowsocks defaults")
 
 
@@ -212,7 +239,7 @@ if __name__ == "__main__":
         description='Process the input from EMACS.')
     parser.add_argument("command", type=str, metavar="COMMAND",
                         help="The command you want to execute",
-                        choices=["init", "pip", "upgrade"])
+                        choices=["init", "pip", "upgrade", "dot"])
     parser.add_argument("-pk", "--passwordkey", type=str,
                         help="The name of variable to passing password")
     args = parser.parse_args()
@@ -223,6 +250,7 @@ if __name__ == "__main__":
         "init": init,
         "upgrade": update_and_upgrade,
         "pip": init_pip,
+        "dot": init_dotfile
     }.get(args.command)
     retcode = exec_cmd()
     print("Finished at %s" % datetime.datetime.now())

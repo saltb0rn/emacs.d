@@ -1,14 +1,14 @@
 /*
+# /* means ignoring all files under / (root of the project)
+**/*~
+# **/*~ means ignoring all *~ files anywhere
+/images/**
 !README.md
 !README.org
 !\.gitmodules
 !\.gitignore
 !/images
-/images/*\.*
 !/lisp
-/lisp/*~
 !/init.el
 !/site-lisp
-/site-lisp/*~
 !/mypkgs
-/mypkgs/*~
