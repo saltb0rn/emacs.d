@@ -1,0 +1,5 @@
+MATCH *
+HostName darksalt.me
+TCPKeepAlive yes
+ServerAliveInterval 60
+ServerAliveCountMax 10
