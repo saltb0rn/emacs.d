@@ -6,7 +6,6 @@
 !\.gitmodules
 !\.gitignore
 !/images
-
 !/lisp
 !/init.el
 !/site-lisp
