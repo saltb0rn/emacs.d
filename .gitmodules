@@ -1,3 +1,0 @@
-[submodule "site-lisp/ycmd"]
-	path = site-lisp/ycmd
-	url = https://github.com/Valloric/ycmd.git

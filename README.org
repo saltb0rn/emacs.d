@@ -1,3 +1,0 @@
-** My Emacs configurations
-
-   Keep tracking my (emacs) configurations
