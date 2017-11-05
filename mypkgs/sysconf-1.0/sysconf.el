@@ -42,15 +42,35 @@
 
 ;;(require 'emacs-proxy-ctl) ;; This is script has been adbandoned
 
+(require 'cl)
+
 (defgroup sysconf nil
   "The Utilities To Setup Environment Quickly."
   :version "1.0"
   :prefix "sysconf-")
 
+(cl-defun join-path (root &rest components)
+  "Inspired by os.path.join of Python.
+
+If directory root exists, return the path after joining.
+Otherwise, return nil
+"
+  (cl-labels ((root-validp (root) (file-directory-p root))
+	      (join (root components)
+		    (if components
+			(join
+			 (expand-file-name (car components) root)
+			 (cdr components))
+		      root)))
+    (if (not (root-validp root))
+	(cl-return-from "join-path" root)
+      (join root components))))
+
 (defconst default-script-path
-  (expand-file-name
-   "sysconf.py"
-   (file-name-directory load-file-name)))
+  (join-path
+   (file-name-directory load-file-name)
+   "sysconf.py")
+  "The path of current executable script")
 
 (defcustom script-path
   default-script-path
@@ -67,6 +87,9 @@
   :group 'sysconf)
 
 (defun password-getter (&optional clean)
+  "Input password if record is nil.
+
+If clean is non-nil, then clean the record."
   (cond
    (clean (setenv password-keyname nil))
    (t
@@ -75,10 +98,12 @@
       (getenv password-keyname)))))
 
 (defun clean-password ()
+  "Clean the password record."
   (interactive)
   (password-getter t))
 
 (defmacro sysconf-* (cmdsym)
+  "A fucntion maker to make functions execute the commands of script correspondingly."
   `(let* ((symname (symbol-name ',cmdsym))
 	  (newsym (intern (concat "sysconf-" symname)))
 	  ;; Synchronous Process
@@ -131,6 +156,8 @@
 
 ;;;###autoload
 (sysconf-* upgrade)
+
+(require 'sysconf-tramp)
 
 (provide 'sysconf)
 ;;; sysconf.el ends here
