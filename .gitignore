@@ -1,4 +1,4 @@
-*
+/*
 !README.md
 !README.org
 !\.gitmodules
@@ -6,7 +6,7 @@
 !/images
 /images/**
 !/lisp
-/lisp/*~
+/lisp/*.*~
 !/init.el
 !/site-lisp
 /site-lisp/**~

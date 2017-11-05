@@ -1,0 +1,45 @@
+(require-install 'ycmd)
+(require-install 'company-ycmd)
+(require-install 'flycheck-ycmd)
+(require-install 'fic-mode)
+(require-install 'highlight-indentation)
+
+(add-hook 'after-init-hook #'global-ycmd-mode)
+(set-variable 'ycmd-server-command
+	      `("python3"
+		,(expand-file-name "site-lisp/ycmd/ycmd" user-emacs-directory)))
+
+;; complete at point ----------------------------------------------------------
+(defun ycmd-setup-completion-at-point-function ()
+   "Setup `completion-at-point-functions' for `ycmd-mode'."
+   (add-hook 'completion-at-point-functions
+			 #'ycmd-complete-at-point nil :local))
+
+(add-hook 'ycmd-mode #'ycmd-setup-completion-at-point-function)
+
+(add-hook 'company-ycmd 'ycmd-mode)
+
+(add-hook 'ycmd-file-parse-result-hook 'flycheck-ycmd--cache-parse-results)
+(add-to-list 'flycheck-checkers 'ycmd)
+
+;; (setq flycheck-indication-mode nil)
+(when (not (display-graphic-p))
+  (setq flycheck-indication-mode nil))
+
+;; (add-hook 'ycmd-mode-hook 'ycmd-eldoc-setup)
+(add-hook 'ycmd-mode-hook #'company-ycmd-setup)
+(add-hook 'ycmd-mode-hook #'flycheck-ycmd-setup)
+(add-hook 'ycmd-mode-hook #'fic-mode)
+(add-hook 'ycmd-mode-hook #'rainbow-delimiters-mode)
+;; (add-hook 'ycmd-mode-hook #'linum-mode)
+(add-hook 'ycmd-mode-hook #'highlight-indentation-mode)
+
+;; keys binding
+(global-company-mode)
+(global-flycheck-mode)
+(ycmd-toggle-force-semantic-completion)
+;; (add-hook 'global-company-mode 'global-flycheck-mode)
+(custom-set-variables
+ '(python-shell-interpreter "python3"))
+
+(provide 'init-ycmd)
