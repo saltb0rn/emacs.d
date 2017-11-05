@@ -1,5 +1,7 @@
 /*
+# /* means ignoring all files under / (root of the project)
 **/*~
+# **/*~ means ignoring all *~ files anywhere
 /images/**
 !README.md
 !README.org
