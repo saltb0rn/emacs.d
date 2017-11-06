@@ -52,6 +52,8 @@
 
 (require 'init-web)
 
+(require 'init-google-translate)
+
 (require 'custom-env)
 
 ;; (require 'sysconf "sysconf.el")
