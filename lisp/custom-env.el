@@ -14,6 +14,7 @@
  '(coffee-indent-like-python-mode t)
  '(coffee-tab-width 4)
  '(ecb-options-version "2.50")
+ ;; '(edebug-trace t)
  '(elpy-rpc-backend "jedi")
  '(elpy-rpc-python-command "python3")
  '(geiser-implementations-alist
@@ -56,7 +57,8 @@
  '(slime-company-completion (quote fuzzy))
  '(tramp-default-method "ssh" nil (tramp))
  '(tramp-syntax (quote default) nil (tramp))
- '(url-proxy-services (quote (("http" . "127.0.0.1:8118"))))
+ ;; '(url-proxy-services (quote (("http" . "127.0.0.1:8118"))))
+ '(url-proxy-services '(("socks5" . "127.0.0.1:1080")))
  '(web-mode-indent-style 2))
 
 (put 'narrow-to-region 'disabled nil)
