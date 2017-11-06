@@ -44,6 +44,8 @@
 
 (require 'init-emms)
 
+(require 'init-org)
+
 (require 'init-python)
 
 (require 'init-lisp)
