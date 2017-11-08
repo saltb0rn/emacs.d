@@ -5,7 +5,8 @@
 (add-hook 'lisp-interaction-mode-hook #'rainbow-delimiters-mode)
 ;;(add-hook 'lisp-interaction-mode-hook #'linum-mode)
 ;;(add-hook 'lisp-interaction-mode-hook #'highlight-indentation-mode)
-(add-hook 'lisp-interaction #'fic-mode)
+(add-hook 'lisp-interaction-mode-hook
+	  #'(lambda () (fic-mode t)))
 
 ;; For common lisp
 (require-install 'slime)

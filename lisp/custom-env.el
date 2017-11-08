@@ -14,9 +14,9 @@
  '(coffee-indent-like-python-mode t)
  '(coffee-tab-width 4)
  '(ecb-options-version "2.50")
- ;; '(edebug-trace t)
  '(elpy-rpc-backend "jedi")
  '(elpy-rpc-python-command "python3")
+ '(fic-highlighted-words (quote ("FIXME" "TODO" "BUG" "NOTE")))
  '(geiser-implementations-alist
    (quote
     (((regexp "\\.scm$")
@@ -50,15 +50,14 @@
  '(org-pretty-entities t)
  '(package-selected-packages
    (quote
-    (i3wm google-translate-default-ui google-translate company-jedi typing-game speed-type slime bison-mode emojify xref-js2 web-mode tabbar rainbow-delimiters org-plus-contrib nyan-mode monokai-theme magit js2-refactor indium highlight-indent-guides geiser flycheck-ycmd fic-mode evil emms elpy ecb company-tern coffee-mode all-the-icons ace-window)))
+    (yaml-mode i3wm google-translate-default-ui google-translate company-jedi typing-game speed-type slime bison-mode emojify xref-js2 web-mode tabbar rainbow-delimiters org-plus-contrib nyan-mode monokai-theme magit js2-refactor indium highlight-indent-guides geiser flycheck-ycmd fic-mode evil emms elpy ecb company-tern coffee-mode all-the-icons ace-window)))
  '(python-shell-interpreter "python3")
  '(slime-auto-select-connection (quote always))
  '(slime-auto-start (quote always))
  '(slime-company-completion (quote fuzzy))
  '(tramp-default-method "ssh" nil (tramp))
  '(tramp-syntax (quote default) nil (tramp))
- ;; '(url-proxy-services (quote (("http" . "127.0.0.1:8118"))))
- '(url-proxy-services '(("socks5" . "127.0.0.1:1080")))
+ '(url-proxy-services (quote (("socks5" . "127.0.0.1:1080"))))
  '(web-mode-indent-style 2))
 
 (put 'narrow-to-region 'disabled nil)
