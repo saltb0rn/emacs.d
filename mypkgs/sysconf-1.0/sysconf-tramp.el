@@ -1,21 +1,21 @@
 (require 'tramp)
 
-(defgroup tramp-conf nil
+(defgroup sysconf-tramp nil
   "Configurations that are not provided for tramp-mode"
+  :prefix "sysconf-tramp-"
   :group 'sysconf)
 
-(defcustom
-  additional-ssh-login-args
+(defcustom sysconf-tramp-additional-ssh-login-args
   '(())
   "Add additional args you want for ssh command.
 The value should be an alist which stands for the option list
 "
   :safe 'consp
-  :group 'tramp-conf)
+  :group 'sysconf-tramp)
 
 (setf (cadr (assoc 'tramp-login-args (assoc "ssh" tramp-methods)))
       (append
-       additional-ssh-login-args
+       sysconf-tramp-additional-ssh-login-args
        (cadr (assoc 'tramp-login-args (assoc "ssh" tramp-methods)))))
 
 ;;; These functions does not work for me.

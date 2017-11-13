@@ -10,9 +10,9 @@
 
 ;;; Commentary:
 
-;; My script to install packages for system (Debian and Debian-based). Since it is not convince
-;; to install the softwares (which includes emacs) every time I use new computer or new system.
-;; So I write this script to solve this problem and practice writing Emacs lisp for fun
+;; My script to install packages for system (Debian and Debian-based). Since every time
+;; I use new computer or new system it is not convince to install the softwares (include emacs).
+;; So I write this script to solve the problem and to practice writing Emacs lisp for fun
 ;; due to freetime.
 
 ;; About headers in the script, read from here:
@@ -47,9 +47,11 @@
 (defgroup sysconf nil
   "The Utilities To Setup Environment Quickly."
   :version "1.0"
-  :prefix "sysconf-")
+  :prefix "sysconf-"
+  :group 'environment
+  )
 
-(cl-defun join-path (root &rest components)
+(cl-defun sysconf-join-path (root &rest components)
   "Inspired by os.path.join of Python.
 
 If directory root exists, return the path after joining.
@@ -63,44 +65,44 @@ Otherwise, return nil
 			 (cdr components))
 		      root)))
     (if (not (root-validp root))
-	(cl-return-from "join-path" root)
+	(cl-return-from "sysconf-join-path" root)
       (join root components))))
 
-(defconst default-script-path
-  (join-path
+(defconst sysconf-default-script-path
+  (sysconf-join-path
    (file-name-directory load-file-name)
    "sysconf.py")
   "The path of current executable script")
 
-(defcustom script-path
-  default-script-path
+(defcustom sysconf-script-path
+  sysconf-default-script-path
   "The path to Python script"
   :type 'string
   :options '(custom-variable)
   :group 'sysconf)
 
-(defcustom password-keyname
+(defcustom sysconf-password-keyname
   "PASSWORD"
-  "The environment variable name of passing `password' to py script"
+  "The name of environment variable which passes `password' to py script"
   :type 'string
   :options '(custom-variable)
   :group 'sysconf)
 
-(defun password-getter (&optional clean)
+(defun sysconf-password-getter (&optional clean)
   "Input password if record is nil.
 
 If clean is non-nil, then clean the record."
   (cond
-   (clean (setenv password-keyname nil))
+   (clean (setenv sysconf-password-keyname nil))
    (t
-    (if (not (getenv password-keyname))
-	(setenv password-keyname (read-passwd "Permission Denied. Input `password' here: "))
-      (getenv password-keyname)))))
+    (if (not (getenv sysconf-password-keyname))
+	(setenv sysconf-password-keyname (read-passwd "Permission Denied. Input `password' here: "))
+      (getenv sysconf-password-keyname)))))
 
-(defun clean-password ()
+(defun sysconf-clean-password ()
   "Clean the password record."
   (interactive)
-  (password-getter t))
+  (sysconf-password-getter t))
 
 (defmacro sysconf-* (cmdsym)
   "A fucntion maker to make functions execute the commands of script correspondingly."
@@ -115,10 +117,10 @@ If clean is non-nil, then clean the record."
 	  ;;	   (concat
 	  ;;	    python-shell-interpreter
 	  ;;	    " "
-	  ;;	    script-path
+	  ;;	    sysconf-script-path
 	  ;;	    " "
 	  ;;	    "--password "
-	  ;;	    (password-getter)
+	  ;;	    (sysconf-password-getter)
 	  ;;	    " "
 	  ;;	    symname)
 	  ;;	   "*sysconf*")))
@@ -130,15 +132,16 @@ If clean is non-nil, then clean the record."
 		      nil
 		    (progn
 		      (let ((process-connection-type t))
-			(password-getter)
+			(sysconf-password-getter)
 			(start-process
 			 "sysconf"
 			 "*SYSCONF*"
 			 python-shell-interpreter
-			 script-path
+			 sysconf-script-path
 			 "--passwordkey"
-			 password-keyname
+			 sysconf-password-keyname
 			 symname))
+
 		      (let ((proc (get-process "sysconf")))
 			(set-process-filter proc
 					    #'(lambda (process output)
@@ -160,4 +163,7 @@ If clean is non-nil, then clean the record."
 (require 'sysconf-tramp)
 
 (provide 'sysconf)
+
+;; TODO: A practice, writing a mirror mode to control proxy, is necessary. Doing this in emacs-proxy-ctl.el
+
 ;;; sysconf.el ends here
