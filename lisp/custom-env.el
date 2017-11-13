@@ -9,7 +9,6 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(sysconf-tramp-additional-ssh-login-args (quote (("-o" "ServerAliveInterval=60"))))
  '(auto-save-default nil)
  '(blink-cursor-mode nil)
  '(coffee-indent-like-python-mode t)
@@ -56,6 +55,7 @@
  '(slime-auto-select-connection (quote always))
  '(slime-auto-start (quote always))
  '(slime-company-completion (quote fuzzy))
+ '(sysconf-tramp-additional-ssh-login-args (quote (("-o" "ServerAliveInterval=60"))))
  '(tramp-default-method "ssh" nil (tramp))
  '(tramp-syntax (quote default) nil (tramp))
  '(url-proxy-services (quote (("socks5" . "127.0.0.1:1080"))))
