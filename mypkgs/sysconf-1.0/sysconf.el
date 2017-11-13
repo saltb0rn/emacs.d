@@ -51,7 +51,7 @@
   :group 'environment
   )
 
-(cl-defun join-path (root &rest components)
+(cl-defun sysconf-join-path (root &rest components)
   "Inspired by os.path.join of Python.
 
 If directory root exists, return the path after joining.
@@ -65,17 +65,17 @@ Otherwise, return nil
 			 (cdr components))
 		      root)))
     (if (not (root-validp root))
-	(cl-return-from "join-path" root)
+	(cl-return-from "sysconf-join-path" root)
       (join root components))))
 
-(defconst default-script-path
-  (join-path
+(defconst sysconf-default-script-path
+  (sysconf-join-path
    (file-name-directory load-file-name)
    "sysconf.py")
   "The path of current executable script")
 
 (defcustom sysconf-script-path
-  default-script-path
+  sysconf-default-script-path
   "The path to Python script"
   :type 'string
   :options '(custom-variable)
@@ -88,21 +88,21 @@ Otherwise, return nil
   :options '(custom-variable)
   :group 'sysconf)
 
-(defun password-getter (&optional clean)
+(defun sysconf-password-getter (&optional clean)
   "Input password if record is nil.
 
 If clean is non-nil, then clean the record."
   (cond
-   (clean (setenv password-keyname nil))
+   (clean (setenv sysconf-password-keyname nil))
    (t
-    (if (not (getenv password-keyname))
-	(setenv password-keyname (read-passwd "Permission Denied. Input `password' here: "))
-      (getenv password-keyname)))))
+    (if (not (getenv sysconf-password-keyname))
+	(setenv sysconf-password-keyname (read-passwd "Permission Denied. Input `password' here: "))
+      (getenv sysconf-password-keyname)))))
 
-(defun clean-password ()
+(defun sysconf-clean-password ()
   "Clean the password record."
   (interactive)
-  (password-getter t))
+  (sysconf-password-getter t))
 
 (defmacro sysconf-* (cmdsym)
   "A fucntion maker to make functions execute the commands of script correspondingly."
@@ -117,10 +117,10 @@ If clean is non-nil, then clean the record."
 	  ;;	   (concat
 	  ;;	    python-shell-interpreter
 	  ;;	    " "
-	  ;;	    script-path
+	  ;;	    sysconf-script-path
 	  ;;	    " "
 	  ;;	    "--password "
-	  ;;	    (password-getter)
+	  ;;	    (sysconf-password-getter)
 	  ;;	    " "
 	  ;;	    symname)
 	  ;;	   "*sysconf*")))
@@ -132,15 +132,16 @@ If clean is non-nil, then clean the record."
 		      nil
 		    (progn
 		      (let ((process-connection-type t))
-			(password-getter)
+			(sysconf-password-getter)
 			(start-process
 			 "sysconf"
 			 "*SYSCONF*"
 			 python-shell-interpreter
-			 script-path
+			 sysconf-script-path
 			 "--passwordkey"
-			 password-keyname
+			 sysconf-password-keyname
 			 symname))
+
 		      (let ((proc (get-process "sysconf")))
 			(set-process-filter proc
 					    #'(lambda (process output)

@@ -35,7 +35,5 @@
 	  (message "Proxy is enable now"))
       (message "`url-proxy-services' is Not set yet"))))
 
-
-
 (provide 'emacs-proxy-ctl)
-b
+
