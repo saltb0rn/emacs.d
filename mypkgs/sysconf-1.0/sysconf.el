@@ -47,7 +47,9 @@
 (defgroup sysconf nil
   "The Utilities To Setup Environment Quickly."
   :version "1.0"
-  :prefix "sysconf-")
+  :prefix "sysconf-"
+  :group 'environment
+  )
 
 (cl-defun join-path (root &rest components)
   "Inspired by os.path.join of Python.
