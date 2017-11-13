@@ -40,7 +40,7 @@
 ;; (require 'init-ycmd) ;; youcompleteme as complete backend
 ;; I pause using ycmd because it conflicts with elpy
 
-(require 'init-ecb)
+;; (require 'init-ecb)  ;; I directly use the builtin cedet insead of ecb, because ecb is too old and too many bugs.
 
 (require 'init-emms)
 

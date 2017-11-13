@@ -10,9 +10,9 @@
 
 ;;; Commentary:
 
-;; My script to install packages for system (Debian and Debian-based). Since it is not convince
-;; to install the softwares (which includes emacs) every time I use new computer or new system.
-;; So I write this script to solve this problem and practice writing Emacs lisp for fun
+;; My script to install packages for system (Debian and Debian-based). Since every time
+;; I use new computer or new system it is not convince to install the softwares (include emacs).
+;; So I write this script to solve the problem and to practice writing Emacs lisp for fun
 ;; due to freetime.
 
 ;; About headers in the script, read from here:
@@ -72,16 +72,16 @@ Otherwise, return nil
    "sysconf.py")
   "The path of current executable script")
 
-(defcustom script-path
+(defcustom sysconf-script-path
   default-script-path
   "The path to Python script"
   :type 'string
   :options '(custom-variable)
   :group 'sysconf)
 
-(defcustom password-keyname
+(defcustom sysconf-password-keyname
   "PASSWORD"
-  "The environment variable name of passing `password' to py script"
+  "The name of environment variable which passes `password' to py script"
   :type 'string
   :options '(custom-variable)
   :group 'sysconf)
