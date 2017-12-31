@@ -20,7 +20,8 @@ INSTALL_IPYTHON_COMMAND = "apt-get install ipython{}".format(PYTHON_VERSION)
 # will never run if Python is not installed first
 INSTALL_PIP_COMMAND = "apt-get install python{}-pip".format(PYTHON_VERSION)
 LINUX_DISTRO, DISTRO_VERSION, DISTRO_ALIAS = platform.linux_distribution()
-SUPPROT_DISTROS = ["Ubuntu", "LinuxMint"]
+SUPPORT_DISTROS = [
+    x for x in map(lambda x: x.lower(), ["Ubuntu", "LinuxMint", "Debian"])]
 
 
 def root_(filename, last_dir=None):
@@ -59,6 +60,7 @@ def symlink_with_log(src, dst, target_is_directory=False):
 def mk_execute():
     def execute(command):
         password = os.getenv(PASSWORD_KEYNAME, '')
+        # password = 'saltborn'
         if not isinstance(command, list):
             command = shlex.split(command)
         proc = Popen(
@@ -74,7 +76,7 @@ def mk_execute():
             _tracebacks["result"].append({
                 "retcode": retcode,
                 "errs": errs,
-                "command": " ".join(command)
+                "command": " ".join(command),
             })
         else:
             nonlocal _outputs
@@ -100,7 +102,7 @@ def init():
     # update_and_upgrade()
     init_pkg()
     init_pip()
-    init_dotfile()
+    # init_dotfile()
 
 
 def init_dotfile():
@@ -179,16 +181,16 @@ def init_pkg():
         "/etc/apt/sources.list"
     ])
     execute("apt-key adv --recv-key --keyserver keyserver.ubuntu.com D62FCE72")
+    TODO: There is a bug here that it cannot install the packages
     '''
-    if LINUX_DISTRO in SUPPROT_DISTROS:
-        execute(["add-apt-repository", "ppa:hda-me/proxychains-ng", "-y"])
-        execute(["apt-get" "update"])
+    if LINUX_DISTRO.lower() in SUPPORT_DISTROS:
+        # execute(["add-apt-repository", "ppa:hda-me/proxychains-ng", "-y"])
+        # execute(["apt-get", "update"])
         execute([
             "apt-get", "install", "compton",
             "i3", "i3status", "i3blocks",
             "lxappearance", "sbcl", "suckless-tools",
-            "python3-pip", "polipo", "proxychains-ng",
-            "rofi"
+            "python3-pip", "polipo", "rofi"
         ])
     else:
         pass
@@ -197,7 +199,7 @@ def init_pkg():
 
 def init_service():
 
-    if LINUX_DISTRO not in SUPPROT_DISTROS:
+    if LINUX_DISTRO not in SUPPORT_DISTROS:
         return
     if LINUX_DISTRO in ["Ubuntu", "LinuxMint"]:
         # For shadowsocks
@@ -231,8 +233,7 @@ def update_and_upgrade():
 
 
 if __name__ == "__main__":
-    distro, version, alias = platform.linux_distribution()
-    if distro not in ["Ubuntu", "LinuxMint"]:
+    if LINUX_DISTRO.lower() not in SUPPORT_DISTROS:
         sys.exit(-1)
     parser = argparse.ArgumentParser(
         prog="sysconf",
