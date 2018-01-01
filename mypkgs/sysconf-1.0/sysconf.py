@@ -29,9 +29,12 @@ def root_(filename, last_dir=None):
     Get the path to files/directories
     """
     args = [filename]
+    home = os.environ["HOME"]
     if isinstance(last_dir, str):
         args.append(last_dir)
-    return os.path.join(os.path.abspath("."), *args)
+    return os.path.join(home, ".emacs.d/mypkgs/sysconf-1.0", *args)
+    # return os.path.join(os.path.abspath("."), *args)
+    # It may be different path if you call this function in different buffer.
 
 
 def symlink_with_log(src, dst, target_is_directory=False):
@@ -100,9 +103,9 @@ def init():
     Configurate my system softwares
     """
     # update_and_upgrade()
-    init_pkg()
+    # init_pkg()
     init_pip()
-    # init_dotfile()
+    init_dotfile()
 
 
 def init_dotfile():
@@ -120,9 +123,6 @@ def init_dotfile():
     home = os.environ["HOME"]
     symlink_with_log(root_("dotfiles", "i3"),
                      os.path.join(home, ".i3"),
-                     True)
-    symlink_with_log(root_("dotfiles", "pip"),
-                     os.path.join(home, ".pip"),
                      True)
 
 
