@@ -103,9 +103,9 @@ def init():
     Configurate my system softwares
     """
     # update_and_upgrade()
-    # init_pkg()
-    init_pip()
-    init_dotfile()
+    init_pkg()
+    # init_pip()
+    # init_dotfile()
 
 
 def init_dotfile():
@@ -186,12 +186,15 @@ def init_pkg():
     if LINUX_DISTRO.lower() in SUPPORT_DISTROS:
         # execute(["add-apt-repository", "ppa:hda-me/proxychains-ng", "-y"])
         # execute(["apt-get", "update"])
-        execute([
-            "apt-get", "install", "compton",
-            "i3", "i3status", "i3blocks",
-            "lxappearance", "sbcl", "suckless-tools",
-            "python3-pip", "polipo", "rofi"
-        ])
+        pkg_list = [
+            "compton", "i3-wm", "i3status",
+            "i3blocks", "lxappearance",
+            "sbcl", "suckless-tools",
+            "python3-pip", "polipo", "rofi",
+            "fcitx", "fcitx-googlepinyin"
+        ]
+        for pkg in pkg_list:
+            execute(["apt-get", "install", pkg])
     else:
         pass
     # install_firefox()
