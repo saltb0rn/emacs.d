@@ -1,21 +1,21 @@
-;; (require-install 'chinese-pyim)
-(require-install 'chinese-pyim-greatdict)
-;; (chinese-pyim-greatdict-enable)
+(require-install 'use-package)
+(require-install 'pyim)
+(require-install 'pyim-basedict)
 
-(use-package chinese-pyim
+(use-package pyim
   :ensure nil
   :config
   ;; 激活 basedict 拼音词库
-  (use-package chinese-pyim-greatdict
+  (use-package pyim-basedict
     :ensure nil
-    :config (chinese-pyim-greatdict-enable))
+    :config (pyim-basedict-enable))
 
   ;; 五笔用户使用 wbdict 词库
-  ;; (use-package chinese-pyim-wbdict
+  ;; (use-package pyim-wbdict
   ;;   :ensure nil
-  ;;   :config (chinese-pyim-wbdict-gbk-enable))
+  ;;   :config (pyim-wbdict-gbk-enable))
 
-  (setq default-input-method "chinese-pyim")
+  (setq default-input-method "pyim")
 
   ;; 我使用全拼
   (setq pyim-default-scheme 'quanpin)
@@ -26,17 +26,17 @@
   ;; 2. 光标前是汉字字符时，才能输入中文。
   ;; 3. 使用 M-j 快捷键，强制将光标前的拼音字符串转换为中文。
   (setq-default pyim-english-input-switch-functions
-                '(pyim-probe-dynamic-english
-                  pyim-probe-isearch-mode
-                  pyim-probe-program-mode
-                  pyim-probe-org-structure-template))
+		'(pyim-probe-dynamic-english
+		  pyim-probe-isearch-mode
+		  pyim-probe-program-mode
+		  pyim-probe-org-structure-template))
 
   (setq-default pyim-punctuation-half-width-functions
-                '(pyim-probe-punctuation-line-beginning
-                  pyim-probe-punctuation-after-punctuation))
+		'(pyim-probe-punctuation-line-beginning
+		  pyim-probe-punctuation-after-punctuation))
 
   ;; 开启拼音搜索功能
-  (setq pyim-isearch-enable-pinyin-search t)
+  (pyim-isearch-mode 1)
 
   ;; 使用 pupup-el 来绘制选词框
   (setq pyim-page-tooltip 'popup)
@@ -46,9 +46,15 @@
 
   ;; 让 Emacs 启动时自动加载 pyim 词库
   (add-hook 'emacs-startup-hook
-            #'(lambda () (pyim-restart-1 t)))
+	    #'(lambda () (pyim-restart-1 t)))
   :bind
   (("M-j" . pyim-convert-code-at-point) ;与 pyim-probe-dynamic-english 配合
    ("C-;" . pyim-delete-word-from-personal-buffer)))
+
+
+(custom-set-variables
+ '(pyim-fuzzy-pinyin-alist (quote (("en" "eng") ("in" "ing") ("un" "ong")
+				   ("z"  "zh")  ("s" "sh") ("an" "ang")
+				   ("on" "ong") ("c" "ch")))))
 
 (provide 'init-chinese-pyim)

@@ -50,15 +50,16 @@
  '(org-pretty-entities t)
  '(package-selected-packages
    (quote
-    (htmlize nginx-mode yaml-mode i3wm google-translate-default-ui google-translate company-jedi typing-game speed-type slime bison-mode emojify xref-js2 web-mode tabbar rainbow-delimiters org-plus-contrib nyan-mode monokai-theme magit js2-refactor indium highlight-indent-guides geiser flycheck-ycmd fic-mode evil emms elpy company-tern coffee-mode all-the-icons ace-window)))
+    (racket-mode htmlize nginx-mode yaml-mode i3wm google-translate-default-ui google-translate company-jedi typing-game speed-type slime bison-mode emojify xref-js2 web-mode tabbar rainbow-delimiters org-plus-contrib nyan-mode monokai-theme magit js2-refactor indium highlight-indent-guides geiser flycheck-ycmd fic-mode evil emms elpy company-tern coffee-mode all-the-icons ace-window pyim use-package pkg-info epl flycheck)))
  '(python-shell-interpreter "python3")
  '(slime-auto-select-connection (quote always))
  '(slime-auto-start (quote always))
  '(slime-company-completion (quote fuzzy))
+ '(socks-server (quote ("Default server" "127.0.0.1" 1080 5)))
  '(sysconf-tramp-additional-ssh-login-args (quote (("-o" "ServerAliveInterval=60"))))
  '(tramp-default-method "ssh" nil (tramp))
  '(tramp-syntax (quote default) nil (tramp))
- '(url-proxy-services (quote (("socks5" . "127.0.0.1:1080"))))
+ '(url-gateway-method (quote socks))
  '(web-mode-indent-style 2))
 
 (put 'narrow-to-region 'disabled nil)

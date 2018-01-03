@@ -191,7 +191,8 @@ def init_pkg():
             "i3blocks", "lxappearance",
             "sbcl", "suckless-tools",
             "python3-pip", "polipo", "rofi",
-            "fcitx", "fcitx-googlepinyin"
+            "fcitx", "fcitx-googlepinyin",
+            "racket"
         ]
         for pkg in pkg_list:
             execute(["apt-get", "install", pkg])

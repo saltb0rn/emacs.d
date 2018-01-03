@@ -26,6 +26,8 @@
 ;;  'use-package
 ;; 'chinese-pyim-greatdict)
 
+(require 'init-chinese-pyim)
+
 (require 'init-utillities)
 
 (require 'init-other-utils)

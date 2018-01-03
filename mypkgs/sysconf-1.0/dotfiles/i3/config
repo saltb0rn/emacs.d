@@ -234,7 +234,7 @@ bindsym $mod+Shift+l exec "i3lock -i ~/.config/i3/DIO.png"
 exec_always --no-startup-id "feh --bg-scale ~/.i3/gensokyo.png"
 # exec_always --no-startup-id "ps -cax | grep blueberry-tray || blueberry-tray"
 # Make windows transparent
-# exec_always --no-startup-id "ps -cax | grep 'compton -f' || compton -f"
+exec_always --no-startup-id "ps -cax | grep 'compton -f' || compton -f"
 
 mode "move-window" {
      bindsym $left move left

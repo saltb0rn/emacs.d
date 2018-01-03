@@ -33,4 +33,11 @@
 ;; For scheme and its dialect
 (require-install 'geiser)
 
+;; For racket, use this mode if you prefer drracket
+(require-install 'racket-mode)
+(add-hook 'racket-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'racket-mode-hook #'prettify-symbols-mode)
+(add-hook 'racket-mode-hook #'fic-mode)
+(setcdr (assoc "\\.rkt\\'" auto-mode-alist) 'racket-mode)
+
 (provide 'init-lisp)
