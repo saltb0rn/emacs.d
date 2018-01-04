@@ -16,7 +16,7 @@
  '(ecb-options-version "2.50")
  '(elpy-rpc-backend "jedi")
  '(elpy-rpc-python-command "python3")
- '(fic-highlighted-words (quote ("FIXME" "TODO" "BUG" "NOTE")))
+ '(fic-highlighted-words (quote ("FIXME" "TODO" "BUG" "NOTE" "FIXED")))
  '(geiser-implementations-alist
    (quote
     (((regexp "\\.scm$")
@@ -55,11 +55,11 @@
  '(slime-auto-select-connection (quote always))
  '(slime-auto-start (quote always))
  '(slime-company-completion (quote fuzzy))
- '(socks-server (quote ("Default server" "127.0.0.1" 1080 5)))
+ ;; '(url-gateway-method (quote socks))
+ ;; '(socks-server (quote ("Default server" "127.0.0.1" 1080 5)))
  '(sysconf-tramp-additional-ssh-login-args (quote (("-o" "ServerAliveInterval=60"))))
  '(tramp-default-method "ssh" nil (tramp))
  '(tramp-syntax (quote default) nil (tramp))
- '(url-gateway-method (quote socks))
  '(web-mode-indent-style 2))
 
 (put 'narrow-to-region 'disabled nil)

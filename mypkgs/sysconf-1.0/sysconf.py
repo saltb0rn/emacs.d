@@ -104,8 +104,8 @@ def init():
     """
     # update_and_upgrade()
     init_pkg()
-    # init_pip()
-    # init_dotfile()
+    init_pip()
+    init_dotfile()
 
 
 def init_dotfile():
@@ -182,6 +182,7 @@ def init_pkg():
     ])
     execute("apt-key adv --recv-key --keyserver keyserver.ubuntu.com D62FCE72")
     TODO: There is a bug here that it cannot install the packages
+    FIXED: The above bug has been fixed
     '''
     if LINUX_DISTRO.lower() in SUPPORT_DISTROS:
         # execute(["add-apt-repository", "ppa:hda-me/proxychains-ng", "-y"])
@@ -194,8 +195,12 @@ def init_pkg():
             "fcitx", "fcitx-googlepinyin",
             "racket"
         ]
-        for pkg in pkg_list:
-            execute(["apt-get", "install", pkg])
+        command_list = ["apt-get", "install"]
+        command_list.extend(pkg_list)
+        command_list.extend(["-y"])
+        execute(command_list)
+        # for pkg in pkg_list:
+        #     execute(["apt-get", "install", pkg, "-y"])
     else:
         pass
     # install_firefox()
