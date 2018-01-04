@@ -102,7 +102,7 @@ def init():
     """
     Configurate my system softwares
     """
-    # update_and_upgrade()
+    update_and_upgrade()
     init_pkg()
     init_pip()
     init_dotfile()
@@ -237,8 +237,8 @@ def install_firefox(path=None):
 
 
 def update_and_upgrade():
-    retcode = execute("apt-get update")
-    return execute("apt-get upgrade -y") if not retcode else retcode
+    return execute("apt-get update -y")
+    # return execute("apt-get upgrade -y") if not retcode else retcode
 
 
 if __name__ == "__main__":
