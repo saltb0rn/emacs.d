@@ -237,7 +237,10 @@ def install_firefox(path=None):
 
 
 def update_and_upgrade():
-    return execute("apt-get update -y")
+    retcode = execute("apt-get update -y")
+    if not retcode:
+        retcode = execute("apt-get dist-upgrade -y")
+    return retcode
     # return execute("apt-get upgrade -y") if not retcode else retcode
 
 
