@@ -50,13 +50,21 @@
  '(org-pretty-entities t)
  '(package-selected-packages
    (quote
-    (racket-mode htmlize nginx-mode yaml-mode i3wm google-translate-default-ui google-translate company-jedi typing-game speed-type slime bison-mode emojify xref-js2 web-mode tabbar rainbow-delimiters org-plus-contrib nyan-mode monokai-theme magit js2-refactor indium highlight-indent-guides geiser flycheck-ycmd fic-mode evil emms elpy company-tern coffee-mode all-the-icons ace-window pyim use-package pkg-info epl flycheck)))
+    (multi-term racket-mode htmlize nginx-mode yaml-mode i3wm google-translate-default-ui google-translate company-jedi typing-game speed-type slime bison-mode emojify xref-js2 web-mode tabbar rainbow-delimiters org-plus-contrib nyan-mode monokai-theme magit js2-refactor indium highlight-indent-guides geiser flycheck-ycmd fic-mode evil emms elpy company-tern coffee-mode all-the-icons ace-window pyim use-package pkg-info epl flycheck)))
+ '(pyim-fuzzy-pinyin-alist
+   (quote
+    (("en" "eng")
+     ("in" "ing")
+     ("un" "ong")
+     ("z" "zh")
+     ("s" "sh")
+     ("an" "ang")
+     ("on" "ong")
+     ("c" "ch"))))
  '(python-shell-interpreter "python3")
  '(slime-auto-select-connection (quote always))
  '(slime-auto-start (quote always))
  '(slime-company-completion (quote fuzzy))
- ;; '(url-gateway-method (quote socks))
- ;; '(socks-server (quote ("Default server" "127.0.0.1" 1080 5)))
  '(sysconf-tramp-additional-ssh-login-args (quote (("-o" "ServerAliveInterval=60"))))
  '(tramp-default-method "ssh" nil (tramp))
  '(tramp-syntax (quote default) nil (tramp))

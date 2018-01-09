@@ -10,3 +10,4 @@
       '(("en" . "zh-CN") ("zh-CN" . "en")))
 
 (provide 'init-google-translate)
+

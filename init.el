@@ -56,6 +56,8 @@
 
 (require 'init-web)
 
+(require 'init-term)
+
 (require 'init-google-translate)
 
 (require 'custom-env)
