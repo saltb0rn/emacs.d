@@ -31,13 +31,18 @@
 ;; (add-hook 'lisp-mode-hook #'slime-mode)
 
 ;; For scheme and its dialect
-(require-install 'geiser)
+;(require-install 'geiser)
 
 ;; For racket, use this mode if you prefer drracket
 (require-install 'racket-mode)
 (add-hook 'racket-mode-hook #'rainbow-delimiters-mode)
 (add-hook 'racket-mode-hook #'prettify-symbols-mode)
 (add-hook 'racket-mode-hook #'fic-mode)
-(setcdr (assoc "\\.rkt\\'" auto-mode-alist) 'racket-mode)
+
+(let ((term (assoc "\\.rkt\\'" auto-mode-alist)))
+  (cond
+   ((equal nil term)
+    (add-to-list 'auto-mode-alist (cons "\\.rkt\\'" 'racket-mode)))
+   (t (setcdr (assoc "\\.rkt\\'" auto-mode-alist) 'racket-mode))))
 
 (provide 'init-lisp)

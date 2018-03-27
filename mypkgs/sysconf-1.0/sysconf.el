@@ -44,6 +44,39 @@
 
 (require 'cl)
 
+;; (defun package-list (&optional no-fetch)
+;;  "Return a list of packages.
+;;This first fetches the updated list of packages before
+;;displaying, unless a prefix argument NO-FETCH is specified.
+;;The list is displayed in a buffer named `*Packages*'."
+;;  (interactive "P")
+;;  (require 'finder-inf nil t)
+;;  ;; Initialize the package system if necessary.
+;;  (unless package--initialized
+;;    (package-initialize t))
+;;  ;; Integrate the package-menu with updating the archives.
+;;  (add-hook 'package--post-download-archives-hook
+;;	    #'package-menu--post-refresh)
+;;  (add-hook 'package--post-download-archives-hook
+;;	    #'package-menu--mark-or-notify-upgrades 'append)
+
+  ;; Generate the Package Menu.
+;;  (let ((buf (get-buffer-create "*Packages*")))
+;;    (with-current-buffer buf
+;;      (package-menu-mode)
+
+      ;; Fetch the remote list of packages.
+;;      (unless no-fetch (package-menu-refresh))
+
+      ;; If we're not async, this would be redundant.
+;;      (when package-menu-async
+;;	(package-menu--generate nil t)))
+    ;; The package menu buffer has keybindings.  If the user types
+    ;; `M-x list-packages', that suggests it should become current.
+    ;; (switch-to-buffer buf)
+;;    ))
+
+
 (defgroup sysconf nil
   "The Utilities To Setup Environment Quickly."
   :version "1.0"

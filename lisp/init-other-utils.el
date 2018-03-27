@@ -55,4 +55,7 @@
 (require-install 'ace-window)
 (global-set-key (kbd "<f4>") 'ace-window)
 
+(require-install 'bookmark+)
+(require-install 'which-key)
+
 (provide 'init-other-utils)
