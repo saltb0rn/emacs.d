@@ -2,6 +2,9 @@
 (require 'org)
 
 ;;; Options
+
+(setq-default TeX-engine 'xtex)
+
 (setq
 
  org-export-with-sub-superscripts nil	; Toggle Tex-like syntax for sub- and superscripts. If you write "^:{}", 'a_{b}' will be interpreted, but simple 'a_b' will be left as it is

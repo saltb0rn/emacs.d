@@ -39,10 +39,13 @@
 (add-hook 'racket-mode-hook #'prettify-symbols-mode)
 (add-hook 'racket-mode-hook #'fic-mode)
 
-(let ((term (assoc "\\.rkt\\'" auto-mode-alist)))
+
+
+(let* ((regex-pat "\\.\\(rkt\\|scm\\|ss\\)\\'")
+       (term (assoc regex-pat auto-mode-alist)))
   (cond
    ((equal nil term)
-    (add-to-list 'auto-mode-alist (cons "\\.rkt\\'" 'racket-mode)))
-   (t (setcdr (assoc "\\.rkt\\'" auto-mode-alist) 'racket-mode))))
+    (add-to-list 'auto-mode-alist (cons regex-pat 'racket-mode)))
+   (t (setcdr (assoc regex-pat auto-mode-alist) 'racket-mode))))
 
 (provide 'init-lisp)
