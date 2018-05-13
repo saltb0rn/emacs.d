@@ -10,9 +10,6 @@
 ;; (set-face-attribute 'default nil :height 100)
 
 ;; display time
-(set-default 'display-time-format
-	     (format-time-string
-	      "%a, %m/%d %H:%M "))
 (display-time-mode t)
 
 ;; display battry info
