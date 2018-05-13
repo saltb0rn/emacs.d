@@ -1,5 +1,28 @@
 (setq custom-file (expand-file-name "lisp/custom-env.el" user-emacs-directory))
 
+;; remove tool/menu/scroll-bar from emacs
+(tool-bar-mode -1)
+(menu-bar-mode -1)
+(scroll-bar-mode -1)
+
+;; change the font for emacs using
+;; (set-default-font "Source Code Pro" nil t)
+;; (set-face-attribute 'default nil :height 100)
+
+;; display time
+(set-default 'display-time-format
+	     (format-time-string
+	      "%a, %m/%d %H:%M "))
+(display-time-mode t)
+
+;; display battry info
+(display-battery-mode t)
+
+;; use theme
+(when window-system
+  (require-install 'zenburn-theme)
+  (load-theme 'zenburn t))
+
 ;; set transparency
 (set-frame-parameter (selected-frame) 'alpha '(85 85))
 (add-to-list 'default-frame-alist '(alpha 85 85))
@@ -19,40 +42,12 @@
  '(elpy-rpc-backend "jedi")
  '(elpy-rpc-python-command "python3")
  '(fic-highlighted-words (quote ("FIXME" "TODO" "BUG" "NOTE" "FIXED")))
- ;'(geiser-implementations-alist
- ;  (quote
- ;   (((regexp "\\.scm$")
- ;     guile)
- ;    ((regexp "\\.ss$")
- ;     chez)
- ;    ((regexp "\\.rkt$")
- ;     racket)
- ;    ((regexp "\\.scm$")
- ;     chicken)
- ;    ((regexp "\\.release-info$")
- ;     chicken)
- ;    ((regexp "\\.meta$")
- ;     chicken)
- ;    ((regexp "\\.setup$")
- ;     chicken)
- ;    ((regexp "\\.ss$")
- ;     racket)
- ;    ((regexp "\\.def$")
- ;     chez)
- ;    ((regexp "\\.scm$")
- ;     mit)
- ;    ((regexp "\\.pkg$")
- ;     mit)
- ;    ((regexp "\\.scm$")
- ;     chibi)
- ;    ((regexp "\\.sld$")
- ;     chibi))))
  '(inhibit-default-init nil)
  '(inhibit-startup-screen nil)
  '(org-pretty-entities t)
  '(package-selected-packages
    (quote
-    (which-key bookmark+ multi-term racket-mode htmlize nginx-mode yaml-mode i3wm google-translate-default-ui google-translate company-jedi typing-game speed-type slime bison-mode emojify xref-js2 web-mode tabbar rainbow-delimiters org-plus-contrib nyan-mode monokai-theme magit js2-refactor indium highlight-indent-guides flycheck-ycmd fic-mode evil emms elpy company-tern coffee-mode all-the-icons ace-window pyim use-package pkg-info epl flycheck)))
+    (zenburn zenburn-theme geiser markdown-mode+ markdown-preview-mode org2ctex pandoc-mode dockerfile-mode which-key bookmark+ multi-term htmlize nginx-mode yaml-mode i3wm google-translate-default-ui google-translate company-jedi typing-game speed-type slime bison-mode emojify xref-js2 web-mode tabbar rainbow-delimiters org-plus-contrib nyan-mode monokai-theme magit js2-refactor indium highlight-indent-guides flycheck-ycmd fic-mode evil emms elpy company-tern coffee-mode all-the-icons ace-window pyim use-package pkg-info epl flycheck)))
  '(pyim-fuzzy-pinyin-alist
    (quote
     (("en" "eng")
@@ -72,6 +67,17 @@
  '(term-default-fg-color "#ddd000")
  '(tramp-default-method "ssh" nil (tramp))
  '(tramp-syntax (quote default) nil (tramp))
+ '(mode-line-format
+   (quote
+    ("%m: "
+     "buffer %b, "
+     (vc-mode vc-mode)
+     " L %l "
+     (:eval (list (nyan-create)))
+     " "
+     mode-line-misc-info
+     mode-line-end-spaces
+     )))
  '(web-mode-indent-style 2))
 
 (put 'narrow-to-region 'disabled nil)

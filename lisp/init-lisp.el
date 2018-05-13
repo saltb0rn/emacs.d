@@ -31,21 +31,28 @@
 ;; (add-hook 'lisp-mode-hook #'slime-mode)
 
 ;; For scheme and its dialect
-;(require-install 'geiser)
+(require-install 'geiser)
+(set-default 'geiser-scheme-implementation 'racket)
+(set-default 'geiser-active-implementations '(racket))
+(set-default 'geiser-repl-query-on-kill-p nil)
+(set-default 'geiser-repl-query-on-exit-p nil)
+(add-hook 'geiser-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'geiser-mode-hook #'prettify-symbols-mode)
+(add-hook 'geiser-mode-hook #'fic-mode)
 
 ;; For racket, use this mode if you prefer drracket
-(require-install 'racket-mode)
-(add-hook 'racket-mode-hook #'rainbow-delimiters-mode)
-(add-hook 'racket-mode-hook #'prettify-symbols-mode)
-(add-hook 'racket-mode-hook #'fic-mode)
+;(require-install 'racket-mode)
+;(add-hook 'racket-mode-hook #'rainbow-delimiters-mode)
+;(add-hook 'racket-mode-hook #'prettify-symbols-mode)
+;(add-hook 'racket-mode-hook #'fic-mode)
 
 
 
-(let* ((regex-pat "\\.\\(rkt\\|scm\\|ss\\)\\'")
-       (term (assoc regex-pat auto-mode-alist)))
-  (cond
-   ((equal nil term)
-    (add-to-list 'auto-mode-alist (cons regex-pat 'racket-mode)))
-   (t (setcdr (assoc regex-pat auto-mode-alist) 'racket-mode))))
+;(let* ((regex-pat "\\.\\(rkt\\|scm\\|ss\\)\\'")
+;       (term (assoc regex-pat auto-mode-alist)))
+;  (cond
+;   ((equal nil term)
+;    (add-to-list 'auto-mode-alist (cons regex-pat 'racket-mode)))
+;   (t (setcdr (assoc regex-pat auto-mode-alist) 'racket-mode))))
 
 (provide 'init-lisp)
