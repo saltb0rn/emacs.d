@@ -13,8 +13,11 @@
 
 (require 'package)
 
+;(add-to-list 'package-archives
+;	     '("melpa" . "http://melpa.org/packages") t)
+
 (add-to-list 'package-archives
-	     '("melpa" . "https://melpa.org/packages") t)
+	     '("melpa" . "http://www.mirrorservice.org/sites/melpa.org/packages/") t)
 
 (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
 
@@ -261,6 +264,8 @@ if(/superloopy\.io/.test(window.location.hostname)) {
 (use-package elpy
   :ensure t
   :config
+  (use-package flycheck
+    :ensure t)
   (add-hook 'elpy-mode-hook #'fic-mode)
   (add-hook 'elpy-mode-hook #'rainbow-delimiters-mode)
   (add-hook 'elpy-mode-hook #'flycheck-mode)
@@ -354,3 +359,17 @@ if(/superloopy\.io/.test(window.location.hostname)) {
    ("C-;" . pyim-delete-word-from-personal-buffer)))
 
 (provide 'init)
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   (quote
+    (flycheck pyim geiser elpy highlight-indentation rainbow-delimiters fic-mode web-mode zenburn-theme markdown-mode use-package))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
