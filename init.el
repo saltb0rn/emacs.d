@@ -24,7 +24,8 @@
 (package-initialize)
 
 ;; update the package metadata if the local cache is missing
-(unless package-archive-contents
+(unless (or package-archive-contents
+	    (file-exists-p package-user-dir))
   (package-refresh-contents))
 
 (setq user-full-name "saltb0rn"
@@ -58,16 +59,10 @@
 (when (fboundp 'tool-bar-mode)
   (tool-bar-mode -1))
 
-(when (fboundp 'menu-bar-mode)
-  (menu-bar-mode -1))
-
-(when (fboundp 'scroll-bar-mode)
-  (scroll-bar-mode -1))
-
-(when (fboundp 'blink-cursor-mode)
-  (blink-cursor-mode -1))
-
-(setq ring-bell-function 'ignore)
+(tool-bar-mode -1)
+(menu-bar-mode -1)
+(scroll-bar-mode -1)
+(blink-cursor-mode)
 
 ;; Disable startup screen
 (setq inhibit-startup-screen t)
@@ -126,6 +121,12 @@
 		    (eval-buffer)
 		    (message "Buffer evaluation finished!!!!"))))))
 
+(use-package nyan-mode
+  :ensure t
+  :config
+  (nyan-mode)
+  (nyan-start-animation)
+  (nyan-toggle-wavy-trail))
 
 (use-package zenburn-theme
   :ensure t
@@ -168,15 +169,12 @@
 
   (setq publish-path (concat project-path "publish/"))
 
-  ;; TODO: The variable should be eliminated.
-  (setq script--load-path
-	(cond
-	 (load-file-name (file-name-directory load-file-name))
-	 ((symbol-file 'project-path 'setq)
-	  (file-name-directory (symbol-file 'project-path 'setq)))
-	 ((string= (file-name-nondirectory buffer-file-name) "init-org-blog.el")
-	  (file-name-directory buffer-file-name))
-	 (t nil)))
+  (use-package simple-httpd
+    :ensure t
+    :config
+    (setq
+     httpd-listings nil
+     httpd-root publish-path))
 
   (defun capture-blog-post-file ()
     "Return a path where to store post files. This path will be important.
@@ -198,7 +196,7 @@ the `org-capture-templates'. "
   (add-to-list 'org-capture-templates
 	       `("b" "Blog Post" plain
 		 (file capture-blog-post-file)
-		 (file ,(concat script--load-path "org-blog-tpl.org"))))
+		 (file "~/.emacs.d/org-blog-tpl.org")))
 
   (setq backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
 
@@ -206,13 +204,11 @@ the `org-capture-templates'. "
 
 	org-html-home/up-format "
 <div id=\"org-div-home-and-up\">
-  <img src=\"/images/logo.png\" alt=\"Superloopy Logo\"/>
+  <img src=\"/images/logo.png\" alt=\"Blog Logo\"/>
   <nav>
     <ul>
-      <!-- <li><a accesskey=\"h\" href=\"%s\"> Up </a></li>\n -->
       <li><a accesskey=\"H\" href=\"%s\"> Home </a></li>
       <li><a accesskey=\"a\" href=\"/posts\"> Posts </a></li>
-      <!-- <li><a accesskey=\"p\" href=\"/publications.html\"> Publications </a></li> -->
       <li><a accesskey=\"A\" href=\"/about.html\"> About </a></li>
     </ul>
   </nav>
@@ -369,7 +365,7 @@ if(/superloopy\.io/.test(window.location.hostname)) {
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (flycheck pyim geiser elpy highlight-indentation rainbow-delimiters fic-mode web-mode zenburn-theme markdown-mode use-package))))
+    (simple-httpd nyan-mode flycheck pyim geiser elpy highlight-indentation rainbow-delimiters fic-mode web-mode zenburn-theme markdown-mode use-package))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
