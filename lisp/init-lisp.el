@@ -2,11 +2,21 @@
 (require-install 'highlight-indentation)
 ;; For elisp
 (setcdr (assoc "\\.el\\'" auto-mode-alist) 'lisp-interaction-mode)
-(add-hook 'lisp-interaction-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'lisp-interaction-mode-hook
+	  #'(lambda ()
+	      (rainbow-delimiters-mode t)))
 ;;(add-hook 'lisp-interaction-mode-hook #'linum-mode)
 ;;(add-hook 'lisp-interaction-mode-hook #'highlight-indentation-mode)
 (add-hook 'lisp-interaction-mode-hook
 	  #'(lambda () (fic-mode t)))
+(add-hook 'lisp-interaction-mode-hook
+	  #'(lambda ()
+	      (define-key lisp-interaction-mode-map
+		(kbd "C-c C-e")
+		#'(lambda ()
+		    (interactive)
+		    (eval-buffer)
+		    (message "Buffer evaluation finished!!!!")))))
 
 ;; For common lisp
 (require-install 'slime)

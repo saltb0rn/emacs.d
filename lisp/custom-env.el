@@ -31,12 +31,12 @@
  ;; If there is more than one, they won't work right.
  '(auto-save-default nil)
  '(blink-cursor-mode nil)
- '(bmkp-last-as-first-bookmark-file "/home/salt/.emacs.d/bookmarks")
+ '(bmkp-last-as-first-bookmark-file "~/.emacs.d/bookmarks")
  '(coffee-indent-like-python-mode t)
  '(coffee-tab-width 4)
  '(debug-on-quit t)
  '(ecb-options-version "2.50")
- '(elpy-rpc-backend "jedi")
+ '(elpy-rpc-backend "jedi" t)
  '(elpy-rpc-python-command "python3")
  '(fic-highlighted-words (quote ("FIXME" "TODO" "BUG" "NOTE" "FIXED")))
  '(inhibit-default-init nil)
@@ -44,7 +44,7 @@
  '(org-pretty-entities t)
  '(package-selected-packages
    (quote
-    (zenburn zenburn-theme geiser markdown-mode+ markdown-preview-mode org2ctex pandoc-mode dockerfile-mode which-key bookmark+ multi-term htmlize nginx-mode yaml-mode i3wm google-translate-default-ui google-translate company-jedi typing-game speed-type slime bison-mode emojify xref-js2 web-mode tabbar rainbow-delimiters org-plus-contrib nyan-mode monokai-theme magit js2-refactor indium highlight-indent-guides flycheck-ycmd fic-mode evil emms elpy company-tern coffee-mode all-the-icons ace-window pyim use-package pkg-info epl flycheck)))
+    (org-capture ox racket-mode pyim package-lint mustache git suggest dictionary simple-httpd zenburn zenburn-theme geiser markdown-mode+ markdown-preview-mode org2ctex pandoc-mode dockerfile-mode which-key bookmark+ multi-term htmlize nginx-mode yaml-mode i3wm google-translate-default-ui google-translate company-jedi typing-game speed-type slime bison-mode emojify xref-js2 web-mode tabbar rainbow-delimiters nyan-mode monokai-theme magit js2-refactor indium highlight-indent-guides flycheck-ycmd fic-mode evil emms elpy company-tern coffee-mode all-the-icons ace-window use-package pkg-info epl flycheck)))
  '(pyim-fuzzy-pinyin-alist
    (quote
     (("en" "eng")
@@ -64,17 +64,6 @@
  '(term-default-fg-color "#ddd000")
  '(tramp-default-method "ssh" nil (tramp))
  '(tramp-syntax (quote default) nil (tramp))
- '(mode-line-format
-   (quote
-    ("%m: "
-     "buffer %b, "
-     (vc-mode vc-mode)
-     " L %l "
-     (:eval (list (nyan-create)))
-     " "
-     mode-line-misc-info
-     mode-line-end-spaces
-     )))
  '(web-mode-indent-style 2))
 
 (put 'narrow-to-region 'disabled nil)

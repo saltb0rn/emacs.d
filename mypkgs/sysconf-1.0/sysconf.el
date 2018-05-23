@@ -1,4 +1,4 @@
-;;; sysconf.el --- My script to install system packages -*- lexical-binding: t -*-
+;;; sysconf.el --- My script to install system packages ;;-*- lexical-binding: t -*-
 
 ;; Copyright (C) 2017 Salt Ho
 

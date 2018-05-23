@@ -1,0 +1,8 @@
+#+TITLE: %^{TITLE}
+#+DATE: %<%Y-%m-%d>
+#+BEGIN_ABSTRACT
+%^{Abstract}
+#+END_ABSTRACT
+#+INDEX: %^{Concept Index Entry}
+
+%?
