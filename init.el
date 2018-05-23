@@ -13,7 +13,6 @@
 
 (require 'package)
 
-
 (add-to-list 'package-archives
 	     '("melpa" . "https://melpa.org/packages") t)
 
@@ -353,26 +352,5 @@ if(/superloopy\.io/.test(window.location.hostname)) {
   :bind
   (("M-j" . pyim-convert-code-at-point) ;与 pyim-probe-dynamic-english 配合
    ("C-;" . pyim-delete-word-from-personal-buffer)))
-
-
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   (quote
-    (pyim markdown-mode zenburn-theme xref-js2 which-key web-mode use-package tabbar slime rainbow-delimiters racket-mode nyan-mode multi-term monokai-theme magit js2-refactor indium google-translate geiser flycheck fic-mode emojify emms elpy company-tern coffee-mode ace-window)))
- '(pyim-fuzzy-pinyin-alist
-   (quote
-    (("en" "eng")
-     ("in" "ing")
-     ("un" "ong")
-     ("z" "zh")
-     ("s" "sh")
-     ("an" "ang")
-     ("on" "ong")
-     ("c" "ch")))))
-
 
 (provide 'init)
