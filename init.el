@@ -48,6 +48,9 @@
 (setq backup-directory-alist
       `((".*" . ,(concat user-emacs-directory "backups/"))))
 
+(unless (file-exists-p (concat user-emacs-directory "autosaved/"))
+  (make-directory-internal (concat user-emacs-directory "autosaved/")))
+
 (setq auto-save-file-name-transforms
       `((".*" ,(concat user-emacs-directory "autosaved/") t)))
 
@@ -280,7 +283,7 @@ if(/superloopy\.io/.test(window.location.hostname)) {
 		    (message "Turn the highlight-indentation-mode off")))))
   (setq python-shell-interpreter "python3"
 	elpy-rpc-backend "jedi"
-	elpy-rcp-python-command "python3")
+	elpy-rpc-python-command "python3")
   (elpy-enable))
 
 (use-package geiser
