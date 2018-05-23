@@ -10,59 +10,369 @@
 ;; installed packages.  Don't delete this line.  If you don't want it,
 ;; just comment it out by adding a semicolon to the start of the line.
 ;; You may delete these explanatory comments.
+
+(require 'package)
+
+
+(add-to-list 'package-archives
+	     '("melpa" . "https://melpa.org/packages") t)
+
+(add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
+
 (package-initialize)
 
-(add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
+;; update the package metadata if the local cache is missing
+(unless package-archive-contents
+  (package-refresh-contents))
 
-;; Display line number
-;; (global-linum-mode)
-;; This will hang out when use doc-view-mode to read pdf
+(setq user-full-name "saltb0rn"
+      user-mail-address "asche34@outlook.com")
+
+;; Set transparency
+(set-frame-parameter (selected-frame) 'alpha '(85 85))
+(add-to-list 'default-frame-alist '(alpha 85 85))
+
+;; Always load newest byte code
+(setq load-prefer-newer t)
+
+;; Reduce the frequency of garbage collection by making it happen
+;; on each 50MB of allocated data (the default is on every 0.76MB)
+(setq gc-cons-threshold 50000000)
+
+;; Warn when opening files bigger than 100MB
+(setq large-file-warning-threshold 100000000)
+
+;; Put backup files into specified directory
+(setq backup-directory-alist
+      `((".*" . ,(concat user-emacs-directory "backups/"))))
+
+(setq auto-save-file-name-transforms
+      `((".*" ,(concat user-emacs-directory "autosaved/") t)))
+
+;; Disable tool-bar, menu-bar and scroll-bar.
+(when (fboundp 'tool-bar-mode)
+  (tool-bar-mode -1))
+
+(when (fboundp 'menu-bar-mode)
+  (menu-bar-mode -1))
+
+(when (fboundp 'scroll-bar-mode)
+  (scroll-bar-mode -1))
+
+(when (fboundp 'blink-cursor-mode)
+  (blink-cursor-mode -1))
+
+(setq ring-bell-function 'ignore)
+
+;; Disable startup screen
+(setq inhibit-startup-screen t)
+
+;; `(global-linum-mode)' will hang out emacs when use `doc-view-mode', so stop it.
+
+;; revert buffers automaticaly when underlying files are changed externally
+(global-auto-revert-mode t)
+
+(prefer-coding-system 'utf-8)
+(set-default-coding-systems 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+
+(setq hippie-expand-try-functions-list
+      `(try-complete-file-name-partially
+	try-complete-file-name
+	try-expand-all-abbrevs
+	try-expand-list
+	try-expand-line
+	try-expand-dabbrev
+	try-expand-dabbrev-all-buffers
+	try-expand-dabbrev-from-kill
+	try-complete-lisp-symbol-partially
+	try-complete-lisp-symbol))
+
+;; smart tab behavior - (or indent complete)
+(setq tab-always-indent 'complete)
 
 ;;-----------------------------------------------------------------------------
 
-(require 'init-elpa)
+;; third-party packages configuration
+;; use `use-package' to configurate
 
-;; (ensure-package-installed
-;;  'use-package
-;; 'chinese-pyim-greatdict)
+(unless (package-installed-p 'use-package)
+  (package-install 'use-package))
 
-(require 'init-chinese-pyim)
+(require 'use-package)
 
-(require 'init-utillities)
+(setq use-package-verbose t)
 
-(require 'init-other-utils)
+(use-package lisp-mode
+  :config
+  (setcdr (assoc "\\.el\\'" auto-mode-alist) 'lisp-interaction-mode)
+  (add-hook 'lisp-interaction-mode-hook
+	    #'(lambda ()
+		(rainbow-delimiters-mode t)))
+  (add-hook 'lisp-interaction-mode-hook
+	    #'(lambda () (fic-mode t)))
+  (add-hook 'lisp-interaction-mode-hook
+	  #'(lambda ()
+	      (define-key lisp-interaction-mode-map
+		(kbd "C-c C-e")
+		#'(lambda ()
+		    (interactive)
+		    (eval-buffer)
+		    (message "Buffer evaluation finished!!!!"))))))
 
-(require 'init-site-lisp)
 
-(require 'init-mypkgs)
+(use-package zenburn-theme
+  :ensure t
+  :config
+  (when window-system
+    (load-theme 'zenburn t)))
 
-;; (require 'init-evil) ;; vim keys-binding
-;; I stop using evil just becase I don't use vim-like keybinding frequently anymore
+(use-package web-mode
+  :ensure t
+  :config
+  (if (null (assoc "\\.html\\?'" auto-mode-alist))
+      (add-to-list 'auto-mode-alist (cons "\\.html?\\'" 'web-mode)))
+  (setq web-mode-enable-auto-closing t
+	web-mode-enable-auto-pairing t))
 
-;; (require 'init-ycmd) ;; youcompleteme as complete backend
-;; I pause using ycmd because it conflicts with elpy
+(use-package fic-mode
+  :ensure t
+  :config
+  (setq fic-highlighted-words
+	(quote ("FIXME" "TODO" "BUG" "NOTE" "FIXED"))))
 
-;; (require 'init-ecb)  ;; I directly use the builtin cedet insead of ecb, because ecb is too old and too many bugs.
+(use-package rainbow-delimiters
+  :ensure t)
 
-(require 'init-emms)
+(use-package highlight-indentation
+  :ensure t)
 
-(require 'init-org)
+;(use-package
 
-(require 'init-python)
+(use-package org
+  :ensure t
+  :config
+  (use-package ox)
+  (use-package org-capture)
+  (setq org-export-coding-system 'utf-8)
 
-(require 'init-lisp)
+  (define-key global-map "\C-cc" 'org-capture)
 
-(require 'init-js)
+  (setq project-path "~/Documents/DarkSalt/")
 
-(require 'init-web)
+  (setq publish-path (concat project-path "publish/"))
 
-(require 'init-term)
+  ;; TODO: The variable should be eliminated.
+  (setq script--load-path
+	(cond
+	 (load-file-name (file-name-directory load-file-name))
+	 ((symbol-file 'project-path 'setq)
+	  (file-name-directory (symbol-file 'project-path 'setq)))
+	 ((string= (file-name-nondirectory buffer-file-name) "init-org-blog.el")
+	  (file-name-directory buffer-file-name))
+	 (t nil)))
 
-(require 'init-google-translate)
+  (defun capture-blog-post-file ()
+    "Return a path where to store post files. This path will be important.
+Usually calling `org-capture' will store the captured content into
+a existed file. We do something unusual that store the captured content
+into a non-existed file.
+When calling `org-capture', it will let you input the post file name,
+the TITLE and something things accroding to the templates specified by
+the `org-capture-templates'. "
+    (let* ((title (read-string "Slug: "))
+	   (slug (replace-regexp-in-string "[^a-z]+" "-" (downcase title))))
+      (expand-file-name
+       (format (concat project-path "posts/%s/%s.org")
+	       (format-time-string "%Y" (current-time))
+	       slug))))
 
-(require 'custom-env)
+  (setq org-capture-templates nil)
 
-;; (require 'sysconf "sysconf.el")
-(require 'sysconf) ;; Don't need to install the package for debugging during development
+  (add-to-list 'org-capture-templates
+	       `("b" "Blog Post" plain
+		 (file capture-blog-post-file)
+		 (file ,(concat script--load-path "org-blog-tpl.org"))))
+
+  (setq backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
+
+	org-html-doctype "html5"
+
+	org-html-home/up-format "
+<div id=\"org-div-home-and-up\">
+  <img src=\"/images/logo.png\" alt=\"Superloopy Logo\"/>
+  <nav>
+    <ul>
+      <!-- <li><a accesskey=\"h\" href=\"%s\"> Up </a></li>\n -->
+      <li><a accesskey=\"H\" href=\"%s\"> Home </a></li>
+      <li><a accesskey=\"a\" href=\"/posts\"> Posts </a></li>
+      <!-- <li><a accesskey=\"p\" href=\"/publications.html\"> Publications </a></li> -->
+      <li><a accesskey=\"A\" href=\"/about.html\"> About </a></li>
+    </ul>
+  </nav>
+</div>
+"
+	org-html-head (concat "<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/main.css\" />\n"
+			      "<link rel=\"icon\" type=\"image/png\" href=\"/images/icon.png\" />")
+
+	org-html-scripts "
+<script type=\"text/javascript\">
+if(/superloopy\.io/.test(window.location.hostname)) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-4113456-6', 'auto');
+  ga('send', 'pageview');
+}</script>"
+
+	org-html-link-home "/"
+	org-html-link-up "/"
+
+	org-export-with-toc nil
+	org-export-with-author t
+	org-export-with-email nil
+	org-export-with-creator nil
+	org-export-with-date nil
+	org-export-with-section-numbers nil
+
+	org-html-preamble nil
+	org-html-postamble 'auto
+	org-publish-project-alist
+	`(("static"
+	   :base-directory ,project-path
+	   :base-extension "js\\|css\\|png\\|jpg\\|pdf"
+	   :publishing-directory ,publish-path
+	   :publishing-function org-publish-attachment
+	   :recursive t)
+	  ("home"
+	   :base-directory ,project-path
+	   :base-extension "org"
+	   :publishing-directory ,publish-path
+	   :publishing-function org-html-publish-to-html)
+	  ("posts"
+	   :base-directory ,(concat project-path "posts/")
+	   :makeindex t
+	   :publishing-directory ,(concat publish-path "posts/")
+	   :publishing-function org-html-publish-to-html
+	   :recursive t)
+	  ("DarkSalt" :components ("static" "home" "posts")))))
+
+(use-package elpy
+  :ensure t
+  :config
+  (add-hook 'elpy-mode-hook #'fic-mode)
+  (add-hook 'elpy-mode-hook #'rainbow-delimiters-mode)
+  (add-hook 'elpy-mode-hook #'flycheck-mode)
+  ;; It will be slow while you typing if the buffer size if lagger than the elpy-rpc-ignored-buffer-size
+  ;; So we need to turn off the highlight-inentation-mode
+  ;; Elpy own it hightlight-indentation
+  (add-hook 'elpy-mode-hook
+	    #'(lambda ()
+		(when (> (buffer-size) elpy-rpc-ignored-buffer-size)
+		  (progn
+		    (highlight-indentation-mode 0)
+		    (message "Turn the highlight-indentation-mode off")))))
+  (setq python-shell-interpreter "python3"
+	elpy-rpc-backend "jedi"
+	elpy-rcp-python-command "python3")
+  (elpy-enable))
+
+(use-package geiser
+  :ensure t
+  :config
+  (set-default 'geiser-scheme-implementation 'racket)
+  (set-default 'geiser-active-implementations '(racket))
+  (set-default 'geiser-repl-query-on-kill-p nil)
+  (set-default 'geiser-repl-query-on-exit-p nil)
+  (add-hook 'geiser-mode-hook #'rainbow-delimiters-mode)
+  (add-hook 'geiser-mode-hook #'prettify-symbols-mode)
+  (add-hook 'geiser-mode-hook #'fic-mode))
+
+;;(use-package racket-mode
+;;  :ensure t
+;;  :config
+;;  ;; For racket, use this mode if you prefer drracket
+;;  (add-hook 'racket-mode-hook #'rainbow-delimiters-mode)
+;;  (add-hook 'racket-mode-hook #'prettify-symbols-mode)
+;;  (add-hook 'racket-mode-hook #'fic-mode)
+;;  (let* ((regex-pat "\\.\\(rkt\\|scm\\|ss\\)\\'")
+;;	 (term (assoc regex-pat auto-mode-alist)))
+;;    (cond
+;;     ((equal nil term)
+;;      (add-to-list 'auto-mode-alist (cons regex-pat 'racket-mode)))
+;;     (t (setcdr (assoc regex-pat auto-mode-alist) 'racket-mode)))))
+
+
+(use-package pyim
+  :ensure t
+  :config
+  ;; 激活 basedict 拼音词库
+  (use-package pyim-basedict
+    :ensure nil
+    :config (pyim-basedict-enable))
+
+  ;; 五笔用户使用 wbdict 词库
+  ;; (use-package pyim-wbdict
+  ;;   :ensure nil
+  ;;   :config (pyim-wbdict-gbk-enable))
+
+  (setq default-input-method "pyim")
+
+  ;; 我使用全拼
+  (setq pyim-default-scheme 'quanpin)
+
+  ;; 设置 pyim 探针设置，这是 pyim 高级功能设置，可以实现 *无痛* 中英文切换 :-)
+  ;; 我自己使用的中英文动态切换规则是：
+  ;; 1. 光标只有在注释里面时，才可以输入中文。
+  ;; 2. 光标前是汉字字符时，才能输入中文。
+  ;; 3. 使用 M-j 快捷键，强制将光标前的拼音字符串转换为中文。
+  (setq-default pyim-english-input-switch-functions
+		'(pyim-probe-dynamic-english
+		  pyim-probe-isearch-mode
+		  pyim-probe-program-mode
+		  pyim-probe-org-structure-template))
+
+  (setq-default pyim-punctuation-half-width-functions
+		'(pyim-probe-punctuation-line-beginning
+		  pyim-probe-punctuation-after-punctuation))
+
+  ;; 开启拼音搜索功能
+  (pyim-isearch-mode 1)
+
+  ;; 使用 pupup-el 来绘制选词框
+  (setq pyim-page-tooltip 'popup)
+
+  ;; 选词框显示5个候选词
+  (setq pyim-page-length 5)
+
+  ;; 让 Emacs 启动时自动加载 pyim 词库
+  (add-hook 'emacs-startup-hook
+	    #'(lambda () (pyim-restart-1 t)))
+  :bind
+  (("M-j" . pyim-convert-code-at-point) ;与 pyim-probe-dynamic-english 配合
+   ("C-;" . pyim-delete-word-from-personal-buffer)))
+
+
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   (quote
+    (pyim markdown-mode zenburn-theme xref-js2 which-key web-mode use-package tabbar slime rainbow-delimiters racket-mode nyan-mode multi-term monokai-theme magit js2-refactor indium google-translate geiser flycheck fic-mode emojify emms elpy company-tern coffee-mode ace-window)))
+ '(pyim-fuzzy-pinyin-alist
+   (quote
+    (("en" "eng")
+     ("in" "ing")
+     ("un" "ong")
+     ("z" "zh")
+     ("s" "sh")
+     ("an" "ang")
+     ("on" "ong")
+     ("c" "ch")))))
+
 
 (provide 'init)
