@@ -186,6 +186,32 @@
      httpd-listings nil
      httpd-root publish-path))
 
+  ;; the rest of configuration of `org' is all about the blogging with Emacs.
+  ;; the blog provides following features,
+  ;; 1. an auto-generated post list ordered by creation date in index;
+  ;; 2. an auto-generated post list ordered by capital letter of post name in "posts" category;
+
+  ;; The structure of my blog project:
+  ;; Project
+  ;;    |- index.org
+  ;;    |- theindex.inc
+  ;;    |- about/
+  ;;    |     `- index.org
+  ;;    |- posts/
+  ;;    |     |- theindex.org
+  ;;    |     |- theindex.inc
+  ;;    |     |- 2018/
+  ;;    |     |     |- 05/
+  ;;    |     |     |    |- hello-world.org
+  ;;    |     |     |    `- other posts
+  ;;    |     |     `- other months
+  ;;    |     `- 20XX/
+  ;;    |
+  ;;    |- publish/, a mirror of Project, is the another project used to publish
+  ;;    |- js/
+  ;;    |- img/
+  ;;    `- css/
+
   (defun capture-blog-post-file ()
     "Return a path where to store post files. This path will be important.
 Usually calling `org-capture' will store the captured content into
@@ -243,15 +269,38 @@ string consisting of url and title of org-file"
 					     (file-name-base file))))))
 		(setq res (add-to-list 'res url-title)))))))))
 
-  ;; Put the result of `(auto-generated-post-list)' into `theindex.inc'
 
-  ;; Renaming "theindex.html" to "index.html" manually is annoyed
+  ;; Define a advice before `org-publish-project' and `org-publish-projects' to
+  ;; generate a list of posts in order by date time.
+  ;; Define a advice after `org-publish-project' and `org-publish-projects' to
+  ;; rename "theindex.html" to "index.html", because doing this manually is annoyed.
+
+  (defadvice org-publish-project
+      (before org-publish-project-rewrite-theindex-inc activate)
+      (write-region
+       (mapconcat
+	#'(lambda (str) (format "- %s" str))
+	(auto-generate-post-list (concat project-path "posts/"))
+	"\n")
+       nil
+       (concat project-path "theindex.inc")))
+
   (defadvice org-publish-project
       (after org-publish-project-rename-theindex-to-index activate)
     (let ((old-index (concat publish-path "posts/" "theindex.html"))
 	  (new-index (concat publish-path "posts/" "index.html")))
       (rename-file old-index new-index t)
-    (message "Renamed %s to %s" old-index new-index)))
+      (message "Renamed %s to %s" old-index new-index)))
+
+  (defadvice org-publish-projects
+      (before org-publish-projects-rewrite-theindex-inc activate)
+      (write-region
+       (mapconcat
+	#'(lambda (str) (format "- %s" str))
+	(auto-generate-post-list (concat project-path "posts/"))
+	"\n")
+       nil
+       (concat project-path "theindex.inc")))
 
   (defadvice org-publish-projects
       (after org-publish-projects-rename-theindex-to-index activate)
