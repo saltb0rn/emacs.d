@@ -81,6 +81,12 @@
 ;; smart tab behavior - (or indent complete)
 (setq tab-always-indent 'complete)
 
+;; Put the customized variables into another file to "protect" "init.el" file
+(setq custom-file (expand-file-name "emacs-custom.el" user-emacs-directory))
+(unless (file-exists-p custom-file)
+  (write-region "" "" custom-file))
+(load custom-file)
+
 ;;-----------------------------------------------------------------------------
 
 ;; third-party packages configuration
@@ -211,7 +217,7 @@ the `org-capture-templates'. "
 #+end_content
 #+end_article"))
 
-  ;; Renaming `theindex.html' manually is annoyed
+  ;; Renaming "theindex.html" to "index.html" manually is annoyed
   (defadvice org-publish-project
       (after org-publish-project-rename-theindex-to-index activate)
     (let ((old-index (concat publish-path "posts/" "theindex.html"))
@@ -403,17 +409,3 @@ if(/superloopy\.io/.test(window.location.hostname)) {
    ("C-;" . pyim-delete-word-from-personal-buffer)))
 
 (provide 'init)
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   (quote
-    (yasnippet-snippets markdown-mode elpy zenburn-theme web-mode use-package simple-httpd rainbow-delimiters pyim nyan-mode geiser flycheck fic-mode))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
