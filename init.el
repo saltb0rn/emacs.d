@@ -167,6 +167,8 @@
   (use-package ox)
   (use-package org-capture)
 
+  (use-package cl)
+
   (add-hook 'org-mode-hook #'flyspell-mode)
 
   (setq org-export-coding-system 'utf-8)
@@ -196,7 +198,7 @@ the `org-capture-templates'. "
 	   (slug (replace-regexp-in-string "[^a-z]+" "-" (downcase title))))
       (expand-file-name
        (format (concat project-path "posts/%s/%s.org")
-	       (format-time-string "%Y/%m//%d" (current-time))
+	       (format-time-string "%Y/%m" (current-time))
 	       slug))))
 
   (setq org-capture-templates nil)
@@ -208,14 +210,40 @@ the `org-capture-templates'. "
 #+title: %^{Title}
 #+date: %<%Y-%m-%d>
 #+index: %^{Concept Index Entry}
-#+begin_article
 #+begin_abstract
 %^{Abstract}
 #+end_abstract
 #+begin_content
 %?
 #+end_content
-#+end_article"))
+"))
+
+  (defun auto-generate-post-list (root)
+    "Search the org files in `project-path', and generate a list of
+string consisting of url and title of org-file"
+    (when (file-directory-p root)
+      (let ((files (reverse (directory-files root t "^[^.][^.].*$" 'time-less-p)))
+	    (res nil))
+	(dolist (file files res)
+	  (if (file-directory-p file)
+	      (setq res (append res (auto-generate-post-list file)))
+	    (when (and (string-suffix-p ".org" file)
+		       (not (string-suffix-p "theindex.org" file)))
+	      (let ((url-title (format "[[file:%s][%s]]"
+				       (replace-regexp-in-string
+					"\\.org"
+					".html"
+					(file-relative-name file project-path))
+				       (with-temp-buffer
+					 (insert-file-contents file)
+					 (goto-char (point-min))
+					 (re-search-forward
+					  (org-make-options-regexp '("TITLE")))
+					 (or (match-string-no-properties 2 nil)
+					     (file-name-base file))))))
+		(setq res (add-to-list 'res url-title)))))))))
+
+  ;; Put the result of `(auto-generated-post-list)' into `theindex.inc'
 
   ;; Renaming "theindex.html" to "index.html" manually is annoyed
   (defadvice org-publish-project
@@ -249,7 +277,7 @@ the `org-capture-templates'. "
 </div>
 "
    org-html-head (concat
-		  "<link rel=\"stylesheet\" type=\"text/css\" href=\"../../../../css/stylesheet.css\"/>\n"
+		  "<link rel=\"stylesheet\" type=\"text/css\" href=\"../../../css/stylesheet.css\"/>\n"
 		  "<link rel=\"icon\" type=\"image/png\" href=\"/images/icon.png\" />")
 
    org-html-scripts "
