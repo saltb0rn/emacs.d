@@ -316,7 +316,7 @@ string consisting of url and title of org-file"
    org-html-home/up-format "
 <div id=\"org-div-home-and-up\">
   <nav>
-    <a href=\"/\"><img src=\"/images/logo.png\" alt=\"Blog Logo\"/></a>
+    <a href=\"/\"><img src=\"../../../img/logo.png\" alt=\"Logo is on the way\"/></a>
     <ul>
       <li><a accesskey=\"H\" href=\"%s\"> Home </a></li>
       <li><a accesskey=\"a\" href=\"/posts\"> Posts </a></li>
@@ -327,7 +327,7 @@ string consisting of url and title of org-file"
 "
    org-html-head (concat
 		  "<link rel=\"stylesheet\" type=\"text/css\" href=\"../../../css/stylesheet.css\"/>\n"
-		  "<link rel=\"icon\" type=\"image/png\" href=\"/images/icon.png\" />")
+		  "<link rel=\"icon\" type=\"image/png\" href=\"../../../img/icon.png\" />")
 
    org-html-scripts "
 <script type=\"text/javascript\">
