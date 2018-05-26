@@ -168,6 +168,7 @@
   (use-package org-capture)
 
   (use-package cl)
+  (use-package dash)
 
   (add-hook 'org-mode-hook #'flyspell-mode)
 
@@ -176,6 +177,10 @@
   (define-key global-map "\C-cc" 'org-capture)
 
   (setq project-path "~/Documents/DarkSalt/")
+
+  (setq posts-path (concat project-path "posts/"))
+
+  (setq tags-path (concat project-path "tags/"))
 
   (setq publish-path (concat project-path "publish/"))
 
@@ -208,6 +213,9 @@
   ;;    |     `- 20XX/
   ;;    |
   ;;    |- publish/, a mirror of Project, is the another project used to publish
+  ;;    |- tags/
+  ;;    |     |- tag1.org
+  ;;    |-    `- tagxxx.org
   ;;    |- js/
   ;;    |- img/
   ;;    `- css/
@@ -223,7 +231,7 @@ the `org-capture-templates'. "
     (let* ((title (read-string "Slug: "))
 	   (slug (replace-regexp-in-string "[^a-z]+" "-" (downcase title))))
       (expand-file-name
-       (format (concat project-path "posts/%s/%s.org")
+       (format (concat posts-path "%s/%s.org")
 	       (format-time-string "%Y/%m" (current-time))
 	       slug))))
 
@@ -232,10 +240,11 @@ the `org-capture-templates'. "
   (add-to-list 'org-capture-templates
 	       `("b" "Blog Post" plain
 		 (file capture-blog-post-file)
-		  "
+		 "
 #+title: %^{Title}
 #+date: %<%Y-%m-%d>
 #+index: %^{Concept Index Entry}
+#+tags: %^{Tags}
 #+begin_abstract
 %^{Abstract}
 #+end_abstract
@@ -244,18 +253,25 @@ the `org-capture-templates'. "
 #+end_content
 "))
 
-  (defun auto-generate-post-list (root)
-    "Search the org files in `project-path', and generate a list of
-string consisting of url and title of org-file"
+  (defun retrieve-posts (root)
+    "Search all the posts in `project-path', return a list of posts paths"
     (when (file-directory-p root)
       (let ((files (reverse (directory-files root t "^[^.][^.].*$" 'time-less-p)))
 	    (res nil))
 	(dolist (file files res)
 	  (if (file-directory-p file)
-	      (setq res (append res (auto-generate-post-list file)))
+	      (setq res (append res (retrieve-posts file)))
 	    (when (and (string-suffix-p ".org" file)
 		       (not (string-suffix-p "theindex.org" file)))
-	      (let ((url-title (format "[[file:%s][%s]]"
+	      (setq res (add-to-list 'res file))))))))
+
+  (defun auto-generate-post-list (root)
+    "Search the org files in `project-path', and generate a list of
+string consisting of url and title of org-file"
+    (let ((files (retrieve-posts root))
+	  res)
+      (dolist (file files res)
+	(setq res (add-to-list 'res (format "[[file:%s][%s]]%s"
 				       (replace-regexp-in-string
 					"\\.org"
 					".html"
@@ -264,11 +280,122 @@ string consisting of url and title of org-file"
 					 (insert-file-contents file)
 					 (goto-char (point-min))
 					 (re-search-forward
-					  (org-make-options-regexp '("TITLE")))
+					  (org-make-options-regexp '("TITLE")) nil t)
 					 (or (match-string-no-properties 2 nil)
-					     (file-name-base file))))))
-		(setq res (add-to-list 'res url-title)))))))))
+					     (file-name-base file)))
+				       (with-temp-buffer
+					 (insert-file-contents file)
+					 (goto-char (point-min))
+					 (re-search-forward
+					  (concat
+					   "#\\+begin_abstract\\("
+					   "\\(.\\|\n\\|\t\\)*"
+					   "\\)#\\+end_abstract")
+					  nil t)
+					 (or (match-string-no-properties 1 nil) ""))))))))
 
+  (defun retrieve-tags-from-post (post)
+    "Retrieve tags from a post"
+    (mapcar
+     #'(lambda (elt)
+	 (--> elt
+	      downcase
+	      capitalize))
+     (with-temp-buffer
+       (insert-file-contents post)
+       (goto-char (point-min))
+       (if (re-search-forward "#\\+tags:[ \t]*\\(.*\\)" nil t)
+	   (split-string (match-string-no-properties 1 nil) " ")
+	 (list "Others")))))
+
+  (defun tag-list (root)
+    "Retrieve tags from posts, return a list of tags"
+    (let ((files (retrieve-posts root))
+	  res)
+      (dolist (file files res)
+	(setq res (append res (retrieve-tags-from-post file))))
+      (sort (remove-duplicates res) 'string<)))
+
+  (defun posts-of-tag (tag &optional root)
+    "Find the posts of tag, return a list of post.
+The ROOT points to the directory where posts store on."
+    (let ((files (retrieve-posts (or root posts-path)))
+	  res)
+      (dolist (file files res)
+	(when (member tag (retrieve-tags-from-post file))
+	  (setq res (add-to-list 'res file))))
+      (cons tag (list (sort res 'string<)))))
+
+  (defun group-posts-by-tags (root)
+    "Return a alist of (TAG . (list POST)).
+The ROOT points to the directory where posts store on."
+    (let ((tags (tag-list root))
+	  res)
+      (dolist (tag tags res)
+	(setq res (add-to-list 'res (posts-of-tag tag))))))
+
+  (defun rename-theindex-to-index ()
+    "Rename theindex.html to index.html"
+    (let ((old-index (concat publish-path "posts/" "theindex.html"))
+	  (new-index (concat publish-path "posts/" "index.html")))
+      (rename-file old-index new-index t)
+      (message "Renamed %s to %s" old-index new-index)))
+
+  (defun rewrite-theindex-inc ()
+    "Rewrite theindex.inc in `project-path'"
+      (write-region
+       (mapconcat
+	#'(lambda (str) (format "*** %s\n\t" str))
+	(auto-generate-post-list posts-path)
+	"\n")
+       nil
+       (concat project-path "theindex.inc")))
+
+  (defun write-posts-to-tag-inc ()
+    (let ((grouped-posts (group-posts-by-tags posts-path))
+	  (tags (tag-list posts-path)))
+      (unless (file-exists-p (concat tags-path "index.org"))
+	(write-region
+	 (format "#+TITLE: TAGS\n\n%s"
+		 (mapconcat
+		  #'(lambda (tag)
+		      (format "- [[file:%s][%s]]"
+			      (file-relative-name
+			       (concat tags-path tag ".html")
+			       project-path)
+			      tag))
+		  (tag-list posts-path)
+		  "\n"))
+	 nil
+	 (concat tags-path "index.org")))
+      (dolist (tag tags)
+	(write-region
+	 (mapconcat
+	  #'(lambda (post)
+	      ;;(format "- [[file:../posts/%s][%s]]"
+	      (format "- [[file:%s][%s]]"
+		      (file-relative-name post tags-path)
+		      (with-temp-buffer
+			(insert-file-contents post)
+			(goto-char (point-min))
+			(re-search-forward
+			 (org-make-options-regexp '("TITLE")) nil t)
+			(or (match-string-no-properties 2 nil)
+			    (file-name-base file)))))
+	  (cadr (assoc tag grouped-posts)) "\n")
+	 nil (concat tags-path tag ".inc"))
+	(unless (file-exists-p (concat tags-path tag ".org"))
+	  (write-region
+	   (format "#+TITLE: %s\n#+INCLUDE: %s"
+		   tag (concat tag ".inc"))
+	   nil (concat tags-path tag ".org"))))))
+
+  (defun create-project-directory-if-necessary ()
+    "Create Project directory if it does not exist."
+    (dolist (path (list tags-path posts-path
+			publish-path (concat project-path "about/")))
+      (unless (file-directory-p path)
+	(make-directory path t))))
 
   ;; Define a advice before `org-publish-project' and `org-publish-projects' to
   ;; generate a list of posts in order by date time.
@@ -277,37 +404,23 @@ string consisting of url and title of org-file"
 
   (defadvice org-publish-project
       (before org-publish-project-rewrite-theindex-inc activate)
-      (write-region
-       (mapconcat
-	#'(lambda (str) (format "- %s" str))
-	(auto-generate-post-list (concat project-path "posts/"))
-	"\n")
-       nil
-       (concat project-path "theindex.inc")))
+    (create-project-directory-if-necessary)
+    (write-posts-to-tag-inc)
+    (rewrite-theindex-inc))
 
   (defadvice org-publish-project
       (after org-publish-project-rename-theindex-to-index activate)
-    (let ((old-index (concat publish-path "posts/" "theindex.html"))
-	  (new-index (concat publish-path "posts/" "index.html")))
-      (rename-file old-index new-index t)
-      (message "Renamed %s to %s" old-index new-index)))
+    (rename-theindex-to-index))
 
   (defadvice org-publish-projects
       (before org-publish-projects-rewrite-theindex-inc activate)
-      (write-region
-       (mapconcat
-	#'(lambda (str) (format "- %s" str))
-	(auto-generate-post-list (concat project-path "posts/"))
-	"\n")
-       nil
-       (concat project-path "theindex.inc")))
+    (create-project-directory-if-necessary)
+    (write-posts-to-tag-inc)
+    (rewrite-theindex-inc))
 
   (defadvice org-publish-projects
       (after org-publish-projects-rename-theindex-to-index activate)
-    (let ((old-index (concat publish-path "posts/" "theindex.html"))
-	  (new-index (concat publish-path "posts/" "index.html")))
-      (rename-file old-index new-index t)
-    (message "Renamed %s to %s" old-index new-index)))
+    (rename-theindex-to-index))
 
   (setq
 
@@ -320,7 +433,8 @@ string consisting of url and title of org-file"
     <ul>
       <li><a accesskey=\"H\" href=\"%s\"> Home </a></li>
       <li><a accesskey=\"a\" href=\"/posts\"> Posts </a></li>
-      <li><a accesskey=\"A\" href=\"/about.html\"> About </a></li>
+      <li><a accesskey=\"T\" href=\"/tags\"> Tags </a></li>
+      <li><a accesskey=\"A\" href=\"/about\"> About </a></li>
     </ul>
   </nav>
 </div>
@@ -379,12 +493,19 @@ if(/superloopy\.io/.test(window.location.hostname)) {
       :recursive t
       :exclude "publish")
      ("posts"
-      :base-directory ,(concat project-path "posts/")
+      :base-directory ,posts-path; ,(concat project-path "posts/")
       :makeindex t
       :publishing-directory ,(concat publish-path "posts/")
       :publishing-function org-html-publish-to-html
       :exclude "publish"
       :recursive t)
+     ("tags"
+      :base-directory ,tags-path ; ,(concat project-path "tags/")
+      :base-extension "org"
+      :publishing-directory ,(concat publish-path "tags/")
+      :publishing-function org-html-publish-to-html
+      :recursive t
+      :exclude "publish")
      ("DarkSalt" :components ("static" "home" "about" "posts")))))
 
 (use-package elpy
