@@ -253,17 +253,31 @@ the `org-capture-templates'. "
 #+end_content
 "))
 
+  (defun read-option-from-post (post option &optional default)
+    "Read OPTION from POST. Return DEFAULT by default."
+    (with-temp-buffer
+      (insert-file-contents post)
+      (goto-char (point-min))
+      (if (re-search-forward (concat "^#\\+" option ":[ \t]*\\(.*\\)") nil t)
+	  (match-string-no-properties 1 nil)
+	default)))
+
   (defun retrieve-posts (root)
     "Search all the posts in `project-path', return a list of posts paths"
     (when (file-directory-p root)
-      (let ((files (reverse (directory-files root t "^[^.][^.].*$" 'time-less-p)))
+      (let ((files (directory-files root t "^[^.][^.].*$" 'time-less-p))
 	    (res nil))
 	(dolist (file files res)
 	  (if (file-directory-p file)
 	      (setq res (append res (retrieve-posts file)))
 	    (when (and (string-suffix-p ".org" file)
 		       (not (string-suffix-p "theindex.org" file)))
-	      (setq res (add-to-list 'res file))))))))
+	      (setq res (add-to-list 'res file)))))
+	(sort res
+	      #'(lambda (f1 f2)
+		  (string<
+		   (read-option-from-post f1 "date" (format-time-string "%Y-%m-%d"))
+		   (read-option-from-post f2 "date" (format-time-string "%Y-%m-%d"))))))))
 
   (defun auto-generate-post-list (root)
     "Search the org files in `project-path', and generate a list of
@@ -276,13 +290,8 @@ string consisting of url and title of org-file"
 					"\\.org"
 					".html"
 					(file-relative-name file project-path))
-				       (with-temp-buffer
-					 (insert-file-contents file)
-					 (goto-char (point-min))
-					 (re-search-forward
-					  (org-make-options-regexp '("TITLE")) nil t)
-					 (or (match-string-no-properties 2 nil)
-					     (file-name-base file)))
+				       (read-option-from-post
+					file "TITLE" (file-name-base file))
 				       (with-temp-buffer
 					 (insert-file-contents file)
 					 (goto-char (point-min))
@@ -301,15 +310,11 @@ string consisting of url and title of org-file"
 	 (--> elt
 	      downcase
 	      capitalize))
-     (with-temp-buffer
-       (insert-file-contents post)
-       (goto-char (point-min))
-       (re-search-forward "#\\+tags:[ \t]*\\(.*\\)" nil t)
-       (let ((tags (match-string-no-properties 1 nil)))
+       (let ((tags (read-option-from-post post "tags")))
 	 (cond
-	  ((null tags) (list "Others"))
-	  ((string= (string-trim tags) "") (list "Others"))
-	  (t (split-string (string-trim tags) " ")))))))
+	  ((or (null tags)
+	       (string= (string-trim tags) "")) (list "Others"))
+	  (t (split-string (string-trim tags) " "))))))
 
   (defun tag-list (root)
     "Retrieve tags from posts, return a list of tags"
@@ -373,16 +378,10 @@ The ROOT points to the directory where posts store on."
 	(write-region
 	 (mapconcat
 	  #'(lambda (post)
-	      ;;(format "- [[file:../posts/%s][%s]]"
 	      (format "- [[file:%s][%s]]"
 		      (file-relative-name post tags-path)
-		      (with-temp-buffer
-			(insert-file-contents post)
-			(goto-char (point-min))
-			(re-search-forward
-			 (org-make-options-regexp '("TITLE")) nil t)
-			(or (match-string-no-properties 2 nil)
-			    (file-name-base file)))))
+		      (read-option-from-post
+		       post "TITLE" (file-name-base post))))
 	  (cadr (assoc tag grouped-posts)) "\n")
 	 nil (concat tags-path tag ".inc"))
 	(unless (file-exists-p (concat tags-path tag ".org"))
