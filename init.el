@@ -304,9 +304,12 @@ string consisting of url and title of org-file"
      (with-temp-buffer
        (insert-file-contents post)
        (goto-char (point-min))
-       (if (re-search-forward "#\\+tags:[ \t]*\\(.*\\)" nil t)
-	   (split-string (match-string-no-properties 1 nil) " ")
-	 (list "Others")))))
+       (re-search-forward "#\\+tags:[ \t]*\\(.*\\)" nil t)
+       (let ((tags (match-string-no-properties 1 nil)))
+	 (cond
+	  ((null tags) (list "Others"))
+	  ((string= (string-trim tags) "") (list "Others"))
+	  (t (split-string (string-trim tags) " ")))))))
 
   (defun tag-list (root)
     "Retrieve tags from posts, return a list of tags"
@@ -314,7 +317,7 @@ string consisting of url and title of org-file"
 	  res)
       (dolist (file files res)
 	(setq res (append res (retrieve-tags-from-post file))))
-      (sort (remove-duplicates res) 'string<)))
+      (sort (remove-duplicates res :test 'string=) 'string<)))
 
   (defun posts-of-tag (tag &optional root)
     "Find the posts of tag, return a list of post.
@@ -354,20 +357,18 @@ The ROOT points to the directory where posts store on."
   (defun write-posts-to-tag-inc ()
     (let ((grouped-posts (group-posts-by-tags posts-path))
 	  (tags (tag-list posts-path)))
-      (unless (file-exists-p (concat tags-path "index.org"))
-	(write-region
-	 (format "#+TITLE: TAGS\n\n%s"
-		 (mapconcat
-		  #'(lambda (tag)
-		      (format "- [[file:%s][%s]]"
-			      (file-relative-name
-			       (concat tags-path tag ".html")
-			       project-path)
-			      tag))
-		  (tag-list posts-path)
-		  "\n"))
-	 nil
-	 (concat tags-path "index.org")))
+      (write-region
+       (format "#+TITLE: TAGS\n\n%s"
+	       (mapconcat
+		#'(lambda (tag)
+		    (format "- [[file:%s][%s]]"
+			    (file-relative-name
+			     (concat tags-path tag ".html")
+			     project-path)
+			    tag))
+		(tag-list posts-path)
+		"\n"))
+       nil (concat tags-path "index.org"))
       (dolist (tag tags)
 	(write-region
 	 (mapconcat
@@ -432,7 +433,7 @@ The ROOT points to the directory where posts store on."
     <a href=\"/\"><img src=\"../../../img/logo.png\" alt=\"Logo is on the way\"/></a>
     <ul>
       <li><a accesskey=\"H\" href=\"%s\"> Home </a></li>
-      <li><a accesskey=\"a\" href=\"/posts\"> Posts </a></li>
+      <!--<li><a accesskey=\"a\" href=\"/posts\"> Posts </a></li>-->
       <li><a accesskey=\"T\" href=\"/tags\"> Tags </a></li>
       <li><a accesskey=\"A\" href=\"/about\"> About </a></li>
     </ul>
