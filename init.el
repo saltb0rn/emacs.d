@@ -182,6 +182,8 @@
 
   (setq tags-path (concat project-path "tags/"))
 
+  (setq files-path (concat project-path "files/"))
+
   (setq publish-path (concat project-path "publish/"))
 
   (use-package simple-httpd
@@ -285,23 +287,26 @@ string consisting of url and title of org-file"
     (let ((files (retrieve-posts root))
 	  res)
       (dolist (file files res)
-	(setq res (add-to-list 'res (format "[[file:%s][%s]]%s"
+	(setq res (add-to-list 'res (format "[[file:%s][%s]]"
 				       (replace-regexp-in-string
 					"\\.org"
 					".html"
 					(file-relative-name file project-path))
 				       (read-option-from-post
 					file "TITLE" (file-name-base file))
-				       (with-temp-buffer
-					 (insert-file-contents file)
-					 (goto-char (point-min))
-					 (re-search-forward
-					  (concat
-					   "#\\+begin_abstract\\("
-					   "\\(.\\|\n\\|\t\\)*"
-					   "\\)#\\+end_abstract")
-					  nil t)
-					 (or (match-string-no-properties 1 nil) ""))))))))
+				       ;;(with-temp-buffer
+				;;	 (insert-file-contents file)
+				;;	 (goto-char (point-min))
+				;;	 (if (re-search-forward
+				;;	      (concat
+				;;	       "#\\+begin_abstract\\("
+				;;	       "\\(.\\|\n\\|\t\\)*"
+				;;	       "\\)#\\+end_abstract")
+				;;	      nil t)
+				;;	     (match-string-no-properties 1 nil)
+				;;					   " "))))))))
+				       ))))))
+					     
 
   (defun retrieve-tags-from-post (post)
     "Retrieve tags from a post"
@@ -350,11 +355,12 @@ The ROOT points to the directory where posts store on."
       (message "Renamed %s to %s" old-index new-index)))
 
   (defun rewrite-theindex-inc ()
+    ;; FIXME: This function seems to have a bug
     "Rewrite theindex.inc in `project-path'"
       (write-region
        (mapconcat
 	#'(lambda (str) (format "*** %s\n\t" str))
-	(auto-generate-post-list posts-path)
+	(auto-generate-post-list posts-path) ; The bug come from this expression
 	"\n")
        nil
        (concat project-path "theindex.inc")))
@@ -402,11 +408,12 @@ The ROOT points to the directory where posts store on."
   ;; Define a advice after `org-publish-project' and `org-publish-projects' to
   ;; rename "theindex.html" to "index.html", because doing this manually is annoyed.
 
-  (defadvice org-publish-project
+ (defadvice org-publish-project
       (before org-publish-project-rewrite-theindex-inc activate)
     (create-project-directory-if-necessary)
     (write-posts-to-tag-inc)
-    (rewrite-theindex-inc))
+    (rewrite-theindex-inc)
+    )
 
   (defadvice org-publish-project
       (after org-publish-project-rename-theindex-to-index activate)
@@ -416,7 +423,8 @@ The ROOT points to the directory where posts store on."
       (before org-publish-projects-rewrite-theindex-inc activate)
     (create-project-directory-if-necessary)
     (write-posts-to-tag-inc)
-    (rewrite-theindex-inc))
+    (rewrite-theindex-inc)
+    )
 
   (defadvice org-publish-projects
       (after org-publish-projects-rename-theindex-to-index activate)
@@ -506,6 +514,13 @@ if(/superloopy\.io/.test(window.location.hostname)) {
       :publishing-function org-html-publish-to-html
       :recursive t
       :exclude "publish")
+     ("files"
+      :base-directory ,files-path
+      :base-extension "js\\|css\\|png\\|jpg\\|pdf"
+      :publishing-directory ,(concat publish-path "files/")
+      :publishing-function org-publish-attachment
+      :exclude "publish"
+      :recursive t)
      ("DarkSalt" :components ("static" "home" "about" "posts")))))
 
 (use-package elpy
