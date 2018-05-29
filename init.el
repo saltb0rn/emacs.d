@@ -294,19 +294,20 @@ string consisting of url and title of org-file"
 					(file-relative-name file project-path))
 				       (read-option-from-post
 					file "TITLE" (file-name-base file))
-				       ;;(with-temp-buffer
-				;;	 (insert-file-contents file)
-				;;	 (goto-char (point-min))
-				;;	 (if (re-search-forward
-				;;	      (concat
-				;;	       "#\\+begin_abstract\\("
-				;;	       "\\(.\\|\n\\|\t\\)*"
-				;;	       "\\)#\\+end_abstract")
-				;;	      nil t)
-				;;	     (match-string-no-properties 1 nil)
-				;;					   " "))))))))
+				       ;; FIXME: the below regex is with an efficiency problem
+;;				       (with-temp-buffer
+;;					 (insert-file-contents file)
+;;					 (goto-char (point-min))
+;;					 (if (re-search-forward
+;;					      (concat
+;;					       "#\\+begin_abstract\\("
+;;					       "\\(.\\|\n\\|\t\\)*"
+;;					       "\\)#\\+end_abstract")
+;;					      nil t)
+;;					     (match-string-no-properties 1 nil)
+;;					   " "))))))))
 				       ))))))
-					     
+
 
   (defun retrieve-tags-from-post (post)
     "Retrieve tags from a post"
@@ -412,8 +413,7 @@ The ROOT points to the directory where posts store on."
       (before org-publish-project-rewrite-theindex-inc activate)
     (create-project-directory-if-necessary)
     (write-posts-to-tag-inc)
-    (rewrite-theindex-inc)
-    )
+    (rewrite-theindex-inc))
 
   (defadvice org-publish-project
       (after org-publish-project-rename-theindex-to-index activate)
@@ -423,8 +423,7 @@ The ROOT points to the directory where posts store on."
       (before org-publish-projects-rewrite-theindex-inc activate)
     (create-project-directory-if-necessary)
     (write-posts-to-tag-inc)
-    (rewrite-theindex-inc)
-    )
+    (rewrite-theindex-inc))
 
   (defadvice org-publish-projects
       (after org-publish-projects-rename-theindex-to-index activate)
