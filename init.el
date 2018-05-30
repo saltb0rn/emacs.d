@@ -184,7 +184,7 @@
 
   (setq files-path (concat project-path "files/"))
 
-  (setq publish-path (concat project-path "publish/"))
+  (setq publish-path (concat project-path "site/"))
 
   (use-package simple-httpd
     :ensure t
@@ -490,6 +490,7 @@ if(/superloopy\.io/.test(window.location.hostname)) {
       :base-extension "org"
       :publishing-directory ,publish-path
       :publishing-function org-html-publish-to-html
+      :html-head-extra "<link rel=\"stylesheet\" type=\"text/css\" href=\"../../../css/index.css\"/>\n"
       :recursive t
       :exclude "publish")
      ("about"
