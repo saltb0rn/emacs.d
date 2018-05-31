@@ -288,10 +288,11 @@ string consisting of url and title of org-file"
 	  res)
       (dolist (file files res)
 	(setq res (add-to-list 'res (format "[[file:%s][%s]]"
-				       (replace-regexp-in-string
-					"\\.org"
-					".html"
-					(file-relative-name file project-path))
+				       (url-encode-url
+					(replace-regexp-in-string
+					 "\\.org"
+					 ".html"
+					 (file-relative-name file project-path))
 				       (read-option-from-post
 					file "TITLE" (file-name-base file))
 				       ;; FIXME: the below regex is with an efficiency problem
@@ -374,9 +375,10 @@ The ROOT points to the directory where posts store on."
 	       (mapconcat
 		#'(lambda (tag)
 		    (format "- [[file:%s][%s]]"
-			    (file-relative-name
-			     (concat tags-path tag ".html")
-			     project-path)
+			    (url-encode-url
+			     (file-relative-name
+			      (concat tags-path tag ".html")
+			      project-path))
 			    tag))
 		(tag-list posts-path)
 		"\n"))
@@ -386,7 +388,7 @@ The ROOT points to the directory where posts store on."
 	 (mapconcat
 	  #'(lambda (post)
 	      (format "- [[file:%s][%s]]"
-		      (file-relative-name post tags-path)
+		      (url-encode-url (file-relative-name post tags-path))
 		      (read-option-from-post
 		       post "TITLE" (file-name-base post))))
 	  (cadr (assoc tag grouped-posts)) "\n")
@@ -483,7 +485,7 @@ if(/superloopy\.io/.test(window.location.hostname)) {
       :base-extension "js\\|css\\|png\\|jpg\\|pdf"
       :publishing-directory ,publish-path
       :publishing-function org-publish-attachment
-      :exclude "publish"
+      :exclude "site"
       :recursive t)
      ("home"
       :base-directory ,project-path
@@ -492,20 +494,20 @@ if(/superloopy\.io/.test(window.location.hostname)) {
       :publishing-function org-html-publish-to-html
       :html-head-extra "<link rel=\"stylesheet\" type=\"text/css\" href=\"../../../css/index.css\"/>\n"
       :recursive t
-      :exclude "publish")
+      :exclude "site")
      ("about"
       :base-directory ,(concat project-path "about/")
       :base-extension "org"
       :publishing-directory ,(concat publish-path "about/")
       :publishing-function org-html-publish-to-html
       :recursive t
-      :exclude "publish")
+      :exclude "site")
      ("posts"
       :base-directory ,posts-path; ,(concat project-path "posts/")
       :makeindex t
       :publishing-directory ,(concat publish-path "posts/")
       :publishing-function org-html-publish-to-html
-      :exclude "publish"
+      :exclude "site"
       :recursive t)
      ("tags"
       :base-directory ,tags-path ; ,(concat project-path "tags/")
@@ -513,15 +515,15 @@ if(/superloopy\.io/.test(window.location.hostname)) {
       :publishing-directory ,(concat publish-path "tags/")
       :publishing-function org-html-publish-to-html
       :recursive t
-      :exclude "publish")
+      :exclude "site")
      ("files"
       :base-directory ,files-path
       :base-extension "js\\|css\\|png\\|jpg\\|pdf"
       :publishing-directory ,(concat publish-path "files/")
       :publishing-function org-publish-attachment
-      :exclude "publish"
+      :exclude "site"
       :recursive t)
-     ("DarkSalt" :components ("static" "home" "about" "posts")))))
+     ("DarkSalt" :components ("static" "home" "about" "posts" "tags")))))
 
 (use-package elpy
   :ensure t
