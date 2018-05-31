@@ -483,7 +483,7 @@ if(/superloopy\.io/.test(window.location.hostname)) {
       :base-extension "js\\|css\\|png\\|jpg\\|pdf"
       :publishing-directory ,publish-path
       :publishing-function org-publish-attachment
-      :exclude "publish"
+      :exclude "site"
       :recursive t)
      ("home"
       :base-directory ,project-path
@@ -492,20 +492,21 @@ if(/superloopy\.io/.test(window.location.hostname)) {
       :publishing-function org-html-publish-to-html
       :html-head-extra "<link rel=\"stylesheet\" type=\"text/css\" href=\"../../../css/index.css\"/>\n"
       :recursive t
-      :exclude "publish")
+      :exclude "site")
      ("about"
       :base-directory ,(concat project-path "about/")
       :base-extension "org"
       :publishing-directory ,(concat publish-path "about/")
       :publishing-function org-html-publish-to-html
       :recursive t
-      :exclude "publish")
+      :exclude "site")
      ("posts"
       :base-directory ,posts-path; ,(concat project-path "posts/")
       :makeindex t
+      :base-extension "org"
       :publishing-directory ,(concat publish-path "posts/")
       :publishing-function org-html-publish-to-html
-      :exclude "publish"
+      ;; :exclude "publish"
       :recursive t)
      ("tags"
       :base-directory ,tags-path ; ,(concat project-path "tags/")
@@ -513,15 +514,15 @@ if(/superloopy\.io/.test(window.location.hostname)) {
       :publishing-directory ,(concat publish-path "tags/")
       :publishing-function org-html-publish-to-html
       :recursive t
-      :exclude "publish")
+      :exclude "site")
      ("files"
       :base-directory ,files-path
       :base-extension "js\\|css\\|png\\|jpg\\|pdf"
       :publishing-directory ,(concat publish-path "files/")
       :publishing-function org-publish-attachment
-      :exclude "publish"
+      :exclude "site"
       :recursive t)
-     ("DarkSalt" :components ("static" "home" "about" "posts")))))
+     ("DarkSalt" :components ("static" "home" "about" "posts" "files")))))
 
 (use-package elpy
   :ensure t
