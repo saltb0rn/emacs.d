@@ -290,8 +290,7 @@ string consisting of url and title of org-file"
 	(setq res (add-to-list 'res (format "[[file:%s][%s]]"
 					    (url-encode-url
 					     (replace-regexp-in-string
-					      "\\.org"
-					      ".html"
+					      "\\.org" ".html"
 					      (file-relative-name file project-path)))
 					    (read-option-from-post
 					     file "TITLE" (file-name-base file))
