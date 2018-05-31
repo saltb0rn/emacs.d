@@ -288,12 +288,13 @@ string consisting of url and title of org-file"
 	  res)
       (dolist (file files res)
 	(setq res (add-to-list 'res (format "[[file:%s][%s]]"
-				       (replace-regexp-in-string
-					"\\.org"
-					".html"
-					(file-relative-name file project-path))
-				       (read-option-from-post
-					file "TITLE" (file-name-base file))
+					    (url-encode-url
+					     (replace-regexp-in-string
+					      "\\.org"
+					      ".html"
+					      (file-relative-name file project-path)))
+					    (read-option-from-post
+					     file "TITLE" (file-name-base file))
 				       ;; FIXME: the below regex is with an efficiency problem
 ;;				       (with-temp-buffer
 ;;					 (insert-file-contents file)
@@ -374,9 +375,10 @@ The ROOT points to the directory where posts store on."
 	       (mapconcat
 		#'(lambda (tag)
 		    (format "- [[file:%s][%s]]"
-			    (file-relative-name
-			     (concat tags-path tag ".html")
-			     project-path)
+			    (url-encode-url
+			     (file-relative-name
+			      (concat tags-path tag ".html")
+			      project-path))
 			    tag))
 		(tag-list posts-path)
 		"\n"))
@@ -386,7 +388,7 @@ The ROOT points to the directory where posts store on."
 	 (mapconcat
 	  #'(lambda (post)
 	      (format "- [[file:%s][%s]]"
-		      (file-relative-name post tags-path)
+		      (url-encode-url (file-relative-name post tags-path))
 		      (read-option-from-post
 		       post "TITLE" (file-name-base post))))
 	  (cadr (assoc tag grouped-posts)) "\n")
