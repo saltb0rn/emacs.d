@@ -507,7 +507,7 @@ if(/superloopy\.io/.test(window.location.hostname)) {
       :base-extension "org"
       :publishing-directory ,(concat publish-path "posts/")
       :publishing-function org-html-publish-to-html
-      ;; :exclude "publish"
+      ;; :exclude "publish"  this setting will stop org to compile all posts, so commented it out.
       :recursive t)
      ("tags"
       :base-directory ,tags-path ; ,(concat project-path "tags/")
