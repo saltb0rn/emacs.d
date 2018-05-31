@@ -523,7 +523,8 @@ if(/superloopy\.io/.test(window.location.hostname)) {
       :publishing-function org-publish-attachment
       :exclude "site"
       :recursive t)
-     ("DarkSalt" :components ("static" "home" "about" "posts" "files")))))
+     ("DarkSalt" :components ("static" "home" "about" "posts" "files" "tags")))))
+
 
 (use-package elpy
   :ensure t
