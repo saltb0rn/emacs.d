@@ -51,14 +51,15 @@
 (tool-bar-mode -1)
 (menu-bar-mode -1)
 (scroll-bar-mode -1)
-(blink-cursor-mode)
+(blink-cursor-mode 0)
+(display-battery-mode 1)
 
 ;; Disable startup screen
 (setq inhibit-startup-screen t)
 
 ;; `(global-linum-mode)' will hang out emacs when use `doc-view-mode', so stop it.
 
-;; revert buffers automaticaly when underlying files are changed externally
+;; revert buffers automatically when underlying files are changed externally
 (global-auto-revert-mode t)
 
 (prefer-coding-system 'utf-8)
@@ -86,6 +87,12 @@
 (unless (file-exists-p custom-file)
   (write-region "" "" custom-file))
 (load custom-file)
+
+;; Load additional files for reading
+(and load-file-name
+     (let ((load-extras-path (concat (file-name-directory load-file-name) "load-extras.el")))
+       (unless (file-exists-p load-extras-path) (write-region "" "" load-extras-path))
+       (load load-extras-path)))
 
 ;;-----------------------------------------------------------------------------
 
