@@ -377,7 +377,9 @@ The ROOT points to the directory where posts store on."
     (let ((grouped-posts (group-posts-by-tags posts-path))
 	  (tags (tag-list posts-path)))
       (write-region
-       (format "#+TITLE: TAGS\n\n%s"
+       (format "
+#+TITLE: TAGS\n
+#+HTML_HEAD_EXTRA:<link rel=\"stylesheet\" type=\"text/css\" href=\"../../../css/tags.css\"/>\n\n%s"
 	       (mapconcat
 		#'(lambda (tag)
 		    (format "- [[file:%s][%s]]"
@@ -509,7 +511,7 @@ if(/superloopy\.io/.test(window.location.hostname)) {
       :recursive t
       :exclude "site")
      ("posts"
-      :base-directory ,posts-path; ,(concat project-path "posts/")
+      :base-directory ,posts-path
       :makeindex t
       :base-extension "org"
       :publishing-directory ,(concat publish-path "posts/")
@@ -517,11 +519,11 @@ if(/superloopy\.io/.test(window.location.hostname)) {
       ;; :exclude "publish"  this setting will stop org to compile all posts, so commented it out.
       :recursive t)
      ("tags"
-      :base-directory ,tags-path ; ,(concat project-path "tags/")
+      :base-directory ,tags-path
       :base-extension "org"
       :publishing-directory ,(concat publish-path "tags/")
       :publishing-function org-html-publish-to-html
-      :recursive t
+      :html-head-extra "<link rel=\"stylesheet\" type=\"text/css\" href=\"../../../css/tags.css\"/>\n"        :recursive t
       :exclude "site")
      ("files"
       :base-directory ,files-path
@@ -551,9 +553,13 @@ if(/superloopy\.io/.test(window.location.hostname)) {
 		  (progn
 		    (highlight-indentation-mode 0)
 		    (message "Turn the highlight-indentation-mode off")))))
-  (setq python-shell-interpreter "python3"
+  (setq python-shell-interpreter "jupyter"
+	python-shell-interpreter-args "console --simple-prompt"
+	python-shell-prompt-detect-failure-warning nil
 	elpy-rpc-backend "jedi"
 	elpy-rpc-python-command "python3")
+  (add-to-list 'python-shell-completion-native-disabled-interpreters
+	       "jupyter")
   (elpy-enable))
 
 (use-package geiser
