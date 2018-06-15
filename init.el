@@ -160,7 +160,99 @@
   :ensure t
   :config
   (setq fic-highlighted-words
-	(quote ("FIXME" "TODO" "BUG" "NOTE" "FIXED"))))
+	(quote ("FIXME" "TODO" "BUG" "NOTE" "FIXED")))
+
+  (defvar fic-jump-buffer "*Fic-Jump*"
+  "The buffer jump from")
+
+  (defun fic--keyword-positions (&optional buffer limit)
+  "Return the LIMIT positions of keywords in BUFFER."
+  (with-current-buffer (or buffer (current-buffer))
+    (save-excursion
+      (save-match-data
+	(let (pos)
+	  (goto-char (point-min))
+	  (while (re-search-forward (fic-search-re) limit t)
+	    (pcase (match-data)
+	      (`(,s ,e . ,_)
+	       (when (eq (get-char-property s 'face) 'fic-face)
+		 (add-to-list 'pos e)))))
+	  (reverse pos))))))
+
+  (defun fic--content-in-line-in-position (marker)
+  "Return the content in line in location MARKER."
+  (let ((frombuf (marker-buffer marker))
+	(pos (marker-position marker)))
+    (if (not (buffer-live-p frombuf))
+	(message "Buffer %s is not alive"  (buffer-name frombuf))
+      (with-current-buffer frombuf
+	(goto-line (line-number-at-pos pos))
+	(buffer-substring (line-beginning-position) (line-end-position))))))
+
+  (defun fic--lineno-in-position (marker)
+    "Return line number in MARKER."
+    (let ((buf (marker-buffer marker))
+	  (pos (marker-position marker)))
+      (if (not (buffer-live-p buf))
+	  (message "Buffer %s is not alive" (buffer-name frombuf))
+	(with-current-buffer buf
+	  (line-number-at-pos pos)))))
+
+  (defun fic--jump-to (marker)
+    "Jump to the MARKER."
+    (let ((tobuf (marker-buffer marker))
+	  (pos (marker-position marker)))
+      (if (not (buffer-live-p tobuf))
+	  (message "Buffer %s is not alive" (buffer-name tobuf))
+	(progn
+	  (switch-to-buffer tobuf)
+	  (goto-char pos)))))
+
+  (defun fic--append-line-to-buffer (&optional buffer)
+    "Append the lines where keywords located in to BUFFER.
+By default, BUFFER is named \"*Fic-Jump*\"."
+    (let* ((oldbuf (current-buffer))
+	   (newbuf (get-buffer-create (or buffer fic-jump-buffer)))
+	   (markers (fic--keyword-positions oldbuf)))
+      (if (with-current-buffer oldbuf
+	    (bound-and-true-p fic-mode))
+	  (progn
+	    (with-current-buffer newbuf
+	      (let ((inhibit-read-only t))
+		(dolist (marker markers)
+		  (let ((beg (point)))
+		    (insert (format "Visit" (fic--content-in-line-in-position marker)))
+		    (make-text-button
+		     beg (point)
+		     'follow-link t
+		     ;;		   'face '(:underline nil)
+		     'mouse-face 'highlight
+		     'help-echo "Click to visit it in other window"
+		     'action ((lambda (mkr)
+				(lambda (x)
+				  (let ((inhibit-read-only t)) (erase-buffer))
+				  (fic--jump-to mkr))) marker)))
+		  (insert " ")
+		  (insert (format "Buffer: %s  "(buffer-name (marker-buffer marker))))
+		  (insert (format "Line: %s " (fic--lineno-in-position marker)))
+		  (insert (format "%s " (fic--content-in-line-in-position marker)))
+		  (insert "\n"))))
+	    (view-buffer (get-buffer newbuf)))
+	(message "The fic-mode is disabled in this buffer."))))
+
+  (defun fic-jump (&optional buffer)
+    "Jump to where keyword located in.
+BUFFER is the buffer to list the lines where keywords located in."
+    (interactive)
+    (let ((bufs (buffer-list))
+	  (buffer (get-buffer-create (or buffer fic-jump-buffer))))
+      (with-current-buffer buffer
+	(let ((inhibit-read-only t))
+	  (erase-buffer)))
+      (dolist (buf bufs)
+	(with-current-buffer buf
+	  (when fic-mode
+	    (fic--append-line-to-buffer buffer)))))))
 
 (use-package rainbow-delimiters
   :ensure t)
