@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 ;; I put all configurations into a single file and `use-package' to configure packages.
 
 (require 'package)
