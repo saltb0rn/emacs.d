@@ -255,6 +255,11 @@ BUFFER is the buffer to list the lines where keywords located in."
 	  (when fic-mode
 	    (fic--append-line-to-buffer buffer)))))))
 
+(use-package helm
+  :ensure t
+  :config
+  (helm-mode 1))
+
 (use-package rainbow-delimiters
   :ensure t)
 
