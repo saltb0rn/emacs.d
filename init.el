@@ -355,9 +355,7 @@ the `org-capture-templates'. "
 #+begin_abstract
 %^{Abstract}
 #+end_abstract
-#+begin_content
 %?
-#+end_content
 "))
 
   (defun read-option-from-post (post option &optional default)
