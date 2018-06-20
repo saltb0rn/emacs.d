@@ -392,27 +392,24 @@ string consisting of url and title of org-file"
     (let ((files (retrieve-posts root))
 	  res)
       (dolist (file files res)
-	(setq res (add-to-list 'res (format "[[file:%s][%s]]"
+	(setq res (add-to-list 'res (format "[[file:%s][%s]]%s"
 					    (url-encode-url
 					     (replace-regexp-in-string
 					      "\\.org" ".html"
 					      (file-relative-name file project-path)))
 					    (read-option-from-post
 					     file "TITLE" (file-name-base file))
-				       ;; FIXME: the below regex is with an efficiency problem
-;;				       (with-temp-buffer
-;;					 (insert-file-contents file)
-;;					 (goto-char (point-min))
-;;					 (if (re-search-forward
-;;					      (concat
-;;					       "#\\+begin_abstract\\("
-;;					       "\\(.\\|\n\\|\t\\)*"
-;;					       "\\)#\\+end_abstract")
-;;					      nil t)
-;;					     (match-string-no-properties 1 nil)
-;;					   " "))))))))
-				       ))))))
-
+					    (with-temp-buffer
+					      (insert-file-contents file)
+					      (goto-char (point-min))
+					      (if (re-search-forward
+						   (concat
+						    "#\\+begin_abstract\\("
+						    "[[:ascii:][:nonascii:]]*"
+						    "\\)#\\+end_abstract")
+						   nil t)
+						  (match-string-no-properties 1 nil)
+						""))))))))
 
   (defun retrieve-tags-from-post (post)
     "Retrieve tags from a post"
