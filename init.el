@@ -747,4 +747,14 @@ if(/superloopy\.io/.test(window.location.hostname)) {
 (use-package restart-emacs
   :ensure t)
 
+(use-package eshell
+  :config
+  ;; Pay attention please, "C-q C-c Ret" is the way to
+  ;; kill the executing process in eshell.
+  (use-package em-smart)
+  (setq eshell-where-to-jump 'begin)
+  (setq eshell-review-quick-commands nil)
+  (setq eshell-smart-space-goes-to-end t)
+  (define-key global-map (kbd "C-c t") #'eshell))
+
 (provide 'init)
