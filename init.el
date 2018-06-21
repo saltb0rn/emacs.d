@@ -95,6 +95,20 @@
        (unless (file-exists-p load-extras-path) (write-region "" "" load-extras-path))
        (load load-extras-path)))
 
+
+;; Restart Emacs
+;; https://emacs.stackexchange.com/questions/5428/restart-emacs-from-within-emacs/5446#5446?newreg=d67eacb8fb3849b28a1cd89ac1769461
+;; There is a package name restart-emacs, use it instead
+;;(defun launch-separate-emacs ()
+;;  (if (display-graphic-p)
+;;      (call-process "sh" nil nil nil "-c" "emacs &")
+;;    (suspend-emacs "fg; emacs -nw")))
+
+;;(defun restart-emacs ()
+;;  (interactive)
+;;  (add-hook kill-emacs-hook #'launch-separate-emacs t)
+;;  (save-buffers-kill-emacs))
+
 ;;-----------------------------------------------------------------------------
 
 ;; third-party packages configuration
@@ -729,5 +743,8 @@ if(/superloopy\.io/.test(window.location.hostname)) {
   :bind
   (("M-j" . pyim-convert-code-at-point) ;与 pyim-probe-dynamic-english 配合
    ("C-;" . pyim-delete-word-from-personal-buffer)))
+
+(use-package restart-emacs
+  :ensure t)
 
 (provide 'init)
