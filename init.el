@@ -25,6 +25,8 @@
 (set-frame-parameter (selected-frame) 'alpha '(85 85))
 (add-to-list 'default-frame-alist '(alpha 85 85))
 
+(setq debug-on-error t)
+
 ;; Always load newest byte code
 (setq load-prefer-newer t)
 
@@ -283,6 +285,7 @@ BUFFER is the buffer to list the lines where keywords located in."
 (use-package org
   :ensure t
   :config
+  (use-package htmlize)
   (use-package ox)
   (use-package org-capture)
 
@@ -745,6 +748,9 @@ if(/superloopy\.io/.test(window.location.hostname)) {
    ("C-;" . pyim-delete-word-from-personal-buffer)))
 
 (use-package restart-emacs
+  :ensure t)
+
+(use-package undo-tree
   :ensure t)
 
 (use-package eshell
