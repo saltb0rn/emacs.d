@@ -29,7 +29,8 @@
 (set-frame-parameter (selected-frame) 'alpha '(85 85))
 (add-to-list 'default-frame-alist '(alpha 85 85))
 
-(setq debug-on-error t)
+;; (setq debug-on-error t)
+;; use `toggle-debug-on-error' instead
 
 ;; Always load newest byte code
 (setq load-prefer-newer t)
@@ -60,6 +61,9 @@
 (scroll-bar-mode -1)
 (blink-cursor-mode 0)
 (display-battery-mode 1)
+
+;; `y-or-n-p' is more convenience than `yes-or-no-p'
+(fset 'yes-or-no-p 'y-or-n-p)
 
 ;; Disable startup screen
 (setq inhibit-startup-screen t)
@@ -296,6 +300,10 @@ BUFFER is the buffer to list the lines where keywords located in."
   (use-package cl)
   (use-package dash)
   (use-package ht :ensure t)
+  (use-package plantuml-mode
+    :ensure t
+    :config
+    (setq org-plantuml-jar-path "~/.plantuml.jar"))
 
   (add-hook 'org-mode-hook #'flyspell-mode)
 
@@ -587,12 +595,11 @@ The ROOT points to the directory where posts store on."
       (message "Renamed %s to %s" old-index new-index)))
 
   (defun rewrite-theindex-inc ()
-    ;; FIXME: This function seems to have a bug
     "Rewrite theindex.inc in `project-path'"
       (write-region
        (mapconcat
 	#'(lambda (str) (format "*** %s\n\t" str))
-	(auto-generate-post-list posts-path) ; The bug come from this expression
+	(auto-generate-post-list posts-path)
 	"\n")
        nil
        (concat project-path "theindex.inc")))
