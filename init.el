@@ -391,6 +391,7 @@ BUFFER is the buffer to list the lines where keywords located in."
       :base-extension "js\\|css\\|png\\|jpg\\|pdf"
       :publishing-directory ,publish-path
       :publishing-function org-publish-attachment
+      :exclude "site"
       :recursive t)
      ("home"
       :base-directory ,project-path
@@ -400,19 +401,21 @@ BUFFER is the buffer to list the lines where keywords located in."
       :html-head-extra "<link rel=\"stylesheet\" type=\"text/css\" href=\"../../../css/index.css\"/>\n"
       :recursive t
       :html-postamble-format ,(ht-get postabmles 'default)
-      :exclude "site" "drafts")
+      :exclude "site")
      ("about"
       :base-directory ,(concat project-path "about/")
       :base-extension "org"
       :publishing-directory ,(concat publish-path "about/")
       :publishing-function org-html-publish-to-html
-      :recursive t)
+      :recursive t
+      :exclude "site")
      ("posts"
       :base-directory ,posts-path
       :makeindex t
       :base-extension "org"
       :publishing-directory ,(concat publish-path "posts/")
       :publishing-function org-html-publish-to-html
+      ;; :exclude "site"  this setting will stop org to compile all posts, so commented it out.
       :recursive t)
      ("tags"
       :base-directory ,tags-path
@@ -420,12 +423,14 @@ BUFFER is the buffer to list the lines where keywords located in."
       :publishing-directory ,(concat publish-path "tags/")
       :publishing-function org-html-publish-to-html
       :html-head-extra "<link rel=\"stylesheet\" type=\"text/css\" href=\"../../../css/tags.css\"/>\n"        :recursive t
-      :html-postamble-format ,(ht-get postabmles 'default))
+      :html-postamble-format ,(ht-get postabmles 'default)
+      :exclude "site")
      ("files"
       :base-directory ,files-path
       :base-extension "js\\|css\\|png\\|jpg\\|pdf"
       :publishing-directory ,(concat publish-path "files/")
       :publishing-function org-publish-attachment
+      :exclude "site"
       :recursive t)
      ("DarkSalt" :components ("static" "home" "about" "posts" "files" "tags")))
    )
