@@ -677,6 +677,8 @@ The ROOT points to the directory where posts store on."
   :config
   (use-package flycheck
     :ensure t)
+  (use-package python-mode
+    :ensure t)
   (add-hook 'elpy-mode-hook #'fic-mode)
   (add-hook 'elpy-mode-hook #'rainbow-delimiters-mode)
   (add-hook 'elpy-mode-hook #'flycheck-mode)
