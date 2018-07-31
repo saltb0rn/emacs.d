@@ -293,7 +293,8 @@ BUFFER is the buffer to list the lines where keywords located in."
 (use-package org
   :ensure t
   :config
-  (use-package htmlize)
+  (use-package htmlize
+    :ensure t)
   (use-package ox)
   (use-package org-capture)
 
