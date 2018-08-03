@@ -740,7 +740,10 @@ The ROOT points to the directory where posts store on."
 		"Add `company-ac-php-backend' to buffer-local version of `company-backends'."
 		(make-local-variable 'company-backends)
 		(push 'company-ac-php-backend company-backends)
-		(company-mode 1))))
+		(company-mode 1)))
+  (add-hook 'php-mode-hook
+	    #'(lambda ()
+		(define-key  php-mode-map (kbd "M-j")#'pyim-convert-code-at-point))))
 
 (use-package pyim
   :ensure t
