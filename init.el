@@ -697,6 +697,11 @@ The ROOT points to the directory where posts store on."
 	python-shell-interpreter-args "-i"
 	elpy-rpc-backend "jedi"
 	elpy-rpc-python-command "python3")
+  ;; (setq python-shell-interpreter "pipenv"
+  ;;	python-shell-interpreter-args "run python3"
+  ;;	python-shell-prompt-detect-failure-warning nil)
+  ;; (add-to-list 'python-shell-completion-native-disabled-interpreters
+  ;;	       "pipenv")
   (elpy-enable))
 
 (use-package geiser
@@ -723,7 +728,14 @@ The ROOT points to the directory where posts store on."
 ;;     ((equal nil term)
 ;;      (add-to-list 'auto-mode-alist (cons regex-pat 'racket-mode)))
 ;;     (t (setcdr (assoc regex-pat auto-mode-alist) 'racket-mode)))))
-
+(use-package php-mode
+  :ensure t
+  :config
+  (use-package smarty-mode
+    :ensure t)
+  (use-package company-php
+    :ensure t)
+  (add-hook 'php-mode-hook #'company-ac-php-backend))
 
 (use-package pyim
   :ensure t
