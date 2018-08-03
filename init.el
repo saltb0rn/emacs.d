@@ -739,7 +739,8 @@ The ROOT points to the directory where posts store on."
 	    #'(lambda ()
 		"Add `company-ac-php-backend' to buffer-local version of `company-backends'."
 		(make-local-variable 'company-backends)
-		(push 'company-ac-php-backend company-backends))))
+		(push 'company-ac-php-backend company-backends)
+		(company-mode 1))))
 
 (use-package pyim
   :ensure t
