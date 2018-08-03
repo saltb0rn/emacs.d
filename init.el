@@ -735,7 +735,11 @@ The ROOT points to the directory where posts store on."
     :ensure t)
   (use-package company-php
     :ensure t)
-  (add-hook 'php-mode-hook #'company-ac-php-backend))
+  (add-hook 'php-mode-hook
+	    #'(lambda ()
+		"Add `company-ac-php-backend' to buffer-local version of `company-backends'."
+		(make-local-variable 'company-backends)
+		(push 'company-ac-php-backend company-backends))))
 
 (use-package pyim
   :ensure t
