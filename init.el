@@ -741,6 +741,7 @@ The ROOT points to the directory where posts store on."
 		(make-local-variable 'company-backends)
 		(push 'company-ac-php-backend company-backends)
 		(company-mode 1)))
+  (add-hook 'php-mode-hook #'(lambda () (fic-mode 1)))
   (add-hook 'php-mode-hook
 	    #'(lambda ()
 		(define-key  php-mode-map (kbd "M-j")#'pyim-convert-code-at-point))))
