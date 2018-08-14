@@ -678,12 +678,14 @@ The ROOT points to the directory where posts store on."
   :config
   (use-package flycheck
     :ensure t)
-  (use-package python-mode
-    :ensure t)
+  ;; (use-package python-mode
+  ;;   :ensure t)
+  ;; this does not work properly with `hs-minor-mode'
   (add-hook 'elpy-mode-hook #'fic-mode)
   (add-hook 'elpy-mode-hook #'rainbow-delimiters-mode)
   (add-hook 'elpy-mode-hook #'flycheck-mode)
   (add-hook 'elpy-mode-hook #'flyspell-prog-mode)
+  (add-hook 'elpy-mode-hook #'hs-minor-mode)
   ;; It will be slow while you typing if the buffer size if lagger than the elpy-rpc-ignored-buffer-size
   ;; So we need to turn off the highlight-inentation-mode
   ;; Elpy own it hightlight-indentation
@@ -744,7 +746,11 @@ The ROOT points to the directory where posts store on."
   (add-hook 'php-mode-hook #'(lambda () (fic-mode 1)))
   (add-hook 'php-mode-hook
 	    #'(lambda ()
-		(define-key php-mode-map (kbd "M-j")#'pyim-convert-code-at-point))))
+		(define-key php-mode-map (kbd "M-j") #'pyim-convert-code-at-point))))
+
+(use-package hideshow
+  :config
+  (define-key hs-minor-mode-map (kbd "C-c -") #'hs-toggle-hiding))
 
 (use-package pyim
   :ensure t
