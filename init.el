@@ -453,7 +453,7 @@ publish the files in blog, vice versa."
 	  (org-html-head (ht-get html-heads 'blog))
 	  (org-html-preamble nil)
 	  (org-html-postamble t)
-	  (org-html-postamble-format (ht-get postabmles 'disqus (ht-get postabmles 'default)))
+	  ;; (org-html-postamble-format (ht-get postabmles 'disqus (ht-get postabmles 'default)))
 	  (org-html-doctype "html5")
 	  (org-html-scripts
 	   "\n<script type=\"text/javascript\">\nif(/superloopy.io/.test(window.location.hostname)) {\n  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){\n  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),\n  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)\n  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');\n  ga('create', 'UA-4113456-6', 'auto');\n  ga('send', 'pageview');\n}</script>")
@@ -744,7 +744,7 @@ The ROOT points to the directory where posts store on."
   (add-hook 'php-mode-hook #'(lambda () (fic-mode 1)))
   (add-hook 'php-mode-hook
 	    #'(lambda ()
-		(define-key  php-mode-map (kbd "M-j")#'pyim-convert-code-at-point))))
+		(define-key php-mode-map (kbd "M-j")#'pyim-convert-code-at-point))))
 
 (use-package pyim
   :ensure t
