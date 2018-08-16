@@ -360,10 +360,15 @@ BUFFER is the buffer to list the lines where keywords located in."
   ;;    |- img/
   ;;    `- css/
 
+  (defun postamble-dispatcher (scheme)
+    (cadar
+     (ht-get postambles scheme
+	     (ht-get postambles 'default))))
+
   (setq
    disqus-shortname "darksalt-me"
 
-   postabmles (ht
+   postambles (ht
 	       ('default
 		 '(("en" "<p class=\"author\">Author: %a (%e)</p>\n<p class=\"date\">Date: %d</p>\n<p class=\"creator\">%c</p>\n<p class=\"validation\">%v</p>")))
 	       ('disqus
@@ -401,13 +406,14 @@ BUFFER is the buffer to list the lines where keywords located in."
       :publishing-function org-html-publish-to-html
       :html-head-extra "<link rel=\"stylesheet\" type=\"text/css\" href=\"../../../css/index.css\"/>\n"
       :recursive t
-      :html-postamble-format ,(ht-get postabmles 'default)
+      :html-postamble ,(postamble-dispatcher 'default)
       :exclude "site")
      ("about"
       :base-directory ,(concat project-path "about/")
       :base-extension "org"
       :publishing-directory ,(concat publish-path "about/")
       :publishing-function org-html-publish-to-html
+      :html-postamble ,(postamble-dispatcher 'disqus)
       :recursive t
       :exclude "site")
      ("posts"
@@ -416,6 +422,7 @@ BUFFER is the buffer to list the lines where keywords located in."
       :base-extension "org"
       :publishing-directory ,(concat publish-path "posts/")
       :publishing-function org-html-publish-to-html
+      :html-postamble ,(postamble-dispatcher 'disqus)
       ;; :exclude "site"  this setting will stop org to compile all posts, so commented it out.
       :recursive t)
      ("tags"
@@ -423,8 +430,9 @@ BUFFER is the buffer to list the lines where keywords located in."
       :base-extension "org"
       :publishing-directory ,(concat publish-path "tags/")
       :publishing-function org-html-publish-to-html
-      :html-head-extra "<link rel=\"stylesheet\" type=\"text/css\" href=\"../../../css/tags.css\"/>\n"        :recursive t
-      :html-postamble-format ,(ht-get postabmles 'default)
+      :html-head-extra "<link rel=\"stylesheet\" type=\"text/css\" href=\"../../../css/tags.css\"/>\n"
+      :recursive t
+      :html-postamble ,(postamble-dispatcher 'default)
       :exclude "site")
      ("files"
       :base-directory ,files-path
@@ -452,11 +460,7 @@ publish the files in blog, vice versa."
 	  (org-html-home/up-format (ht-get home/up-formats 'blog))
 	  (org-html-head (ht-get html-heads 'blog))
 	  (org-html-preamble nil)
-	  (org-html-postamble t)
-	  ;; (org-html-postamble-format (ht-get postabmles 'disqus (ht-get postabmles 'default)))
 	  (org-html-doctype "html5")
-	  (org-html-scripts
-	   "\n<script type=\"text/javascript\">\nif(/superloopy.io/.test(window.location.hostname)) {\n  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){\n  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),\n  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)\n  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');\n  ga('create', 'UA-4113456-6', 'auto');\n  ga('send', 'pageview');\n}</script>")
 	  (org-html-link-home "/")
 	  (org-html-link-up "/")
 	  (org-export-with-toc nil)
