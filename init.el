@@ -282,7 +282,14 @@ BUFFER is the buffer to list the lines where keywords located in."
 (use-package helm
   :ensure t
   :config
-  (helm-mode 1))
+  (helm-mode 1)
+  (defadvice helm-etags-select (around unlimited-candidate-number
+				       activate)
+    "Set `helm-candidate-number-limit' to nil while calling ’helm-etags-select’.
+So that entire list of result will be showed."
+    (interactive
+     (let ((helm-candidate-number-limit nil))
+       (call-interactively (ad-get-orig-definition 'helm-etags-select))))))
 
 (use-package rainbow-delimiters
   :ensure t)
@@ -436,7 +443,7 @@ BUFFER is the buffer to list the lines where keywords located in."
       :exclude "site")
      ("files"
       :base-directory ,files-path
-      :base-extension "js\\|css\\|png\\|jpg\\|pdf"
+      :base-extension "js\\|css\\|png\\|jpg\\|pdf\\|jpeg"
       :publishing-directory ,(concat publish-path "files/")
       :publishing-function org-publish-attachment
       :exclude "site"
@@ -820,5 +827,14 @@ The ROOT points to the directory where posts store on."
   (setq eshell-review-quick-commands nil)
   (setq eshell-smart-space-goes-to-end t)
   (define-key global-map (kbd "C-c t") #'eshell))
+
+(use-package etags
+  :config
+  ;; TODO: use `helm-etags-select' to navigate tags
+  )
+
+(use-package realgud
+  :ensure t
+  :config)
 
 (provide 'init)
