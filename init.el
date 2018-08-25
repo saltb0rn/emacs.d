@@ -311,7 +311,21 @@ So that entire list of result will be showed."
   (use-package plantuml-mode
     :ensure t
     :config
-    (setq org-plantuml-jar-path "~/.plantuml.jar")
+    ;; On Debian/Ubuntu it's necessary to install graphviz
+    (add-to-list 'auto-mode-alist '("\\.uml\\'" . plantuml-mode))
+    (setq org-plantuml-jar-path "~/plantuml.jar")
+    (defun plantuml-export (&optional format)
+      (interactive)
+      (when (not (equal major-mode 'plantuml-mode))
+	(user-error "Please run in plantuml-mode"))
+      (let* ((format (or format "png"))
+	     (res (shell-command
+		   (concat "java -jar "
+			   org-plantuml-jar-path " -t" "png"
+			   " " (buffer-file-name)))))
+	(if (not (equal 0 res))
+	    (message "Export failed")
+	  (message "Export successful"))))
     (require 'ob-plantuml))
 
   (add-hook 'org-mode-hook #'flyspell-mode)
