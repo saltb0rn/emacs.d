@@ -65,6 +65,9 @@
 ;; `y-or-n-p' is more convenience than `yes-or-no-p'
 (fset 'yes-or-no-p 'y-or-n-p)
 
+;; `eval-last-sexp' replaced by `pp-eval-last-sexp'
+(fset 'eval-last-sexp 'pp-eval-last-sexp)
+
 ;; Disable startup screen
 (setq inhibit-startup-screen t)
 
@@ -72,6 +75,8 @@
 
 ;; revert buffers automatically when underlying files are changed externally
 (global-auto-revert-mode t)
+
+(show-paren-mode 1)
 
 (prefer-coding-system 'utf-8)
 (set-default-coding-systems 'utf-8)
@@ -148,6 +153,9 @@
 	    #'(lambda ()
 		(rainbow-delimiters-mode t)))
   (add-hook 'lisp-interaction-mode-hook
+	    #'(lambda ()
+		(hs-minor-mode 1)))
+  (add-hook 'lisp-interaction-mode-hook
 	    #'(lambda () (fic-mode t)))
   (add-hook 'lisp-interaction-mode-hook
 	    #'flyspell-prog-mode)
@@ -178,6 +186,9 @@
   :config
   (if (null (assoc "\\.html\\?'" auto-mode-alist))
       (add-to-list 'auto-mode-alist (cons "\\.html?\\'" 'web-mode)))
+  (add-hook 'web-mode-hook
+	    #'(lambda ()
+		(hs-minor-mode 1)))
   (setq web-mode-enable-auto-closing t
 	web-mode-enable-auto-pairing t))
 
@@ -710,7 +721,7 @@ The ROOT points to the directory where posts store on."
   (add-hook 'elpy-mode-hook #'rainbow-delimiters-mode)
   (add-hook 'elpy-mode-hook #'flycheck-mode)
   (add-hook 'elpy-mode-hook #'flyspell-prog-mode)
-  (add-hook 'elpy-mode-hook #'hs-minor-mode)
+  (add-hook 'elpy-mode-hook #'(lambda () (hs-minor-mode 1)))
   ;; It will be slow while you typing if the buffer size if lagger than the elpy-rpc-ignored-buffer-size
   ;; So we need to turn off the highlight-inentation-mode
   ;; Elpy own it hightlight-indentation
@@ -769,6 +780,7 @@ The ROOT points to the directory where posts store on."
 		(push 'company-ac-php-backend company-backends)
 		(company-mode 1)))
   (add-hook 'php-mode-hook #'(lambda () (fic-mode 1)))
+  (add-hook 'php-mode-hook #'(lambda () (hs-minor-mode 1)))
   (add-hook 'php-mode-hook
 	    #'(lambda ()
 		(define-key php-mode-map (kbd "M-j") #'pyim-convert-code-at-point))))
@@ -845,10 +857,34 @@ The ROOT points to the directory where posts store on."
 (use-package etags
   :config
   ;; TODO: use `helm-etags-select' to navigate tags
+  ;; (shell-command
+  ;;  (string-join
+  ;;   (list "ctags" "-e" "-f" tag-path "-L" buffer-file-name)) " ")
+  ;; TODO: find the way to check if the major-mode is derived from another major-mode.
+  ;; (derived-mode-p
   )
 
 (use-package realgud
   :ensure t
   :config)
+
+(use-package desktop
+  :config
+  ;; to save session and kill the buffers which start with and end with '*'
+  (add-hook 'desktop-save-hook
+	    #'(lambda ()
+		(add-hook 'kill-emacs-hook
+			  #'(lambda ()
+			       (mapcar
+				#'(lambda (buf)
+				    (or
+				     (and (string-match-p
+					   "\\*[[:ascii:][:nonascii:]]+?\\*" (buffer-name buf))
+					  (and (buffer-live-p buf) (kill-buffer buf)))
+				     nil))
+				(buffer-list))))))
+  (setq
+   desktop-save t)
+  (desktop-save-mode 1))
 
 (provide 'init)
