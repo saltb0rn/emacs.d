@@ -871,18 +871,20 @@ The ROOT points to the directory where posts store on."
 (use-package desktop
   :config
   ;; to save session and kill the buffers which start with and end with '*'
-  (add-hook 'desktop-save-hook
-	    #'(lambda ()
-		(add-hook 'kill-emacs-hook
-			  #'(lambda ()
-			       (mapcar
-				#'(lambda (buf)
-				    (or
-				     (and (string-match-p
-					   "\\*[[:ascii:][:nonascii:]]+?\\*" (buffer-name buf))
-					  (and (buffer-live-p buf) (kill-buffer buf)))
-				     nil))
-				(buffer-list))))))
+  (defun kill-annoying-buffers ()
+    (add-hook 'kill-emacs-hook
+	      #'(lambda ()
+		  (mapcar
+		   #'(lambda (buf)
+		       (or
+			(and (string-match-p
+			      "\\*[[:ascii:][:nonascii:]]+?\\*" (buffer-name buf))
+			     (and (buffer-live-p buf)
+				  (kill-buffer buf))
+			     (buffer-name buf))
+			nil))
+		   (buffer-list)))))
+  (add-hook 'desktop-save-mode-hook #'kill-annoying-buffers)
   (setq
    desktop-save t)
   (desktop-save-mode 1))
