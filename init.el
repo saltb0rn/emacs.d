@@ -135,13 +135,21 @@
 
 (setq use-package-verbose t)
 
+
+;; this package would install system packages if they were missing.
+(use-package use-package-ensure-system-package
+  :disabled
+  :ensure t)
+
+;; third-party packages
+
 (use-package flycheck
   :ensure t
   :hook (elpy-mode . flycheck-mode))
 
 (use-package web-mode
   :ensure t
-  :mode "\\.html\\?'"
+  :mode ("\\.html\\?'" . web-mode)
   :config
   ;; (if (null (assoc "\\.html\\?'" auto-mode-alist))
   ;;     (add-to-list 'auto-mode-alist (cons "\\.html?\\'" 'web-mode)))
@@ -151,8 +159,6 @@
   ;;     (user-error "Don't turn on `hs-minor-mode' while using `web-mode'")))
   (setq web-mode-enable-auto-closing t
 	web-mode-enable-auto-pairing t))
-
-;; third-party packages
 
 (use-package nyan-mode
   :ensure t
@@ -172,7 +178,8 @@
   :hook (elpy-mode
 	 geiser-mode
 	 lisp-interaction-mode
-	 racket-mode)
+	 racket-mode
+	 php-mode)
   :config
   (setq fic-highlighted-words
 	(quote ("FIXME" "TODO" "BUG" "NOTE" "FIXED")))
@@ -270,6 +277,9 @@ BUFFER is the buffer to list the lines where keywords located in."
 
 (use-package helm
   :ensure t
+  :bind (("M-x" . helm-M-x)
+	 ("C-x C-f" . helm-find-files)
+	 ([f10] . helm-buffers-list))
   :config
   (helm-mode 1)
   (defadvice helm-etags-select (around unlimited-candidate-number
@@ -313,19 +323,25 @@ So that entire list of result will be showed."
 (use-package simple-httpd
   :ensure t)
 
+(use-package htmlize
+  :ensure t)
+
+(use-package dash
+  :ensure t)
+
+(use-package ht
+  :ensure t)
+
 (use-package org
   :ensure t
   :requires (htmlize
-	     ox
-	     org-capture
-	     cl
 	     dash
 	     ht
 	     simple-httpd
 	     plantuml-mode)
 
   :bind (:map global-map
-	      ("\C-cc" . org-capture))
+	      ("\C-c c" . org-capture))
   :config
 
   (setq org-export-coding-system 'utf-8
@@ -686,7 +702,8 @@ The ROOT points to the directory where posts store on."
 
 (use-package elpy
   :ensure t
-  :requires (flycheck highlight-indentation)
+  :after (flycheck
+	  highlight-indentation)
   :config
   ;; It will be slow while you typing if the buffer size if lagger than the elpy-rpc-ignored-buffer-size
   ;; So we need to turn off the highlight-inentation-mode
@@ -730,25 +747,23 @@ The ROOT points to the directory where posts store on."
       (add-to-list 'auto-mode-alist (cons regex-pat 'racket-mode)))
      (t (setcdr (assoc regex-pat auto-mode-alist) 'racket-mode)))))
 
+(use-package smarty-mode
+  :ensure t)
+
+(use-package company-php
+  :ensure t)
+
 (use-package php-mode
   :ensure t
+  :bind (:map php-mode-map
+	      ("M-j" . #'pyim-convert-code-at-point))
   :config
-  (use-package smarty-mode
-    :ensure t)
-  (use-package company-php
-    :ensure t)
   (add-hook 'php-mode-hook
 	    #'(lambda ()
 		"Add `company-ac-php-backend' to buffer-local version of `company-backends'."
 		(make-local-variable 'company-backends)
 		(push 'company-ac-php-backend company-backends)
-		(company-mode 1)))
-  (add-hook 'php-mode-hook #'(lambda () (fic-mode 1)))
-  (add-hook 'php-mode-hook #'(lambda () (hs-minor-mode 1)))
-  (add-hook 'php-mode-hook
-	    #'(lambda ()
-		(define-key php-mode-map (kbd "M-j") #'pyim-convert-code-at-point))))
-
+		(company-mode 1))))
 
 (use-package pyim
   :ensure t
@@ -853,6 +868,7 @@ The ROOT points to the directory where posts store on."
 (use-package hideshow
   :hook ((lisp-interaction-mode
 	  elpy-mode
+	  php-mode
 	  web-mode) . hs-minor-mode)
   :config
   (define-key hs-minor-mode-map (kbd "C-c -") #'hs-toggle-hiding))
@@ -862,14 +878,15 @@ The ROOT points to the directory where posts store on."
   (setq ispell-dictionary "english"))
 
 (use-package eshell
+  :init (require 'em-smart)
+  :bind (("C-c t" . eshell))
   :config
   ;; Pay attention please, "C-q C-c Ret" is the way to
   ;; kill the executing process in eshell.
-  (use-package em-smart)
-  (setq eshell-where-to-jump 'begin)
-  (setq eshell-review-quick-commands nil)
-  (setq eshell-smart-space-goes-to-end t)
-  (define-key global-map (kbd "C-c t") #'eshell))
+  ;; (define-key global-map (kbd "C-c t") #'eshell)
+  (setq eshell-where-to-jump 'begin
+	eshell-review-quick-commands nil
+	eshell-smart-space-goes-to-end t))
 
 (use-package etags
   :config
