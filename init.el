@@ -126,8 +126,7 @@
 
 ;;-----------------------------------------------------------------------------
 
-;; third-party packages configuration
-;; use `use-package' to configure
+;; use to `use-package' configure packages
 
 (unless (package-installed-p 'use-package)
   (package-install 'use-package))
@@ -136,37 +135,24 @@
 
 (setq use-package-verbose t)
 
-(use-package ispell
-  :config
-  (setq ispell-dictionary "english"))
+(use-package flycheck
+  :ensure t
+  :hook (elpy-mode . flycheck-mode))
 
-(use-package tramp
+(use-package web-mode
+  :ensure t
+  :mode "\\.html\\?'"
   :config
-  (setf (cadr (assoc 'tramp-login-args (assoc "ssh" tramp-methods)))
-	(append '(("-o" "ServerAliveInterval=60"))
-		(cadr (assoc 'tramp-login-args (assoc "ssh" tramp-methods))))))
+  ;; (if (null (assoc "\\.html\\?'" auto-mode-alist))
+  ;;     (add-to-list 'auto-mode-alist (cons "\\.html?\\'" 'web-mode)))
+  ;; (defadvice hs-minor-mode (before hs-minor-mode-banned-for-web-mode activate)
+  ;;   (interactive)
+  ;;   (when (equal major-mode 'web-mode)
+  ;;     (user-error "Don't turn on `hs-minor-mode' while using `web-mode'")))
+  (setq web-mode-enable-auto-closing t
+	web-mode-enable-auto-pairing t))
 
-(use-package lisp-mode
-  :config
-  (setcdr (assoc "\\.el\\'" auto-mode-alist) 'lisp-interaction-mode)
-  (add-hook 'lisp-interaction-mode-hook
-	    #'(lambda ()
-		(rainbow-delimiters-mode t)))
-  (add-hook 'lisp-interaction-mode-hook
-	    #'(lambda ()
-		(hs-minor-mode 1)))
-  (add-hook 'lisp-interaction-mode-hook
-	    #'(lambda () (fic-mode t)))
-  (add-hook 'lisp-interaction-mode-hook
-	    #'flyspell-prog-mode)
-  (add-hook 'lisp-interaction-mode-hook
-	  #'(lambda ()
-	      (define-key lisp-interaction-mode-map
-		(kbd "C-c C-e")
-		#'(lambda ()
-		    (interactive)
-		    (eval-buffer)
-		    (message "Buffer evaluation finished!!!!"))))))
+;; third-party packages
 
 (use-package nyan-mode
   :ensure t
@@ -181,25 +167,17 @@
   (when window-system
     (load-theme 'zenburn t)))
 
-(use-package web-mode
-  :ensure t
-  :config
-  (if (null (assoc "\\.html\\?'" auto-mode-alist))
-      (add-to-list 'auto-mode-alist (cons "\\.html?\\'" 'web-mode)))
-  (add-hook 'web-mode-hook
-	    #'(lambda ()
-		(hs-minor-mode 1)))
-  (setq web-mode-enable-auto-closing t
-	web-mode-enable-auto-pairing t))
-
 (use-package fic-mode
   :ensure t
+  :hook (elpy-mode
+	 geiser-mode
+	 lisp-interaction-mode
+	 racket-mode)
   :config
   (setq fic-highlighted-words
 	(quote ("FIXME" "TODO" "BUG" "NOTE" "FIXED")))
 
-  (defvar fic-jump-buffer "*Fic-Jump*"
-  "The buffer jump from")
+  (defvar fic-jump-buffer "*Fic-Jump*" "The buffer jump from")
 
   (defun fic--keyword-positions (&optional buffer limit)
   "Return the LIMIT positions of keywords in BUFFER."
@@ -303,64 +281,61 @@ So that entire list of result will be showed."
        (call-interactively (ad-get-orig-definition 'helm-etags-select))))))
 
 (use-package rainbow-delimiters
-  :ensure t)
+  :ensure t
+  :hook ((lisp-interaction-mode
+	  elpy-mode
+	  geiser-mode
+	  racket-mode) . rainbow-delimiters-mode))
 
 (use-package highlight-indentation
   :ensure t)
 
-(use-package org
+(use-package plantuml-mode
   :ensure t
   :config
-  (use-package htmlize
-    :ensure t)
-  (use-package ox)
-  (use-package org-capture)
+  ;; On Debian/Ubuntu it's necessary to install graphviz
+  (add-to-list 'auto-mode-alist '("\\.uml\\'" . plantuml-mode))
+  (setq org-plantuml-jar-path "~/plantuml.jar")
+  (defun plantuml-export (&optional format)
+    (interactive)
+    (when (not (equal major-mode 'plantuml-mode))
+      (user-error "Please run in plantuml-mode"))
+    (let* ((format (or format "png"))
+	   (res (shell-command
+		 (concat "java -jar "
+			 org-plantuml-jar-path " -t" "png"
+			 " " (buffer-file-name)))))
+      (if (not (equal 0 res))
+	  (message "Export failed")
+	(message "Export successful"))))
+  (require 'ob-plantuml))
 
-  (use-package cl)
-  (use-package dash)
-  (use-package ht :ensure t)
-  (use-package plantuml-mode
-    :ensure t
-    :config
-    ;; On Debian/Ubuntu it's necessary to install graphviz
-    (add-to-list 'auto-mode-alist '("\\.uml\\'" . plantuml-mode))
-    (setq org-plantuml-jar-path "~/plantuml.jar")
-    (defun plantuml-export (&optional format)
-      (interactive)
-      (when (not (equal major-mode 'plantuml-mode))
-	(user-error "Please run in plantuml-mode"))
-      (let* ((format (or format "png"))
-	     (res (shell-command
-		   (concat "java -jar "
-			   org-plantuml-jar-path " -t" "png"
-			   " " (buffer-file-name)))))
-	(if (not (equal 0 res))
-	    (message "Export failed")
-	  (message "Export successful"))))
-    (require 'ob-plantuml))
+(use-package simple-httpd
+  :ensure t)
 
-  (add-hook 'org-mode-hook #'flyspell-mode)
+(use-package org
+  :ensure t
+  :requires (htmlize
+	     ox
+	     org-capture
+	     cl
+	     dash
+	     ht
+	     simple-httpd
+	     plantuml-mode)
 
-  (setq org-export-coding-system 'utf-8)
+  :bind (:map global-map
+	      ("\C-cc" . org-capture))
+  :config
 
-  (define-key global-map "\C-cc" 'org-capture)
-
-  (setq project-path "~/Documents/DarkSalt/")
-
-  (setq posts-path (concat project-path "posts/"))
-
-  (setq tags-path (concat project-path "tags/"))
-
-  (setq files-path (concat project-path "files/"))
-
-  (setq publish-path (concat project-path "site/"))
-
-  (use-package simple-httpd
-    :ensure t
-    :config
-    (setq
-     httpd-listings nil
-     httpd-root publish-path))
+  (setq org-export-coding-system 'utf-8
+	project-path "~/Documents/DarkSalt/"
+	posts-path (concat project-path "posts/")
+	tags-path (concat project-path "tags/")
+	files-path (concat project-path "files/")
+	publish-path (concat project-path "site/")
+	httpd-listings nil
+	httpd-root publish-path)
 
   ;; `publish-all-posts' to publish
   ;; the rest of configuration of `org' is all about the blogging with Emacs.
@@ -711,17 +686,8 @@ The ROOT points to the directory where posts store on."
 
 (use-package elpy
   :ensure t
+  :requires (flycheck highlight-indentation)
   :config
-  (use-package flycheck
-    :ensure t)
-  ;; (use-package python-mode
-  ;;   :ensure t)
-  ;; this does not work properly with `hs-minor-mode'
-  (add-hook 'elpy-mode-hook #'fic-mode)
-  (add-hook 'elpy-mode-hook #'rainbow-delimiters-mode)
-  (add-hook 'elpy-mode-hook #'flycheck-mode)
-  (add-hook 'elpy-mode-hook #'flyspell-prog-mode)
-  (add-hook 'elpy-mode-hook #'(lambda () (hs-minor-mode 1)))
   ;; It will be slow while you typing if the buffer size if lagger than the elpy-rpc-ignored-buffer-size
   ;; So we need to turn off the highlight-inentation-mode
   ;; Elpy own it hightlight-indentation
@@ -749,23 +715,21 @@ The ROOT points to the directory where posts store on."
   (set-default 'geiser-active-implementations '(racket))
   (set-default 'geiser-repl-query-on-kill-p nil)
   (set-default 'geiser-repl-query-on-exit-p nil)
-  (add-hook 'geiser-mode-hook #'rainbow-delimiters-mode)
-  (add-hook 'geiser-mode-hook #'prettify-symbols-mode)
-  (add-hook 'geiser-mode-hook #'fic-mode))
+  (add-hook 'geiser-mode-hook #'prettify-symbols-mode))
 
-;;(use-package racket-mode
-;;  :ensure t
-;;  :config
-;;  ;; For racket, use this mode if you prefer drracket
-;;  (add-hook 'racket-mode-hook #'rainbow-delimiters-mode)
-;;  (add-hook 'racket-mode-hook #'prettify-symbols-mode)
-;;  (add-hook 'racket-mode-hook #'fic-mode)
-;;  (let* ((regex-pat "\\.\\(rkt\\|scm\\|ss\\)\\'")
-;;	 (term (assoc regex-pat auto-mode-alist)))
-;;    (cond
-;;     ((equal nil term)
-;;      (add-to-list 'auto-mode-alist (cons regex-pat 'racket-mode)))
-;;     (t (setcdr (assoc regex-pat auto-mode-alist) 'racket-mode)))))
+(use-package racket-mode
+  :disabled
+  :ensure t
+  :config
+  ;; For racket, use this mode if you prefer drracket
+  (add-hook 'racket-mode-hook #'prettify-symbols-mode)
+  (let* ((regex-pat "\\.\\(rkt\\|scm\\|ss\\)\\'")
+	 (term (assoc regex-pat auto-mode-alist)))
+    (cond
+     ((equal nil term)
+      (add-to-list 'auto-mode-alist (cons regex-pat 'racket-mode)))
+     (t (setcdr (assoc regex-pat auto-mode-alist) 'racket-mode)))))
+
 (use-package php-mode
   :ensure t
   :config
@@ -785,9 +749,6 @@ The ROOT points to the directory where posts store on."
 	    #'(lambda ()
 		(define-key php-mode-map (kbd "M-j") #'pyim-convert-code-at-point))))
 
-(use-package hideshow
-  :config
-  (define-key hs-minor-mode-map (kbd "C-c -") #'hs-toggle-hiding))
 
 (use-package pyim
   :ensure t
@@ -844,29 +805,11 @@ The ROOT points to the directory where posts store on."
 (use-package undo-tree
   :ensure t)
 
-(use-package eshell
-  :config
-  ;; Pay attention please, "C-q C-c Ret" is the way to
-  ;; kill the executing process in eshell.
-  (use-package em-smart)
-  (setq eshell-where-to-jump 'begin)
-  (setq eshell-review-quick-commands nil)
-  (setq eshell-smart-space-goes-to-end t)
-  (define-key global-map (kbd "C-c t") #'eshell))
-
-(use-package etags
-  :config
-  ;; TODO: use `helm-etags-select' to navigate tags
-  ;; (shell-command
-  ;;  (string-join
-  ;;   (list "ctags" "-e" "-f" tag-path "-L" buffer-file-name)) " ")
-  ;; TODO: find the way to check if the major-mode is derived from another major-mode.
-  ;; (derived-mode-p
-  )
-
 (use-package realgud
   :ensure t
   :config)
+
+;; built-in libraries
 
 (use-package desktop
   :config
@@ -888,5 +831,58 @@ The ROOT points to the directory where posts store on."
   (setq
    desktop-save t)
   (desktop-save-mode 1))
+
+(use-package flyspell
+  :hook ((elpy-mode. flyspell-prog-mode)
+	 (org-mode . flyspell-mode)))
+
+(use-package tramp
+  :config
+  (setf (cadr (assoc 'tramp-login-args (assoc "ssh" tramp-methods)))
+	(append '(("-o" "ServerAliveInterval=60"))
+		(cadr (assoc 'tramp-login-args (assoc "ssh" tramp-methods))))))
+
+(use-package lisp-interaction-mode
+  :init
+  (setcdr (assoc "\\.el\\'" auto-mode-alist) 'lisp-interaction-mode)
+  (defadvice eval-buffer (after eval-buffer-with-message activate)
+    (message "Buffer evaluation finished!!!"))
+  :bind (:map lisp-interaction-mode-map
+	      ("C-c C-e" . eval-buffer)))
+
+(use-package hideshow
+  :hook ((lisp-interaction-mode
+	  elpy-mode
+	  web-mode) . hs-minor-mode)
+  :config
+  (define-key hs-minor-mode-map (kbd "C-c -") #'hs-toggle-hiding))
+
+(use-package ispell
+  :config
+  (setq ispell-dictionary "english"))
+
+(use-package eshell
+  :config
+  ;; Pay attention please, "C-q C-c Ret" is the way to
+  ;; kill the executing process in eshell.
+  (use-package em-smart)
+  (setq eshell-where-to-jump 'begin)
+  (setq eshell-review-quick-commands nil)
+  (setq eshell-smart-space-goes-to-end t)
+  (define-key global-map (kbd "C-c t") #'eshell))
+
+(use-package etags
+  :config
+  ;; TODO: use `helm-etags-select' to navigate tags
+  (defun generate-or-update-ctags-of-current-buffer ()
+    (when (derived-mode-p 'prog-mode)
+      (shell-command
+       (string-join
+	(list "ctags" "-e" "-f" tag-path buffer-file-name) " "))))
+  ;; TODO: find the way to check if the major-mode is derived from another major-mode.
+  ;; (derived-mode-p
+  ;; TODO: find-file-hook, create ctags file
+  ;; TODO: after-save-hook, refresh ctags file
+  )
 
 (provide 'init)
