@@ -26,8 +26,8 @@
       user-mail-address "asche34@outlook.com")
 
 ;; Set transparency
-(set-frame-parameter (selected-frame) 'alpha '(85 85))
-(add-to-list 'default-frame-alist '(alpha 85 85))
+(set-frame-parameter (selected-frame) 'alpha '(90 0))
+(add-to-list 'default-frame-alist '(alpha 90 0))
 
 ;; (setq debug-on-error t)
 ;; use `toggle-debug-on-error' instead
@@ -135,10 +135,16 @@
 
 (setq use-package-verbose t)
 
+(defadvice async-shell-command (around
+				async-shell-command-ask-password
+				(command &optional output-buffer error-buffer)
+				activate)
+  (let ((default-directory "/sudo::"))
+    (funcall (ad-get-orig-definition 'async-shell-command)
+			command output-buffer error-buffer)))
 
 ;; this package would install system packages if they were missing.
 (use-package use-package-ensure-system-package
-  :disabled
   :ensure t)
 
 ;; third-party packages
@@ -283,12 +289,12 @@ BUFFER is the buffer to list the lines where keywords located in."
   :config
   (helm-mode 1)
   (defadvice helm-etags-select (around unlimited-candidate-number
+				       (reinit)
 				       activate)
     "Set `helm-candidate-number-limit' to nil while calling ’helm-etags-select’.
 So that entire list of result will be showed."
-    (interactive
-     (let ((helm-candidate-number-limit nil))
-       (call-interactively (ad-get-orig-definition 'helm-etags-select))))))
+    (let ((helm-candidate-number-limit nil))
+      (funcall (ad-get-orig-definition 'helm-etags-select) reinit))))
 
 (use-package rainbow-delimiters
   :ensure t
@@ -824,6 +830,11 @@ The ROOT points to the directory where posts store on."
   :ensure t
   :config)
 
+(use-package indium
+  :ensure t
+  :ensure-system-package
+  ((indium . "npm install -g indium")))
+
 ;; built-in libraries
 
 (use-package desktop
@@ -888,6 +899,11 @@ The ROOT points to the directory where posts store on."
 	eshell-review-quick-commands nil
 	eshell-smart-space-goes-to-end t))
 
+(use-package eww
+  :requires pyim
+  :config
+  (add-hook 'eww-mode-hook #'(lambda () (read-only-mode -1))))
+
 (use-package etags
   :config
   ;; TODO: use `helm-etags-select' to navigate tags
@@ -901,5 +917,28 @@ The ROOT points to the directory where posts store on."
   ;; TODO: find-file-hook, create ctags file
   ;; TODO: after-save-hook, refresh ctags file
   )
+
+(use-package socks
+  :init (setq socks-server-on nil)
+  :config
+  (setq	socks-noproxy '("localhost")
+	socks-server '("Default Server" "127.0.0.1" 1080 5)
+	socks-address (format
+		       "%s://%s:%s" "socks"
+		       (cadr socks-server)
+		       (caddr socks-server))
+	url-proxy-services `(("http" . ,socks-address)
+			     ("https" . ,socks-address)
+			     ("no_proxy" . "127.0.0.1")
+			     ("no_proxy" . "^.*\\(?:baidu\\|zhihu\\)\\.com")))
+
+  (defun toggle-socks-proxy ()
+    (interactive)
+    (if socks-server-on
+	(setq url-gateway-method 'native
+	      socks-server-on nil)
+      (setq url-gateway-method 'socks
+	    socks-server-on t)))
+  (toggle-socks-proxy))
 
 (provide 'init)
