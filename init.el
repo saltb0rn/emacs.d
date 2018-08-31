@@ -155,9 +155,9 @@
 
 (use-package web-mode
   :ensure t
-  :mode ("\\.html\\?'" . web-mode)
+  :mode ("\\.html?\\'" . web-mode)
   :config
-  ;; (if (null (assoc "\\.html\\?'" auto-mode-alist))
+  ;; (if (null (assoc "\\.html?\\'" auto-mode-alist))
   ;;     (add-to-list 'auto-mode-alist (cons "\\.html?\\'" 'web-mode)))
   ;; (defadvice hs-minor-mode (before hs-minor-mode-banned-for-web-mode activate)
   ;;   (interactive)
@@ -848,6 +848,7 @@ The ROOT points to the directory where posts store on."
 (use-package magit
   :bind
   (("C-x g" . #'magit-status))
+  :ensure-system-package git
   :ensure t)
 
 ;; built-in libraries
