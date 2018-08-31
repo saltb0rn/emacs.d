@@ -846,6 +846,8 @@ The ROOT points to the directory where posts store on."
   :ensure t)
 
 (use-package magit
+  :bind
+  (("C-x g" . #'magit-status))
   :ensure t)
 
 ;; built-in libraries
