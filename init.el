@@ -124,6 +124,9 @@
 ;;  (add-hook kill-emacs-hook #'launch-separate-emacs t)
 ;;  (save-buffers-kill-emacs))
 
+;; set key bidings
+(define-key (current-global-map) (kbd "C-c C-c") #'whitespace-cleanup)
+
 ;;-----------------------------------------------------------------------------
 
 ;; use to `use-package' configure packages
