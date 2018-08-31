@@ -773,6 +773,10 @@ The ROOT points to the directory where posts store on."
 
 (use-package pyim
   :ensure t
+  :custom
+  (pyim-fuzzy-pinyin-alist
+   '(("en" "eng") ("in" "ing") ("un" "ung")
+     ("on" "ong") ("z" "zh") ("an" "ang")))
   :config
   ;; 激活 basedict 拼音词库
   (use-package pyim-basedict
@@ -834,6 +838,15 @@ The ROOT points to the directory where posts store on."
   :ensure t
   :ensure-system-package
   ((indium . "npm install -g indium")))
+
+(use-package elfeed
+  :ensure t)
+
+(use-package org-pomodoro
+  :ensure t)
+
+(use-package magit
+  :ensure t)
 
 ;; built-in libraries
 
@@ -912,15 +925,17 @@ The ROOT points to the directory where posts store on."
       (shell-command
        (string-join
 	(list "ctags" "-e" "-f" tag-path buffer-file-name) " "))))
-  ;; TODO: find the way to check if the major-mode is derived from another major-mode.
-  ;; (derived-mode-p
+  ;; TODO: to check if the major-mode is derived from `prog-mode'
+  ;; (derived-mode-p prog-mode)
   ;; TODO: find-file-hook, create ctags file
   ;; TODO: after-save-hook, refresh ctags file
   )
 
 (use-package socks
+  :disabled
   :init (setq socks-server-on nil)
   :config
+  ;; BUG: `toggle-socks-proxy' does not work quite.
   (setq	socks-noproxy '("localhost")
 	socks-server '("Default Server" "127.0.0.1" 1080 5)
 	socks-address (format
@@ -939,6 +954,7 @@ The ROOT points to the directory where posts store on."
 	      socks-server-on nil)
       (setq url-gateway-method 'socks
 	    socks-server-on t)))
+
   (toggle-socks-proxy))
 
 (provide 'init)
