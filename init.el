@@ -343,14 +343,21 @@ So that entire list of result will be showed."
 
 (use-package org
   :ensure t
+  :init
+  (define-skeleton org-insert-src-block
+    "Insert source block in org-mode"
+    "Insert the code name of language: "
+    "#+BEGIN_SRC " str \n
+    "#+END_SRC")
   :requires (htmlize
 	     dash
 	     ht
 	     simple-httpd
 	     plantuml-mode)
-
   :bind (:map global-map
-	      ("\C-c c" . org-capture))
+	      ("\C-c c" . org-capture)
+	      :map org-mode-map
+	      ("C-c i" . 'org-insert-src-block))
   :config
 
   (setq org-export-coding-system 'utf-8
