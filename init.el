@@ -4,7 +4,7 @@
 (require 'package)
 
 (let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
-		    (not (gnutls-available-p))))
+                    (not (gnutls-available-p))))
        (proto (if no-ssl "http" "https")))
   ;; Comment/uncomment these two lines to enable/disable MELPA and MELPA Stable as desired
   (add-to-list 'package-archives (cons "melpa" (concat proto "://melpa.org/packages/")) t)
@@ -19,7 +19,7 @@
 
 ;; update the package metadata if the local cache is missing
 (unless (or package-archive-contents
-	    (file-exists-p package-user-dir))
+            (file-exists-p package-user-dir))
   (package-refresh-contents))
 
 (setq user-full-name "saltb0rn"
@@ -76,7 +76,12 @@
 ;; revert buffers automatically when underlying files are changed externally
 (global-auto-revert-mode t)
 
+
+;; auto highlight left parenthesis and right parenthesis while cursor at position of either of them
 (show-paren-mode 1)
+
+;; no tabs
+(set-default 'indent-tabs-mode nil)
 
 (prefer-coding-system 'utf-8)
 (set-default-coding-systems 'utf-8)
@@ -85,15 +90,15 @@
 
 (setq hippie-expand-try-functions-list
       `(try-complete-file-name-partially
-	try-complete-file-name
-	try-expand-all-abbrevs
-	try-expand-list
-	try-expand-line
-	try-expand-dabbrev
-	try-expand-dabbrev-all-buffers
-	try-expand-dabbrev-from-kill
-	try-complete-lisp-symbol-partially
-	try-complete-lisp-symbol))
+        try-complete-file-name
+        try-expand-all-abbrevs
+        try-expand-list
+        try-expand-line
+        try-expand-dabbrev
+        try-expand-dabbrev-all-buffers
+        try-expand-dabbrev-from-kill
+        try-complete-lisp-symbol-partially
+        try-complete-lisp-symbol))
 
 ;; smart tab behavior - (or indent complete)
 (setq tab-always-indent 'complete)
@@ -139,12 +144,12 @@
 (setq use-package-verbose t)
 
 (defadvice async-shell-command (around
-				async-shell-command-ask-password
-				(command &optional output-buffer error-buffer)
-				activate)
+                                async-shell-command-ask-password
+                                (command &optional output-buffer error-buffer)
+                                activate)
   (let ((default-directory "/sudo::"))
     (funcall (ad-get-orig-definition 'async-shell-command)
-			command output-buffer error-buffer)))
+                        command output-buffer error-buffer)))
 
 ;; this package would install system packages if they were missing.
 (use-package use-package-ensure-system-package
@@ -167,7 +172,7 @@
   ;;   (when (equal major-mode 'web-mode)
   ;;     (user-error "Don't turn on `hs-minor-mode' while using `web-mode'")))
   (setq web-mode-enable-auto-closing t
-	web-mode-enable-auto-pairing t))
+        web-mode-enable-auto-pairing t))
 
 (use-package nyan-mode
   :ensure t
@@ -185,13 +190,13 @@
 (use-package fic-mode
   :ensure t
   :hook (elpy-mode
-	 geiser-mode
-	 lisp-interaction-mode
-	 racket-mode
-	 php-mode)
+         geiser-mode
+         lisp-interaction-mode
+         racket-mode
+         php-mode)
   :config
   (setq fic-highlighted-words
-	(quote ("FIXME" "TODO" "BUG" "NOTE" "FIXED")))
+        (quote ("FIXME" "TODO" "BUG" "NOTE" "FIXED")))
 
   (defvar fic-jump-buffer "*Fic-Jump*" "The buffer jump from")
 
@@ -200,100 +205,100 @@
   (with-current-buffer (or buffer (current-buffer))
     (save-excursion
       (save-match-data
-	(let (pos)
-	  (goto-char (point-min))
-	  (while (re-search-forward (fic-search-re) limit t)
-	    (pcase (match-data)
-	      (`(,s ,e . ,_)
-	       (when (eq (get-char-property s 'face) 'fic-face)
-		 (add-to-list 'pos e)))))
-	  (reverse pos))))))
+        (let (pos)
+          (goto-char (point-min))
+          (while (re-search-forward (fic-search-re) limit t)
+            (pcase (match-data)
+              (`(,s ,e . ,_)
+               (when (eq (get-char-property s 'face) 'fic-face)
+                 (add-to-list 'pos e)))))
+          (reverse pos))))))
 
   (defun fic--content-in-line-in-position (marker)
   "Return the content in line in location MARKER."
   (let ((frombuf (marker-buffer marker))
-	(pos (marker-position marker)))
+        (pos (marker-position marker)))
     (if (not (buffer-live-p frombuf))
-	(message "Buffer %s is not alive"  (buffer-name frombuf))
+        (message "Buffer %s is not alive"  (buffer-name frombuf))
       (with-current-buffer frombuf
-	(goto-line (line-number-at-pos pos))
-	(buffer-substring (line-beginning-position) (line-end-position))))))
+        (goto-line (line-number-at-pos pos))
+        (buffer-substring (line-beginning-position) (line-end-position))))))
 
   (defun fic--lineno-in-position (marker)
     "Return line number in MARKER."
     (let ((buf (marker-buffer marker))
-	  (pos (marker-position marker)))
+          (pos (marker-position marker)))
       (if (not (buffer-live-p buf))
-	  (message "Buffer %s is not alive" (buffer-name frombuf))
-	(with-current-buffer buf
-	  (line-number-at-pos pos)))))
+          (message "Buffer %s is not alive" (buffer-name frombuf))
+        (with-current-buffer buf
+          (line-number-at-pos pos)))))
 
   (defun fic--jump-to (marker)
     "Jump to the MARKER."
     (let ((tobuf (marker-buffer marker))
-	  (pos (marker-position marker)))
+          (pos (marker-position marker)))
       (if (not (buffer-live-p tobuf))
-	  (message "Buffer %s is not alive" (buffer-name tobuf))
-	(progn
-	  (switch-to-buffer tobuf)
-	  (goto-char pos)))))
+          (message "Buffer %s is not alive" (buffer-name tobuf))
+        (progn
+          (switch-to-buffer tobuf)
+          (goto-char pos)))))
 
   (defun fic--append-line-to-buffer (&optional buffer)
     "Append the lines where keywords located in to BUFFER.
 By default, BUFFER is named \"*Fic-Jump*\"."
     (let* ((oldbuf (current-buffer))
-	   (newbuf (get-buffer-create (or buffer fic-jump-buffer)))
-	   (markers (fic--keyword-positions oldbuf)))
+           (newbuf (get-buffer-create (or buffer fic-jump-buffer)))
+           (markers (fic--keyword-positions oldbuf)))
       (if (with-current-buffer oldbuf
-	    (bound-and-true-p fic-mode))
-	  (progn
-	    (with-current-buffer newbuf
-	      (let ((inhibit-read-only t))
-		(dolist (marker markers)
-		  (let ((beg (point)))
-		    (insert (format "Visit" (fic--content-in-line-in-position marker)))
-		    (make-text-button
-		     beg (point)
-		     'follow-link t
-		     ;;		   'face '(:underline nil)
-		     'mouse-face 'highlight
-		     'help-echo "Click to visit it in other window"
-		     'action ((lambda (mkr)
-				(lambda (x)
-				  (let ((inhibit-read-only t)) (erase-buffer))
-				  (fic--jump-to mkr))) marker)))
-		  (insert " ")
-		  (insert (format "Buffer: %s  "(buffer-name (marker-buffer marker))))
-		  (insert (format "Line: %s " (fic--lineno-in-position marker)))
-		  (insert (format "%s " (fic--content-in-line-in-position marker)))
-		  (insert "\n"))))
-	    (view-buffer (get-buffer newbuf)))
-	(message "The fic-mode is disabled in this buffer."))))
+            (bound-and-true-p fic-mode))
+          (progn
+            (with-current-buffer newbuf
+              (let ((inhibit-read-only t))
+                (dolist (marker markers)
+                  (let ((beg (point)))
+                    (insert (format "Visit" (fic--content-in-line-in-position marker)))
+                    (make-text-button
+                     beg (point)
+                     'follow-link t
+                     ;;            'face '(:underline nil)
+                     'mouse-face 'highlight
+                     'help-echo "Click to visit it in other window"
+                     'action ((lambda (mkr)
+                                (lambda (x)
+                                  (let ((inhibit-read-only t)) (erase-buffer))
+                                  (fic--jump-to mkr))) marker)))
+                  (insert " ")
+                  (insert (format "Buffer: %s  "(buffer-name (marker-buffer marker))))
+                  (insert (format "Line: %s " (fic--lineno-in-position marker)))
+                  (insert (format "%s " (fic--content-in-line-in-position marker)))
+                  (insert "\n"))))
+            (view-buffer (get-buffer newbuf)))
+        (message "The fic-mode is disabled in this buffer."))))
 
   (defun fic-jump (&optional buffer)
     "Jump to where keyword located in.
 BUFFER is the buffer to list the lines where keywords located in."
     (interactive)
     (let ((bufs (buffer-list))
-	  (buffer (get-buffer-create (or buffer fic-jump-buffer))))
+          (buffer (get-buffer-create (or buffer fic-jump-buffer))))
       (with-current-buffer buffer
-	(let ((inhibit-read-only t))
-	  (erase-buffer)))
+        (let ((inhibit-read-only t))
+          (erase-buffer)))
       (dolist (buf bufs)
-	(with-current-buffer buf
-	  (when fic-mode
-	    (fic--append-line-to-buffer buffer)))))))
+        (with-current-buffer buf
+          (when fic-mode
+            (fic--append-line-to-buffer buffer)))))))
 
 (use-package helm
   :ensure t
   :bind (("M-x" . helm-M-x)
-	 ("C-x C-f" . helm-find-files)
-	 ([f10] . helm-buffers-list))
+         ("C-x C-f" . helm-find-files)
+         ([f10] . helm-buffers-list))
   :config
   (helm-mode 1)
   (defadvice helm-etags-select (around unlimited-candidate-number
-				       (reinit)
-				       activate)
+                                       (reinit)
+                                       activate)
     "Set `helm-candidate-number-limit' to nil while calling ’helm-etags-select’.
 So that entire list of result will be showed."
     (let ((helm-candidate-number-limit nil))
@@ -302,9 +307,9 @@ So that entire list of result will be showed."
 (use-package rainbow-delimiters
   :ensure t
   :hook ((lisp-interaction-mode
-	  elpy-mode
-	  geiser-mode
-	  racket-mode) . rainbow-delimiters-mode))
+          elpy-mode
+          geiser-mode
+          racket-mode) . rainbow-delimiters-mode))
 
 (use-package highlight-indentation
   :ensure t)
@@ -320,13 +325,13 @@ So that entire list of result will be showed."
     (when (not (equal major-mode 'plantuml-mode))
       (user-error "Please run in plantuml-mode"))
     (let* ((format (or format "png"))
-	   (res (shell-command
-		 (concat "java -jar "
-			 org-plantuml-jar-path " -t" "png"
-			 " " (buffer-file-name)))))
+           (res (shell-command
+                 (concat "java -jar "
+                         org-plantuml-jar-path " -t" "png"
+                         " " (buffer-file-name)))))
       (if (not (equal 0 res))
-	  (message "Export failed")
-	(message "Export successful"))))
+          (message "Export failed")
+        (message "Export successful"))))
   (require 'ob-plantuml))
 
 (use-package simple-httpd
@@ -350,24 +355,24 @@ So that entire list of result will be showed."
     "#+BEGIN_SRC " str \n
     "#+END_SRC")
   :requires (htmlize
-	     dash
-	     ht
-	     simple-httpd
-	     plantuml-mode)
-  :bind (:map global-map
-	      ("\C-c c" . org-capture)
-	      :map org-mode-map
-	      ("C-c i" . 'org-insert-src-block))
+             dash
+             ht
+             simple-httpd
+             plantuml-mode)
+  :bind (:map org-mode-map
+         ("C-c i" . 'org-insert-src-block)
+         :map global-map
+         ("\C-c c" . org-capture))
   :config
 
   (setq org-export-coding-system 'utf-8
-	project-path "~/Documents/DarkSalt/"
-	posts-path (concat project-path "posts/")
-	tags-path (concat project-path "tags/")
-	files-path (concat project-path "files/")
-	publish-path (concat project-path "site/")
-	httpd-listings nil
-	httpd-root publish-path)
+        project-path "~/Documents/DarkSalt/"
+        posts-path (concat project-path "posts/")
+        tags-path (concat project-path "tags/")
+        files-path (concat project-path "files/")
+        publish-path (concat project-path "site/")
+        httpd-listings nil
+        httpd-root publish-path)
 
   ;; `publish-all-posts' to publish
   ;; the rest of configuration of `org' is all about the blogging with Emacs.
@@ -402,33 +407,33 @@ So that entire list of result will be showed."
   (defun postamble-dispatcher (scheme)
     (cadar
      (ht-get postambles scheme
-	     (ht-get postambles 'default))))
+             (ht-get postambles 'default))))
 
   (setq
    disqus-shortname "darksalt-me"
 
    postambles (ht
-	       ('default
-		 '(("en" "<p class=\"author\">Author: %a (%e)</p>\n<p class=\"date\">Date: %d</p>\n<p class=\"creator\">%c</p>\n<p class=\"validation\">%v</p>")))
-	       ('disqus
-		`(("en"
-		   ,(concat
-		    "<div id=\"disqus_thread\"></div>\n<script id=\"dsq-count-scr\" src=\"//"
-		    disqus-shortname
-		    ".com/count.js\" async></script>\n\n<script>\n\n/**\n*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.\n*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/\n/*\nvar disqus_config = function () {\nthis.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable\nthis.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable\n};\n*/\n(function() { // DON'T EDIT BELOW THIS LINE\nvar d = document, s = d.createElement('script');\ns.src = 'https://"
-		    disqus-shortname
-		    ".disqus.com/embed.js';\ns.setAttribute('data-timestamp', +new Date());\n(d.head || d.body).appendChild(s);\n})();\n</script>\n<noscript>Please enable JavaScript to view the <a href=\"https://disqus.com/?ref_noscript\">comments powered by Disqus.</a></noscript>\n<p class=\"author\">Author: %a (%e)</p>\n<p class=\"date\">Date: %d</p>\n<p class=\"creator\">Generated by %c</p>")))))
+               ('default
+                 '(("en" "<p class=\"author\">Author: %a (%e)</p>\n<p class=\"date\">Date: %d</p>\n<p class=\"creator\">%c</p>\n<p class=\"validation\">%v</p>")))
+               ('disqus
+                `(("en"
+                   ,(concat
+                    "<div id=\"disqus_thread\"></div>\n<script id=\"dsq-count-scr\" src=\"//"
+                    disqus-shortname
+                    ".com/count.js\" async></script>\n\n<script>\n\n/**\n*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.\n*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/\n/*\nvar disqus_config = function () {\nthis.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable\nthis.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable\n};\n*/\n(function() { // DON'T EDIT BELOW THIS LINE\nvar d = document, s = d.createElement('script');\ns.src = 'https://"
+                    disqus-shortname
+                    ".disqus.com/embed.js';\ns.setAttribute('data-timestamp', +new Date());\n(d.head || d.body).appendChild(s);\n})();\n</script>\n<noscript>Please enable JavaScript to view the <a href=\"https://disqus.com/?ref_noscript\">comments powered by Disqus.</a></noscript>\n<p class=\"author\">Author: %a (%e)</p>\n<p class=\"date\">Date: %d</p>\n<p class=\"creator\">Generated by %c</p>")))))
 
    home/up-formats (ht
-		    ('default
-		      "<div id=\"org-div-home-and-up\">\n <a accesskey=\"h\" href=\"%s\"> UP </a>\n |\n <a accesskey=\"H\" href=\"%s\"> HOME </a>\n</div>")
-		    ('blog
-		     "\n<div id=\"org-div-home-and-up\">\n  <nav>\n    <a href=\"/\"><img src=\"../../../img/logo.png\" alt=\"Logo is on the way\"/></a>\n    <ul>\n      <li><a accesskey=\"H\" href=\"%s\"> Home </a></li>\n      <!--<li><a accesskey=\"a\" href=\"/posts\"> Posts </a></li>-->\n      <li><a accesskey=\"T\" href=\"/tags\"> Tags </a></li>\n      <li><a accesskey=\"A\" href=\"/about\"> About </a></li>\n    </ul>\n  </nav>\n</div>\n"))
+                    ('default
+                      "<div id=\"org-div-home-and-up\">\n <a accesskey=\"h\" href=\"%s\"> UP </a>\n |\n <a accesskey=\"H\" href=\"%s\"> HOME </a>\n</div>")
+                    ('blog
+                     "\n<div id=\"org-div-home-and-up\">\n  <nav>\n    <a href=\"/\"><img src=\"../../../img/logo.png\" alt=\"Logo is on the way\"/></a>\n    <ul>\n      <li><a accesskey=\"H\" href=\"%s\"> Home </a></li>\n      <!--<li><a accesskey=\"a\" href=\"/posts\"> Posts </a></li>-->\n      <li><a accesskey=\"T\" href=\"/tags\"> Tags </a></li>\n      <li><a accesskey=\"A\" href=\"/about\"> About </a></li>\n    </ul>\n  </nav>\n</div>\n"))
 
    html-heads (ht
-	       ('default "")
-	       ('blog
-		"<link rel=\"stylesheet\" type=\"text/css\" href=\"../../../css/stylesheet.css\"/>\n<link rel=\"icon\" type=\"image/png\" href=\"../../../img/icon.png\" />"))
+               ('default "")
+               ('blog
+                "<link rel=\"stylesheet\" type=\"text/css\" href=\"../../../css/stylesheet.css\"/>\n<link rel=\"icon\" type=\"image/png\" href=\"../../../img/icon.png\" />"))
 
    blog-alist
    `(("static"
@@ -489,25 +494,25 @@ That is, the when calling `org-publish-project' or `org-publish' would not
 publish the files in blog, vice versa."
     (interactive
      (list (assoc (completing-read "Publish project: "
-				   blog-alist nil t)
-		  blog-alist)
-	   current-prefix-arg))
+                                   blog-alist nil t)
+                  blog-alist)
+           current-prefix-arg))
     (create-project-directory-if-necessary)
     (write-posts-to-tag-inc)
     (rewrite-theindex-inc)
     (let ((org-publish-project-alist blog-alist)
-	  (org-html-home/up-format (ht-get home/up-formats 'blog))
-	  (org-html-head (ht-get html-heads 'blog))
-	  (org-html-preamble nil)
-	  (org-html-doctype "html5")
-	  (org-html-link-home "/")
-	  (org-html-link-up "/")
-	  (org-export-with-toc nil)
-	  (org-export-with-author t)
-	  (org-export-with-email nil)
-	  (org-export-with-creator nil)
-	  (org-export-with-date nil)
-	  (org-export-with-section-numbers nil))
+          (org-html-home/up-format (ht-get home/up-formats 'blog))
+          (org-html-head (ht-get html-heads 'blog))
+          (org-html-preamble nil)
+          (org-html-doctype "html5")
+          (org-html-link-home "/")
+          (org-html-link-up "/")
+          (org-export-with-toc nil)
+          (org-export-with-author t)
+          (org-export-with-email nil)
+          (org-export-with-creator nil)
+          (org-export-with-date nil)
+          (org-export-with-section-numbers nil))
       (org-publish-project project))
     (rename-theindex-to-index))
 
@@ -520,18 +525,18 @@ When calling `org-capture', it will let you input the post file name,
 the TITLE and something things accroding to the templates specified by
 the `org-capture-templates'. "
     (let* ((title (read-string "Slug: "))
-	   (slug (replace-regexp-in-string "[^a-z]+" "-" (downcase title))))
+           (slug (replace-regexp-in-string "[^a-z]+" "-" (downcase title))))
       (expand-file-name
        (format (concat posts-path "%s/%s.org")
-	       (format-time-string "%Y/%m" (current-time))
-	       slug))))
+               (format-time-string "%Y/%m" (current-time))
+               slug))))
 
   (setq org-capture-templates nil)
 
   (add-to-list 'org-capture-templates
-	       `("b" "Blog Post" plain
-		 (file capture-blog-post-file)
-		 "
+               `("b" "Blog Post" plain
+                 (file capture-blog-post-file)
+                 "
 #+title: %^{Title}
 #+date: %<%Y-%m-%d>
 #+index: %^{Concept Index Entry}
@@ -548,94 +553,94 @@ the `org-capture-templates'. "
       (insert-file-contents post)
       (goto-char (point-min))
       (if (re-search-forward (concat "^#\\+" option ":[ \t]*\\(.*\\)") nil t)
-	  (match-string-no-properties 1 nil)
-	default)))
+          (match-string-no-properties 1 nil)
+        default)))
 
   (defun retrieve-posts (root)
     "Search all the posts in `project-path', return a list of posts paths"
     (when (file-directory-p root)
       (let ((files (directory-files root t "^[^.][^.].*$" 'time-less-p))
-	    (res nil))
-	(dolist (file files res)
-	  (if (file-directory-p file)
-	      (setq res (append res (retrieve-posts file)))
-	    (when (and (string-suffix-p ".org" file)
-		       (not (string-suffix-p "theindex.org" file)))
-	      (setq res (add-to-list 'res file)))))
-	(sort res
-	      #'(lambda (f1 f2)
-		  (string<
-		   (read-option-from-post f1 "date" (format-time-string "%Y-%m-%d"))
-		   (read-option-from-post f2 "date" (format-time-string "%Y-%m-%d"))))))))
+            (res nil))
+        (dolist (file files res)
+          (if (file-directory-p file)
+              (setq res (append res (retrieve-posts file)))
+            (when (and (string-suffix-p ".org" file)
+                       (not (string-suffix-p "theindex.org" file)))
+              (setq res (add-to-list 'res file)))))
+        (sort res
+              #'(lambda (f1 f2)
+                  (string<
+                   (read-option-from-post f1 "date" (format-time-string "%Y-%m-%d"))
+                   (read-option-from-post f2 "date" (format-time-string "%Y-%m-%d"))))))))
 
   (defun auto-generate-post-list (root)
     "Search the org files in `project-path', and generate a list of
 string consisting of url and title of org-file"
     (let ((files (retrieve-posts root))
-	  res)
+          res)
       (dolist (file files res)
-	(setq res (add-to-list 'res (format "[[file:%s][%s]]%s"
-					    (url-encode-url
-					     (replace-regexp-in-string
-					      "\\.org" ".html"
-					      (file-relative-name file project-path)))
-					    (read-option-from-post
-					     file "TITLE" (file-name-base file))
-					    (with-temp-buffer
-					      (insert-file-contents file)
-					      (goto-char (point-min))
-					      (if (re-search-forward
-						   (concat
-						    "#\\+begin_abstract\\("
-						    "[[:ascii:][:nonascii:]]*"
-						    "\\)#\\+end_abstract")
-						   nil t)
-						  (match-string-no-properties 1 nil)
-						""))))))))
+        (setq res (add-to-list 'res (format "[[file:%s][%s]]%s"
+                                            (url-encode-url
+                                             (replace-regexp-in-string
+                                              "\\.org" ".html"
+                                              (file-relative-name file project-path)))
+                                            (read-option-from-post
+                                             file "TITLE" (file-name-base file))
+                                            (with-temp-buffer
+                                              (insert-file-contents file)
+                                              (goto-char (point-min))
+                                              (if (re-search-forward
+                                                   (concat
+                                                    "#\\+begin_abstract\\("
+                                                    "[[:ascii:][:nonascii:]]*"
+                                                    "\\)#\\+end_abstract")
+                                                   nil t)
+                                                  (match-string-no-properties 1 nil)
+                                                ""))))))))
 
   (defun retrieve-tags-from-post (post)
     "Retrieve tags from a post"
     (mapcar
      #'(lambda (elt)
-	 (--> elt
-	      downcase
-	      capitalize))
+         (--> elt
+              downcase
+              capitalize))
        (let ((tags (read-option-from-post post "tags")))
-	 (cond
-	  ((or (null tags)
-	       (string= (string-trim tags) "")) (list "Others"))
-	  (t (split-string (string-trim tags) " "))))))
+         (cond
+          ((or (null tags)
+               (string= (string-trim tags) "")) (list "Others"))
+          (t (split-string (string-trim tags) " "))))))
 
   (defun tag-list (root)
     "Retrieve tags from posts, return a list of tags"
     (let ((files (retrieve-posts root))
-	  res)
+          res)
       (dolist (file files res)
-	(setq res (append res (retrieve-tags-from-post file))))
+        (setq res (append res (retrieve-tags-from-post file))))
       (sort (remove-duplicates res :test 'string=) 'string<)))
 
   (defun posts-of-tag (tag &optional root)
     "Find the posts of tag, return a list of post.
 The ROOT points to the directory where posts store on."
     (let ((files (retrieve-posts (or root posts-path)))
-	  res)
+          res)
       (dolist (file files res)
-	(when (member tag (retrieve-tags-from-post file))
-	  (setq res (add-to-list 'res file))))
+        (when (member tag (retrieve-tags-from-post file))
+          (setq res (add-to-list 'res file))))
       (cons tag (list (sort res 'string<)))))
 
   (defun group-posts-by-tags (root)
     "Return a alist of (TAG . (list POST)).
 The ROOT points to the directory where posts store on."
     (let ((tags (tag-list root))
-	  res)
+          res)
       (dolist (tag tags res)
-	(setq res (add-to-list 'res (posts-of-tag tag))))))
+        (setq res (add-to-list 'res (posts-of-tag tag))))))
 
   (defun rename-theindex-to-index ()
     "Rename theindex.html to index.html"
     (let ((old-index (concat publish-path "posts/" "theindex.html"))
-	  (new-index (concat publish-path "posts/" "index.html")))
+          (new-index (concat publish-path "posts/" "index.html")))
       (rename-file old-index new-index t)
       (message "Renamed %s to %s" old-index new-index)))
 
@@ -643,52 +648,52 @@ The ROOT points to the directory where posts store on."
     "Rewrite theindex.inc in `project-path'"
       (write-region
        (mapconcat
-	#'(lambda (str) (format "*** %s\n\t" str))
-	(auto-generate-post-list posts-path)
-	"\n")
+        #'(lambda (str) (format "*** %s\n\t" str))
+        (auto-generate-post-list posts-path)
+        "\n")
        nil
        (concat project-path "theindex.inc")))
 
   (defun write-posts-to-tag-inc ()
     (let ((grouped-posts (group-posts-by-tags posts-path))
-	  (tags (tag-list posts-path)))
+          (tags (tag-list posts-path)))
       (write-region
        (format "
 #+TITLE: TAGS\n
 #+HTML_HEAD_EXTRA:<link rel=\"stylesheet\" type=\"text/css\" href=\"../../../css/tags.css\"/>\n\n%s"
-	       (mapconcat
-		#'(lambda (tag)
-		    (format "- [[file:%s][%s]]"
-			    (url-encode-url
-			     (file-relative-name
-			      (concat tags-path tag ".html")
-			      project-path))
-			    tag))
-		(tag-list posts-path)
-		"\n"))
+               (mapconcat
+                #'(lambda (tag)
+                    (format "- [[file:%s][%s]]"
+                            (url-encode-url
+                             (file-relative-name
+                              (concat tags-path tag ".html")
+                              project-path))
+                            tag))
+                (tag-list posts-path)
+                "\n"))
        nil (concat tags-path "index.org"))
       (dolist (tag tags)
-	(write-region
-	 (mapconcat
-	  #'(lambda (post)
-	      (format "- [[file:%s][%s]]"
-		      (url-encode-url (file-relative-name post tags-path))
-		      (read-option-from-post
-		       post "TITLE" (file-name-base post))))
-	  (cadr (assoc tag grouped-posts)) "\n")
-	 nil (concat tags-path tag ".inc"))
-	(unless (file-exists-p (concat tags-path tag ".org"))
-	  (write-region
-	   (format "#+TITLE: %s\n#+INCLUDE: %s"
-		   tag (concat tag ".inc"))
-	   nil (concat tags-path tag ".org"))))))
+        (write-region
+         (mapconcat
+          #'(lambda (post)
+              (format "- [[file:%s][%s]]"
+                      (url-encode-url (file-relative-name post tags-path))
+                      (read-option-from-post
+                       post "TITLE" (file-name-base post))))
+          (cadr (assoc tag grouped-posts)) "\n")
+         nil (concat tags-path tag ".inc"))
+        (unless (file-exists-p (concat tags-path tag ".org"))
+          (write-region
+           (format "#+TITLE: %s\n#+INCLUDE: %s"
+                   tag (concat tag ".inc"))
+           nil (concat tags-path tag ".org"))))))
 
   (defun create-project-directory-if-necessary ()
     "Create Project directory if it does not exist."
     (dolist (path (list tags-path posts-path
-			publish-path (concat project-path "about/")))
+                        publish-path (concat project-path "about/")))
       (unless (file-directory-p path)
-	(make-directory path t))))
+        (make-directory path t))))
 
   ;; Define a advice before `org-publish-project' and `org-publish-projects' to
   ;; generate a list of posts in order by date time.
@@ -719,26 +724,26 @@ The ROOT points to the directory where posts store on."
 (use-package elpy
   :ensure t
   :after (flycheck
-	  highlight-indentation)
+          highlight-indentation)
   :config
   ;; It will be slow while you typing if the buffer size if lagger than the elpy-rpc-ignored-buffer-size
   ;; So we need to turn off the highlight-inentation-mode
   ;; Elpy own it hightlight-indentation
   (add-hook 'elpy-mode-hook
-	    #'(lambda ()
-		(when (> (buffer-size) elpy-rpc-ignored-buffer-size)
-		  (progn
-		    (highlight-indentation-mode 0)
-		    (message "Turn the highlight-indentation-mode off")))))
+            #'(lambda ()
+                (when (> (buffer-size) elpy-rpc-ignored-buffer-size)
+                  (progn
+                    (highlight-indentation-mode 0)
+                    (message "Turn the highlight-indentation-mode off")))))
   (setq python-shell-interpreter "python3"
-	python-shell-interpreter-args "-i"
-	elpy-rpc-backend "jedi"
-	elpy-rpc-python-command "python3")
+        python-shell-interpreter-args "-i"
+        elpy-rpc-backend "jedi"
+        elpy-rpc-python-command "python3")
   ;; (setq python-shell-interpreter "pipenv"
   ;;	python-shell-interpreter-args "run python3"
   ;;	python-shell-prompt-detect-failure-warning nil)
   ;; (add-to-list 'python-shell-completion-native-disabled-interpreters
-  ;;	       "pipenv")
+  ;;           "pipenv")
   (elpy-enable))
 
 (use-package geiser
@@ -757,7 +762,7 @@ The ROOT points to the directory where posts store on."
   ;; For racket, use this mode if you prefer drracket
   (add-hook 'racket-mode-hook #'prettify-symbols-mode)
   (let* ((regex-pat "\\.\\(rkt\\|scm\\|ss\\)\\'")
-	 (term (assoc regex-pat auto-mode-alist)))
+         (term (assoc regex-pat auto-mode-alist)))
     (cond
      ((equal nil term)
       (add-to-list 'auto-mode-alist (cons regex-pat 'racket-mode)))
@@ -772,14 +777,14 @@ The ROOT points to the directory where posts store on."
 (use-package php-mode
   :ensure t
   :bind (:map php-mode-map
-	      ("M-j" . #'pyim-convert-code-at-point))
+              ("M-j" . #'pyim-convert-code-at-point))
   :config
   (add-hook 'php-mode-hook
-	    #'(lambda ()
-		"Add `company-ac-php-backend' to buffer-local version of `company-backends'."
-		(make-local-variable 'company-backends)
-		(push 'company-ac-php-backend company-backends)
-		(company-mode 1))))
+            #'(lambda ()
+                "Add `company-ac-php-backend' to buffer-local version of `company-backends'."
+                (make-local-variable 'company-backends)
+                (push 'company-ac-php-backend company-backends)
+                (company-mode 1))))
 
 (use-package pyim
   :ensure t
@@ -809,14 +814,14 @@ The ROOT points to the directory where posts store on."
   ;; 2. 光标前是汉字字符时，才能输入中文。
   ;; 3. 使用 M-j 快捷键，强制将光标前的拼音字符串转换为中文。
   (setq-default pyim-english-input-switch-functions
-		'(pyim-probe-dynamic-english
-		  pyim-probe-isearch-mode
-		  pyim-probe-program-mode
-		  pyim-probe-org-structure-template))
+                '(pyim-probe-dynamic-english
+                  pyim-probe-isearch-mode
+                  pyim-probe-program-mode
+                  pyim-probe-org-structure-template))
 
   (setq-default pyim-punctuation-half-width-functions
-		'(pyim-probe-punctuation-line-beginning
-		  pyim-probe-punctuation-after-punctuation))
+                '(pyim-probe-punctuation-line-beginning
+                  pyim-probe-punctuation-after-punctuation))
 
   ;; 开启拼音搜索功能
   (pyim-isearch-mode 1)
@@ -829,7 +834,7 @@ The ROOT points to the directory where posts store on."
 
   ;; 让 Emacs 启动时自动加载 pyim 词库
   (add-hook 'emacs-startup-hook
-	    #'(lambda () (pyim-restart-1 t)))
+            #'(lambda () (pyim-restart-1 t)))
   :bind
   (("M-j" . pyim-convert-code-at-point) ;与 pyim-probe-dynamic-english 配合
    ("C-;" . pyim-delete-word-from-personal-buffer)))
@@ -868,17 +873,17 @@ The ROOT points to the directory where posts store on."
   ;; to save session and kill the buffers which start with and end with '*'
   (defun kill-annoying-buffers ()
     (add-hook 'kill-emacs-hook
-	      #'(lambda ()
-		  (mapcar
-		   #'(lambda (buf)
-		       (or
-			(and (string-match-p
-			      "\\*[[:ascii:][:nonascii:]]+?\\*" (buffer-name buf))
-			     (and (buffer-live-p buf)
-				  (kill-buffer buf))
-			     (buffer-name buf))
-			nil))
-		   (buffer-list)))))
+              #'(lambda ()
+                  (mapcar
+                   #'(lambda (buf)
+                       (or
+                        (and (string-match-p
+                              "\\*[[:ascii:][:nonascii:]]+?\\*" (buffer-name buf))
+                             (and (buffer-live-p buf)
+                                  (kill-buffer buf))
+                             (buffer-name buf))
+                        nil))
+                   (buffer-list)))))
   (add-hook 'desktop-save-mode-hook #'kill-annoying-buffers)
   (setq
    desktop-save t)
@@ -886,13 +891,13 @@ The ROOT points to the directory where posts store on."
 
 (use-package flyspell
   :hook ((elpy-mode. flyspell-prog-mode)
-	 (org-mode . flyspell-mode)))
+         (org-mode . flyspell-mode)))
 
 (use-package tramp
   :config
   (setf (cadr (assoc 'tramp-login-args (assoc "ssh" tramp-methods)))
-	(append '(("-o" "ServerAliveInterval=60"))
-		(cadr (assoc 'tramp-login-args (assoc "ssh" tramp-methods))))))
+        (append '(("-o" "ServerAliveInterval=60"))
+                (cadr (assoc 'tramp-login-args (assoc "ssh" tramp-methods))))))
 
 (use-package lisp-interaction-mode
   :init
@@ -900,13 +905,13 @@ The ROOT points to the directory where posts store on."
   (defadvice eval-buffer (after eval-buffer-with-message activate)
     (message "Buffer evaluation finished!!!"))
   :bind (:map lisp-interaction-mode-map
-	      ("C-c C-e" . eval-buffer)))
+              ("C-c C-e" . eval-buffer)))
 
 (use-package hideshow
   :hook ((lisp-interaction-mode
-	  elpy-mode
-	  php-mode
-	  web-mode) . hs-minor-mode)
+          elpy-mode
+          php-mode
+          web-mode) . hs-minor-mode)
   :config
   (define-key hs-minor-mode-map (kbd "C-c -") #'hs-toggle-hiding))
 
@@ -922,8 +927,8 @@ The ROOT points to the directory where posts store on."
   ;; kill the executing process in eshell.
   ;; (define-key global-map (kbd "C-c t") #'eshell)
   (setq eshell-where-to-jump 'begin
-	eshell-review-quick-commands nil
-	eshell-smart-space-goes-to-end t))
+        eshell-review-quick-commands nil
+        eshell-smart-space-goes-to-end t))
 
 (use-package eww
   :requires pyim
@@ -937,7 +942,7 @@ The ROOT points to the directory where posts store on."
     (when (derived-mode-p 'prog-mode)
       (shell-command
        (string-join
-	(list "ctags" "-e" "-f" tag-path buffer-file-name) " "))))
+        (list "ctags" "-e" "-f" tag-path buffer-file-name) " "))))
   ;; TODO: to check if the major-mode is derived from `prog-mode'
   ;; (derived-mode-p prog-mode)
   ;; TODO: find-file-hook, create ctags file
@@ -950,23 +955,23 @@ The ROOT points to the directory where posts store on."
   :config
   ;; BUG: `toggle-socks-proxy' does not work quite.
   (setq	socks-noproxy '("localhost")
-	socks-server '("Default Server" "127.0.0.1" 1080 5)
-	socks-address (format
-		       "%s://%s:%s" "socks"
-		       (cadr socks-server)
-		       (caddr socks-server))
-	url-proxy-services `(("http" . ,socks-address)
-			     ("https" . ,socks-address)
-			     ("no_proxy" . "127.0.0.1")
-			     ("no_proxy" . "^.*\\(?:baidu\\|zhihu\\)\\.com")))
+        socks-server '("Default Server" "127.0.0.1" 1080 5)
+        socks-address (format
+                       "%s://%s:%s" "socks"
+                       (cadr socks-server)
+                       (caddr socks-server))
+        url-proxy-services `(("http" . ,socks-address)
+                             ("https" . ,socks-address)
+                             ("no_proxy" . "127.0.0.1")
+                             ("no_proxy" . "^.*\\(?:baidu\\|zhihu\\)\\.com")))
 
   (defun toggle-socks-proxy ()
     (interactive)
     (if socks-server-on
-	(setq url-gateway-method 'native
-	      socks-server-on nil)
+        (setq url-gateway-method 'native
+              socks-server-on nil)
       (setq url-gateway-method 'socks
-	    socks-server-on t)))
+            socks-server-on t)))
 
   (toggle-socks-proxy))
 
