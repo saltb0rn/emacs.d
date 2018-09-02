@@ -428,12 +428,26 @@ So that entire list of result will be showed."
                     ('default
                       "<div id=\"org-div-home-and-up\">\n <a accesskey=\"h\" href=\"%s\"> UP </a>\n |\n <a accesskey=\"H\" href=\"%s\"> HOME </a>\n</div>")
                     ('blog
-                     "\n<div id=\"org-div-home-and-up\">\n  <nav>\n    <a href=\"/\"><img src=\"../../../img/logo.png\" alt=\"Logo is on the way\"/></a>\n    <ul>\n      <li><a accesskey=\"H\" href=\"%s\"> Home </a></li>\n      <!--<li><a accesskey=\"a\" href=\"/posts\"> Posts </a></li>-->\n      <li><a accesskey=\"T\" href=\"/tags\"> Tags </a></li>\n      <li><a accesskey=\"A\" href=\"/about\"> About </a></li>\n    </ul>\n  </nav>\n</div>\n"))
+                     `,(concat
+                        "\n<div id=\"org-div-home-and-up\">"
+                        "\n  <nav>"
+                        "\n    <a href=\"/\"><img src=\"../../../img/logo.png\" alt=\"Logo is on the way\"/></a>"
+                        "\n    <ul>\n      <li><a accesskey=\"H\" href=\"%s\"> Home </a></li>"
+                        "\n      <!--<li><a accesskey=\"a\" href=\"/posts\"> Posts </a></li>-->"
+                        "\n      <li><a accesskey=\"T\" href=\"/tags\"> Tags </a></li>"
+                        "\n      <li><a accesskey=\"A\" href=\"/about\"> About </a></li>"
+                        "\n    </ul>"
+                        "\n  </nav>"
+                        "\n</div>\n")))
 
    html-heads (ht
                ('default "")
                ('blog
-                "<link rel=\"stylesheet\" type=\"text/css\" href=\"../../../css/stylesheet.css\"/>\n<link rel=\"icon\" type=\"image/png\" href=\"../../../img/icon.png\" />"))
+                `,(concat
+                   "\n<link rel=\"stylesheet\" type=\"text/css\" href=\"../../../css/stylesheet.css\"/>"
+                   "\n<link rel=\"icon\" type=\"image/png\" href=\"../../../img/icon.png\" />"
+                   "\n<script type=\"text/javascript\" src=\"http://livejs.com/live.js\"></script>"
+                   "\n<script src=\"../../../js/main.js\" defer></script>")))
 
    blog-alist
    `(("static"
@@ -850,9 +864,52 @@ The ROOT points to the directory where posts store on."
   :config)
 
 (use-package indium
+  :disabled
   :ensure t
   :ensure-system-package
   ((indium . "npm install -g indium")))
+
+
+(use-package js2-mode
+  :ensure t
+  :mode ("\\.js\\'" . js2-mode)
+  :ensure-system-package
+  ((node . nodejs)
+   npm)
+  :bind (:map js-mode-map
+              ("M-." . nil)
+              :map js2-mode-map
+              ("C-k" . #'js2r-kill))
+  :config
+  (add-hook 'js2-mode-hook
+            #'(lambda ()
+                (add-hook 'xref-backend-functions
+                          #'xref-js2-xref-backend nil t))))
+
+(use-package company-tern
+  :ensure t
+  :ensure-system-package
+  (tern . "npm install -g tern")
+  :hook
+  ((js2-mode . tern-mode)
+   (js2-mode . company-mode))
+  :config
+  (add-to-list 'company-backends 'company-tern)
+  (define-key tern-mode-keymap (kbd "M-.") nil)
+  (define-key tern-mode-keymap (kbd "M-,") nil)
+
+  ;; create default config in ~/.tern-config
+
+  )
+
+(use-package js2-refactor
+  :ensure t
+  :hook (js2-mode . js2-refactor-mode)
+  :config
+  (js2r-add-keybindings-with-prefix "C-c C-r"))
+
+(use-package xref-js2
+  :ensure t)
 
 (use-package elfeed
   :ensure t)
