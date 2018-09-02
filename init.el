@@ -132,6 +132,15 @@
 ;; set key bidings
 (define-key (current-global-map) (kbd "C-c C-c") #'whitespace-cleanup)
 
+(define-skeleton insert-mit-license
+  "Insert MIT license"
+  nil
+  (concat "The MIT License\n\n"
+          "Copyright © " (format-time-string "%Y") " " user-full-name "\n\n"
+          "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\n"
+          "The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\n"
+          "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."))
+
 ;;-----------------------------------------------------------------------------
 
 ;; use to `use-package' configure packages
@@ -550,16 +559,15 @@ the `org-capture-templates'. "
   (add-to-list 'org-capture-templates
                `("b" "Blog Post" plain
                  (file capture-blog-post-file)
-                 "
-#+title: %^{Title}
-#+date: %<%Y-%m-%d>
-#+index: %^{Concept Index Entry}
-#+tags: %^{Tags}
-#+begin_abstract
-%^{Abstract}
-#+end_abstract
-%?
-"))
+                 ,(concat
+                 "#+title: %^{Title}"
+                 "#+date: %<%Y-%m-%d>"
+                 "#+index: %^{Concept Index Entry}"
+                 "#+tags: %^{Tags}"
+                 "#+begin_abstract"
+                 "%^{Abstract}"
+                 "#+end_abstract"
+                 "%?")))
 
   (defun read-option-from-post (post option &optional default)
     "Read OPTION from POST. Return DEFAULT by default."
@@ -737,8 +745,8 @@ The ROOT points to the directory where posts store on."
 
 (use-package elpy
   :ensure t
-  :after (flycheck
-          highlight-indentation)
+  ;; :after (flycheck
+  ;;         highlight-indentation)
   :config
   ;; It will be slow while you typing if the buffer size if lagger than the elpy-rpc-ignored-buffer-size
   ;; So we need to turn off the highlight-inentation-mode
