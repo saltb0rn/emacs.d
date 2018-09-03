@@ -963,13 +963,15 @@ The ROOT points to the directory where posts store on."
               #'(lambda ()
                   (mapcar
                    #'(lambda (buf)
-                       (or
-                        (and (string-match-p
-                              "\\*[[:ascii:][:nonascii:]]+?\\*" (buffer-name buf))
-                             (and (buffer-live-p buf)
-                                  (kill-buffer buf))
-                             (buffer-name buf))
-                        nil))
+                       (condition-case nil
+                           (or
+                            (and (string-match-p
+                                  "\\*[[:ascii:][:nonascii:]]+?\\*" (buffer-name buf))
+                                 (and (buffer-live-p buf)
+                                      (kill-buffer buf))
+                                 (buffer-name buf))
+                            nil)
+                         ('error nil)))
                    (buffer-list)))))
   (add-hook 'desktop-save-mode-hook #'kill-annoying-buffers)
   (setq
