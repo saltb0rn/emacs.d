@@ -931,6 +931,28 @@ The ROOT points to the directory where posts store on."
   :ensure-system-package git
   :ensure t)
 
+(use-package engine-mode
+  :ensure t
+  :config
+  (engine-mode t)
+  ;; the usage of engine-mode
+  ;; https://github.com/hrs/engine-mode
+  (defengine github
+    "https://github.com/search?ref=simplesearch&q=%s"
+    :keybinding "c")
+  (defengine google
+    "https://google.com/search?ie=utf-8&oe=utf-8&q=%s"
+    :keybinding "g")
+  (defengine duckduckgo
+    "https://duckduckgo.com/?q=%s"
+    :keybinding "d")
+  (defengine stack-overflow
+    "https://stackoverflow.com/search?q=%s")
+  (defengine wikipedia
+    "http://www.wikipedia.org/search-redirect.php?language=en&go=Go&search=%s"
+    :keybinding "w"
+    :docstring "Searchin' the wikis."))
+
 ;; built-in libraries
 
 (use-package desktop
