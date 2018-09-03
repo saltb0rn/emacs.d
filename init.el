@@ -1014,6 +1014,11 @@ The ROOT points to the directory where posts store on."
   ;; TODO: after-save-hook, refresh ctags file
   )
 
+(use-package browse-url
+  :config
+  (when (executable-find browse-url-chrome-program)
+    (setq browse-url-browser-function 'browse-url-chrome)))
+
 (use-package socks
   :disabled
   :init (setq socks-server-on nil)
