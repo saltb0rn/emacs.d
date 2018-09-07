@@ -453,9 +453,11 @@ So that entire list of result will be showed."
                ('default "")
                ('blog
                 `,(concat
+                   "\n<meta name=\"google-site-verification\" content=\"GSgfDkJS4wqhz_cK-gCQQzcDkrjqVixtO24NDjAjNtQ\" />"
                    "\n<link rel=\"stylesheet\" type=\"text/css\" href=\"../../../css/stylesheet.css\"/>"
                    "\n<link rel=\"icon\" type=\"image/png\" href=\"../../../img/icon.png\" />"
-                   "\n<script type=\"text/javascript\" src=\"http://livejs.com/live.js\"></script>"
+                   ;;"\n<script type=\"text/javascript\" src=\"http://livejs.com/live.js\"></script>"
+                   "\n<script type=\"text/javascript\" src=\"../../../js/live.js\" defer></script>"
                    "\n<script src=\"../../../js/main.js\" defer></script>")))
 
    blog-alist
@@ -476,6 +478,7 @@ So that entire list of result will be showed."
       :html-postamble ,(postamble-dispatcher 'default)
       :exclude "site")
      ("about"
+
       :base-directory ,(concat project-path "about/")
       :base-extension "org"
       :publishing-directory ,(concat publish-path "about/")
@@ -963,7 +966,7 @@ The ROOT points to the directory where posts store on."
               #'(lambda ()
                   (mapcar
                    #'(lambda (buf)
-                       (condition-case nil
+                       (condition-case err
                            (or
                             (and (string-match-p
                                   "\\*[[:ascii:][:nonascii:]]+?\\*" (buffer-name buf))
@@ -971,7 +974,7 @@ The ROOT points to the directory where posts store on."
                                       (kill-buffer buf))
                                  (buffer-name buf))
                             nil)
-                         ('error nil)))
+                         (error nil)))
                    (buffer-list)))))
   (add-hook 'desktop-save-mode-hook #'kill-annoying-buffers)
   (setq
