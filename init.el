@@ -562,15 +562,17 @@ the `org-capture-templates'. "
   (add-to-list 'org-capture-templates
                `("b" "Blog Post" plain
                  (file capture-blog-post-file)
-                 ,(concat
-                 "#+title: %^{Title}"
-                 "#+date: %<%Y-%m-%d>"
-                 "#+index: %^{Concept Index Entry}"
-                 "#+tags: %^{Tags}"
-                 "#+begin_abstract"
-                 "%^{Abstract}"
-                 "#+end_abstract"
-                 "%?")))
+                 ,(string-join
+                   (list
+                    "#+title: %^{Title}"
+                    "#+date: %<%Y-%m-%d>"
+                    "#+index: %^{Concept Index Entry}"
+                    "#+tags: %^{Tags}"
+                    "#+begin_abstract"
+                    "%^{Abstract}"
+                    "#+end_abstract"
+                    "%?")
+                   "\n")))
 
   (defun read-option-from-post (post option &optional default)
     "Read OPTION from POST. Return DEFAULT by default."
@@ -616,9 +618,10 @@ string consisting of url and title of org-file"
                                               (goto-char (point-min))
                                               (if (re-search-forward
                                                    (concat
-                                                    "#\\+begin_abstract\\("
-                                                    "[[:ascii:][:nonascii:]]*"
-                                                    "\\)#\\+end_abstract")
+                                                    "#\\+begin_abstract"
+                                                    ;; "\\([[:ascii:][:nonascii:]]*\\)"
+                                                    "\\(\\(?:.*\n\\)*.*\\)"
+                                                    "#\\+end_abstract")
                                                    nil t)
                                                   (match-string-no-properties 1 nil)
                                                 ""))))))))
