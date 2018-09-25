@@ -166,6 +166,13 @@
 
 ;; third-party packages
 
+(use-package company
+  :ensure t
+  :hook ((c-mode
+          c++-mode
+          php-mode
+          js2-mode) . company-mode))
+
 (use-package flycheck
   :ensure t
   :hook (elpy-mode . flycheck-mode))
@@ -313,6 +320,32 @@ So that entire list of result will be showed."
     (let ((helm-candidate-number-limit nil))
       (funcall (ad-get-orig-definition 'helm-etags-select) reinit))))
 
+(use-package helm-gtags
+  :ensure t
+  :hook
+  ((dired-mode
+    eshell-mode
+    c-mode
+    c++-mode) . helm-gtags-mode)
+  :ensure-system-package (gtags . global)
+  :bind
+  (:map helm-gtags-mode-map
+        ("C-c g a" . #'helm-gtags-in-this-function)
+        ("C-j" . #'helm-gtags-select)
+        ("M-." . #'helm-gtags-dwim)
+        ("M-," . #'helm-gtags-pop-stack)
+        ("C-c <" . #'helm-gtags-previous-history)
+        ("C-c >" . #'helm-gtags-next-history)))
+
+(use-package function-args
+  :ensure t)
+
+(use-package sr-speedbar
+  :ensure t
+  :config
+  (setq sr-speedbar-skip-other-window-p t  ; use windmove to move
+        sr-speedbar-right-side nil))
+
 (use-package rainbow-delimiters
   :ensure t
   :hook ((lisp-interaction-mode
@@ -358,7 +391,7 @@ So that entire list of result will be showed."
 (use-package org
   :ensure t
   :init
-  (define-skeleton org-insert-src-block
+  (define-skeleton org-insert-sr-block
     "Insert source block in org-mode"
     "Insert the code name of language: "
     "#+BEGIN_SRC " str \n
@@ -811,8 +844,7 @@ The ROOT points to the directory where posts store on."
             #'(lambda ()
                 "Add `company-ac-php-backend' to buffer-local version of `company-backends'."
                 (make-local-variable 'company-backends)
-                (push 'company-ac-php-backend company-backends)
-                (company-mode 1))))
+                (push 'company-ac-php-backend company-backends))))
 
 (use-package pyim
   :ensure t
@@ -877,12 +909,16 @@ The ROOT points to the directory where posts store on."
   :ensure t
   :config)
 
+(use-package company-c-headers
+  :ensure t
+  :config
+  (add-to-list 'company-c-headers-path-system "/usr/include/c++/8/"))
+
 (use-package indium
   :disabled
   :ensure t
   :ensure-system-package
   ((indium . "npm install -g indium")))
-
 
 (use-package js2-mode
   :ensure t
@@ -905,8 +941,8 @@ The ROOT points to the directory where posts store on."
   :ensure-system-package
   (tern . "npm install -g tern")
   :hook
-  ((js2-mode . tern-mode)
-   (js2-mode . company-mode))
+  ((js2-mode . tern-mode))
+   ;(js2-mode . company-mode))
   :config
   (add-to-list 'company-backends 'company-tern)
   (define-key tern-mode-keymap (kbd "M-.") nil)
@@ -959,6 +995,22 @@ The ROOT points to the directory where posts store on."
     :keybinding "w"
     :docstring "Searchin' the wikis."))
 
+;; (use-package ggtags
+;;   :ensure t
+;;   :bind
+;;   (:map ggtags-mode-map
+;;         ("C-c g s" . #'ggtags-find-other-symbol)
+;;         ("C-c g h" . #'ggtags-view-tag-history)
+;;         ("C-c g r" . #'ggtags-find-reference)
+;;         ("C-c g f" . #'ggtags-find-file)
+;;         ("C-c g c" . #'ggtags-create-tags)
+;;         ("C-c g u" . #'ggtags-update-tags))
+;;   :config
+;;   (add-hook 'c-mode-common-hook
+;;             (lambda ()
+;;               (when (derived-mode-p 'c-mode 'c++-mode)
+;;                 (ggtags-mode 1)))))
+
 ;; built-in libraries
 
 (use-package desktop
@@ -1000,7 +1052,7 @@ The ROOT points to the directory where posts store on."
   (defadvice eval-buffer (after eval-buffer-with-message activate)
     (message "Buffer evaluation finished!!!"))
   :bind (:map lisp-interaction-mode-map
-              ("C-c C-e" . eval-buffer)))
+              ("C-c C-a" . eval-buffer)))
 
 (use-package hideshow
   :hook ((lisp-interaction-mode
