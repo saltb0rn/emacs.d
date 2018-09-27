@@ -391,7 +391,7 @@ So that entire list of result will be showed."
 (use-package org
   :ensure t
   :init
-  (define-skeleton org-insert-sr-block
+  (define-skeleton org-insert-src-block
     "Insert source block in org-mode"
     "Insert the code name of language: "
     "#+BEGIN_SRC " str \n
@@ -402,7 +402,7 @@ So that entire list of result will be showed."
              simple-httpd
              plantuml-mode)
   :bind (:map org-mode-map
-         ("C-c i" . 'org-insert-src-block)
+         ("C-c i" . #'org-insert-src-block)
          :map global-map
          ("\C-c c" . org-capture))
   :config
@@ -1013,8 +1013,6 @@ The ROOT points to the directory where posts store on."
                   #'(lambda ()
                       (interactive)
                       (display-buffer ilog-buffer-name))))
-
-
 
 (use-package engine-mode
   :ensure t
