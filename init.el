@@ -395,6 +395,7 @@ So that entire list of result will be showed."
     "Insert source block in org-mode"
     "Insert the code name of language: "
     "#+BEGIN_SRC " str \n
+    > _ \n
     "#+END_SRC")
   :requires (htmlize
              dash
@@ -946,10 +947,13 @@ The ROOT points to the directory where posts store on."
   (add-to-list 'company-c-headers-path-system "/usr/include/c++/8/"))
 
 (use-package indium
-  :disabled
   :ensure t
   :ensure-system-package
-  ((indium . "npm install -g indium")))
+  ((indium . "npm install -g indium"))
+  :hook (js2-mode . indium-interaction-mode)
+  :config
+  ;; to define a skeleton to auto insert .indium config file
+  )
 
 (use-package js2-mode
   :ensure t
@@ -965,23 +969,110 @@ The ROOT points to the directory where posts store on."
   (add-hook 'js2-mode-hook
             #'(lambda ()
                 (add-hook 'xref-backend-functions
-                          #'xref-js2-xref-backend nil t))))
+                          #'xref-js2-xref-backend nil t)))
+
+  (defcustom dev-dependencies
+    '(babel
+      babel-cli
+      babel-loader
+      react-hot-loader
+      webpack
+      webpack-cli
+      webpack-dev-server
+      html-webpack-plugin)
+    "The dev dependencies list for your project."
+    :type 'list)
+
+  (setq npm-init.js
+    (concat
+     "var dirname = process.cwd().split(\"/\").reverse()[0];\n\n"
+     "module.exports = {\n"
+     "    scripts: {\n"
+     "        \"dev\": \"npx webpack-dev-server\",\n"
+     "        \"clean\": \"([ -d dist ] && [ `ls dist | wc -l` -gt '0' ] && rm -r dist/*.js) || ([ -f dist ] && rm dist) || echo \\\"already cleaned\\\"\",\n"
+     "        \"build\": \"npx webpack\",\n"
+     "        \"init\": \"npm install --save-dev " (string-join (mapcar #'symbol-name dev-dependencies) " ") "\",\n"
+     "    },\n"
+     "    name: dirname,\n"
+     "    version: \"1.0.0\",\n"
+     "};"))
+
+  (setq webpack.config.js
+        (concat
+         "const webpack = require(\"webpack\");\n"
+         "const HtmlWebpackPlugin = require(\"html-webpack-plugin\");\n"
+         "// about the html plugin: https://github.com/jantimon/html-webpack-plugin#options"
+         "\n"
+         "module.exports = {\n"
+         "    mode: \"development\",\n"
+         "    entry: {\n"
+         "        index: ./src/index.js"
+         "    },\n"
+         "    output: {\n"
+         "        path: __dirname + \"/dist\",\n"
+         "        filename: '[name].bundle.js',\n"
+         "    },\n"
+         "    devServer: {\n"
+         "        contentBase: __dirname + \"/dist\",\n"
+         "        compress: true,\n"
+         "        inline: true,\n"
+         "        hot: true,\n"
+         "    },\n"
+         ;; "    module: {\n"
+         ;; "        rules: [\n"
+         ;; "            {\n"
+         ;; "                test:"
+         ;; "            }\n"
+         ;; "        ]\n"
+         ;; "    },\n"
+         "    plugins: [\n"
+         "        new webpack.HotModuleReplacementPlugin(),\n"
+         "        // new HtmlWebpackPlugin({template: \"./src/index.html\"}),\n"
+         "    ]\n"
+         "};"))
+
+  (defun create-webpack-project (parent name)
+    "Create a empty project using webpack to develop.
+A empty project should look like this:
+
+.
+├── dist
+├── package.json
+├── src
+└── webpack.config.js
+
+2 directories, 2 files
+
+After creating the new empty project, go to the directory execute \"npm run init\" to install dev dependencies and start to develop your project."
+    (interactive (list (read-directory-name "Run find in directory: " nil "" t)
+                       (read-string "Input the name of the project: ")))
+    (let ((webpack-project-root (format "%s%s/" parent name)))
+      (condition-case exn
+          (progn
+            (mkdir webpack-project-root)
+            (mkdir (concat webpack-project-root "src"))
+            (mkdir (concat webpack-project-root "dist"))
+            (with-temp-buffer (insert webpack.config.js)
+                              (write-region (buffer-string) nil (concat webpack-project-root "webpack.config.js")))
+            (with-temp-buffer (insert npm-init.js)
+                              (write-region (buffer-string) nil (expand-file-name "~/.npm-init.js")))
+            (shell-command (string-join (list "cd" webpack-project-root "&&" "npm" "init" "-y") " ") nil nil))
+        (error
+         (when (file-directory-p webpack-project-root)
+           (delete-directory webpack-project-root t))
+         (prin1 exn))))))
 
 (use-package company-tern
   :ensure t
   :ensure-system-package
   (tern . "npm install -g tern")
   :hook
-  ((js2-mode . tern-mode))
-   ;(js2-mode . company-mode))
+  ((js2-mode . tern-mode)
+  (js2-mode . company-mode))
   :config
   (add-to-list 'company-backends 'company-tern)
   (define-key tern-mode-keymap (kbd "M-.") nil)
-  (define-key tern-mode-keymap (kbd "M-,") nil)
-
-  ;; create default config in ~/.tern-config
-
-  )
+  (define-key tern-mode-keymap (kbd "M-,") nil))
 
 (use-package js2-refactor
   :ensure t
@@ -1053,6 +1144,11 @@ The ROOT points to the directory where posts store on."
 ;;                 (ggtags-mode 1)))))
 
 ;; built-in libraries
+
+;; (use-package auto-insert
+;;   :config
+;;   TODO js and html
+;;   )
 
 (use-package desktop
   :config
