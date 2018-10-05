@@ -132,6 +132,15 @@
 ;; set key bidings
 (define-key (current-global-map) (kbd "C-c C-c") #'whitespace-cleanup)
 
+;; write to file
+(defun write-to-file (content file)
+  "Write CONTENT to FILE.
+CONTENT must be string type.
+FILE should be path to which CONTENT is written."
+  (with-temp-buffer
+    (insert content)
+    (write-region (buffer-string) nil file)))
+
 (define-skeleton insert-mit-license
   "Insert MIT license"
   nil
@@ -1006,7 +1015,7 @@ The ROOT points to the directory where posts store on."
          "module.exports = {\n"
          "    mode: \"development\",\n"
          "    entry: {\n"
-         "        index: ./src/index.js"
+         "        // index: ./src/index.js,\n"
          "    },\n"
          "    output: {\n"
          "        path: __dirname + \"/dist\",\n"
@@ -1052,11 +1061,9 @@ After creating the new empty project, go to the directory execute \"npm run init
             (mkdir webpack-project-root)
             (mkdir (concat webpack-project-root "src"))
             (mkdir (concat webpack-project-root "dist"))
-            (with-temp-buffer (insert webpack.config.js)
-                              (write-region (buffer-string) nil (concat webpack-project-root "webpack.config.js")))
-            (with-temp-buffer (insert npm-init.js)
-                              (write-region (buffer-string) nil (expand-file-name "~/.npm-init.js")))
-            (shell-command (string-join (list "cd" webpack-project-root "&&" "npm" "init" "-y") " ") nil nil))
+            (write-to-file webpack.config.js (concat webpack-project-root "webpack.config.js"))
+            (write-to-file npm-init.js (expand-file-name "~/.npm-init.js"))
+            (shell-command (format "cd %s && npm init -y" webpack-project-root) nil nil))
         (error
          (when (file-directory-p webpack-project-root)
            (delete-directory webpack-project-root t))
