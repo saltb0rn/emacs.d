@@ -135,11 +135,19 @@
 ;; write to file
 (defun write-to-file (content file)
   "Write CONTENT to FILE.
-CONTENT must be string type.
+CONTENT should be string type.
 FILE should be path to which CONTENT is written."
   (with-temp-buffer
     (insert content)
     (write-region (buffer-string) nil file)))
+
+;; read from file
+(defun read-from-file (file)
+  "Read Content from FILE.
+FILE should be a path to file."
+  (with-temp-buffer
+    (insert-file-contents-literally (expand-file-name file))
+    (buffer-string)))
 
 (define-skeleton insert-mit-license
   "Insert MIT license"
@@ -980,65 +988,36 @@ The ROOT points to the directory where posts store on."
                 (add-hook 'xref-backend-functions
                           #'xref-js2-xref-backend nil t)))
 
-  (defcustom dev-dependencies
-    '(babel
-      babel-cli
-      babel-loader
-      react-hot-loader
-      webpack
-      webpack-cli
-      webpack-dev-server
-      html-webpack-plugin)
-    "The dev dependencies list for your project."
-    :type 'list)
+  ;; (defcustom dev-dependencies
+  ;;   ;; @babel since Babel 7
+  ;;   '(babel-loader                      ; a loader for babel
+  ;;     @babel/core                       ; core functionality of Babel
+  ;;     @babel/preset-env ; instead of adding all the plugins one by one, use a "preset" which is just a pre-determined set of plugins. env preset to only include the gransformations and polyfills for the features that we use and the are missing in our target browsers.
+  ;;     @babel/cli    ; a tool allows you to use label from the terminal
+  ;;     @babel/polyfill ; to polyfill all the new JavaScript features
+  ;;     react-hot-loader ; a plugin for webpack to automatically refresh js files after saving them
+  ;;     webpack      ; core functionality of webpack
+  ;;     webpack-cli  ; a tool allow you to use webpack from the terminal
+  ;;     webpack-dev-server          ; to emulate a server
+  ;;     webpack-api-mocker          ; to provide a mocker server
+  ;;     html-webpack-plugin)        ; to package html file automatically
+  ;;   "The dev dependencies list for your project."
+  ;;   :type 'list)
 
-  (setq npm-init.js
-    (concat
-     "var dirname = process.cwd().split(\"/\").reverse()[0];\n\n"
-     "module.exports = {\n"
-     "    scripts: {\n"
-     "        \"dev\": \"npx webpack-dev-server\",\n"
-     "        \"clean\": \"([ -d dist ] && [ `ls dist | wc -l` -gt '0' ] && rm -r dist/*.js) || ([ -f dist ] && rm dist) || echo \\\"already cleaned\\\"\",\n"
-     "        \"build\": \"npx webpack\",\n"
-     "        \"init\": \"npm install --save-dev " (string-join (mapcar #'symbol-name dev-dependencies) " ") "\",\n"
-     "    },\n"
-     "    name: dirname,\n"
-     "    version: \"1.0.0\",\n"
-     "};"))
+  (defun get-path-to-template-file (path)
+    (expand-file-name (concat user-emacs-directory "assets/" path)))
 
-  (setq webpack.config.js
-        (concat
-         "const webpack = require(\"webpack\");\n"
-         "const HtmlWebpackPlugin = require(\"html-webpack-plugin\");\n"
-         "// about the html plugin: https://github.com/jantimon/html-webpack-plugin#options"
-         "\n"
-         "module.exports = {\n"
-         "    mode: \"development\",\n"
-         "    entry: {\n"
-         "        // index: ./src/index.js,\n"
-         "    },\n"
-         "    output: {\n"
-         "        path: __dirname + \"/dist\",\n"
-         "        filename: '[name].bundle.js',\n"
-         "    },\n"
-         "    devServer: {\n"
-         "        contentBase: __dirname + \"/dist\",\n"
-         "        compress: true,\n"
-         "        inline: true,\n"
-         "        hot: true,\n"
-         "    },\n"
-         ;; "    module: {\n"
-         ;; "        rules: [\n"
-         ;; "            {\n"
-         ;; "                test:"
-         ;; "            }\n"
-         ;; "        ]\n"
-         ;; "    },\n"
-         "    plugins: [\n"
-         "        new webpack.HotModuleReplacementPlugin(),\n"
-         "        // new HtmlWebpackPlugin({template: \"./src/index.html\"}),\n"
-         "    ]\n"
-         "};"))
+  (setq
+   
+   npm-init.js (read-from-file (get-path-to-template-file "webpack/.npm-init.js"))
+   
+   webpack.config.js (read-from-file (get-path-to-template-file "webpack/webpack.config.js"))
+
+   webpack-index.js (read-from-file (get-path-to-template-file "webpack/src/index.js"))
+
+   webpack-index.html (read-from-file (get-path-to-template-file "webpack/src/index.html"))
+
+   webpack-api-mocker-example (read-from-file (get-path-to-template-file "webpack/mocker/index.js")))
 
   (defun create-webpack-project (parent name)
     "Create a empty project using webpack to develop.
@@ -1046,11 +1025,15 @@ A empty project should look like this:
 
 .
 ├── dist
+├── mocker
+│   └── index.js
 ├── package.json
 ├── src
+│   ├── index.html
+│   └── index.js
 └── webpack.config.js
 
-2 directories, 2 files
+3 directories, 5 files
 
 After creating the new empty project, go to the directory execute \"npm run init\" to install dev dependencies and start to develop your project."
     (interactive (list (read-directory-name "Run find in directory: " nil "" t)
@@ -1060,7 +1043,12 @@ After creating the new empty project, go to the directory execute \"npm run init
           (progn
             (mkdir webpack-project-root)
             (mkdir (concat webpack-project-root "src"))
+            (write-to-file webpack-index.html (concat webpack-project-root "src" "/index.html"))
+            (write-to-file webpack-index.js (concat webpack-project-root "src" "/index.js"))
             (mkdir (concat webpack-project-root "dist"))
+            (mkdir (concat webpack-project-root "mocker"))
+            (write-to-file webpack-api-mocker-example
+                           (concat webpack-project-root "mocker" "/index.js"))
             (write-to-file webpack.config.js (concat webpack-project-root "webpack.config.js"))
             (write-to-file npm-init.js (expand-file-name "~/.npm-init.js"))
             (shell-command (format "cd %s && npm init -y" webpack-project-root) nil nil))
