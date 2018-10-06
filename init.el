@@ -149,6 +149,9 @@ FILE should be a path to file."
     (insert-file-contents-literally (expand-file-name file))
     (buffer-string)))
 
+(defun get-path-to-asset-file (file)
+  (expand-file-name (concat user-emacs-directory "assets/" file)))
+
 (define-skeleton insert-mit-license
   "Insert MIT license"
   nil
@@ -1004,20 +1007,19 @@ The ROOT points to the directory where posts store on."
   ;;   "The dev dependencies list for your project."
   ;;   :type 'list)
 
-  (defun get-path-to-template-file (path)
-    (expand-file-name (concat user-emacs-directory "assets/" path)))
+
 
   (setq
-   
-   npm-init.js (read-from-file (get-path-to-template-file "webpack/.npm-init.js"))
-   
-   webpack.config.js (read-from-file (get-path-to-template-file "webpack/webpack.config.js"))
 
-   webpack-index.js (read-from-file (get-path-to-template-file "webpack/src/index.js"))
+   npm-init.js (read-from-file (get-path-to-asset-file "webpack/.npm-init.js"))
 
-   webpack-index.html (read-from-file (get-path-to-template-file "webpack/src/index.html"))
+   webpack.config.js (read-from-file (get-path-to-asset-file "webpack/webpack.config.js"))
 
-   webpack-api-mocker-example (read-from-file (get-path-to-template-file "webpack/mocker/index.js")))
+   webpack-index.js (read-from-file (get-path-to-asset-file "webpack/src/index.js"))
+
+   webpack-index.html (read-from-file (get-path-to-asset-file "webpack/src/index.html"))
+
+   webpack-api-mocker-example (read-from-file (get-path-to-asset-file "webpack/mocker/index.js")))
 
   (defun create-webpack-project (parent name)
     "Create a empty project using webpack to develop.
