@@ -991,36 +991,6 @@ The ROOT points to the directory where posts store on."
                 (add-hook 'xref-backend-functions
                           #'xref-js2-xref-backend nil t)))
 
-  ;; (defcustom dev-dependencies
-  ;;   ;; @babel since Babel 7
-  ;;   '(babel-loader                      ; a loader for babel
-  ;;     @babel/core                       ; core functionality of Babel
-  ;;     @babel/preset-env ; instead of adding all the plugins one by one, use a "preset" which is just a pre-determined set of plugins. env preset to only include the gransformations and polyfills for the features that we use and the are missing in our target browsers.
-  ;;     @babel/cli    ; a tool allows you to use label from the terminal
-  ;;     @babel/polyfill ; to polyfill all the new JavaScript features
-  ;;     react-hot-loader ; a plugin for webpack to automatically refresh js files after saving them
-  ;;     webpack      ; core functionality of webpack
-  ;;     webpack-cli  ; a tool allow you to use webpack from the terminal
-  ;;     webpack-dev-server          ; to emulate a server
-  ;;     webpack-api-mocker          ; to provide a mocker server
-  ;;     html-webpack-plugin)        ; to package html file automatically
-  ;;   "The dev dependencies list for your project."
-  ;;   :type 'list)
-
-
-
-  ;; (setq
-
-  ;;  npm-init.js (read-from-file (get-path-to-asset-file "webpack/.npm-init.js"))
-
-  ;;  webpack.config.js (read-from-file (get-path-to-asset-file "webpack/webpack.config.js"))
-
-  ;;  webpack-index.js (read-from-file (get-path-to-asset-file "webpack/src/index.js"))
-
-  ;;  webpack-index.html (read-from-file (get-path-to-asset-file "webpack/src/index.html"))
-
-  ;;  webpack-api-mocker-example (read-from-file (get-path-to-asset-file "webpack/mocker/index.js")))
-
   (defun create-webpack-project (parent name)
     "Create a empty project using webpack to develop.
 A empty project should look like this:
@@ -1031,11 +1001,16 @@ A empty project should look like this:
 │   └── index.js
 ├── package.json
 ├── src
-│   ├── index.html
-│   └── index.js
+│   ├── css
+│   │   └── index.css
+│   ├── html
+│   │   └── index.html
+│   ├── img
+│   └── js
+│       └── index.js
 └── webpack.config.js
 
-3 directories, 5 files
+7 directories, 6 files
 
 After creating the new empty project, go to the directory execute \"npm run init\" to install dev dependencies and start to develop your project."
     (interactive (list (read-directory-name "Run find in directory: " nil "" t)
