@@ -5,22 +5,32 @@
 
   About configuration for webpack: https://webpack.js.org/configuration/.
 
+  You can find loaders here: https://webpack.js.org/loaders/.
+
+  And find plugins here: https://webpack.js.org/plugins/.
 */
+var fs = require("fs");
 const path = require('path');
 const webpack = require('webpack');
 // package html files to dist directory: https://github.com/jantimon/html-webpack-plugin#options
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+// package css files from html files: https://webpack.js.org/plugins/mini-css-extract-plugin/
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 // build a api mocker: https://github.com/jaywcjlove/webpack-api-mocker/tree/master/example/webpack
 const apiMocker = require('webpack-api-mocker');
+
+const dist = "dist";
 
 module.exports = {
     mode: 'development',
     entry: {
-        index: './src/index.js',
+        index: './src/js/index.js',
+        // main: './src/js/main.js', define new entries here
     },
+    // entry: fs.readdirSync("./src/js").filter(elt => /^(?!\.).*\.js$/),
     output: {
         path: path.resolve(__dirname, 'dist'),
-        filename: '[name].bundle.js',
+        filename: 'js/[name].js?[hash]',
     },
     devtool: 'inline-source-map',
     devServer: {
@@ -40,7 +50,7 @@ module.exports = {
                 // We can put options here instead of putting them in './mocker/index.js'
             );
         },
-        contentBase: path.resolve( __dirname, 'dist'),
+        contentBase: path.resolve( __dirname, dist),
         compress: true,
         inline: true,
         hot: true,
@@ -75,6 +85,41 @@ module.exports = {
                     },
                 },
             },
+            {
+                test: /\.(?:c|sa|le)ss$/,
+                use: [
+                    MiniCssExtractPlugin.loader,
+                    'css-loader',
+                    // 'style-loader',
+                    // 'postcss-loader',
+                    'sass-loader',
+                    'less-loader'
+                ]
+            },
+            {
+                test: /\.(?:jpeg|png|gif|jpg)$/,
+                use: {
+                    loader: 'url-loader',
+                    options: {
+                        fallback: 'file-loader',
+                        limit: 1024,
+                        outputPath: path.relative(
+                            path.resolve(__dirname, dist),
+                            path.resolve(__dirname, dist, 'img')),
+                        name: '[name].[ext]?[hash]',
+                    }
+                }
+            },
+            {
+                test: /\.html$/,
+                use: {
+                    loader: 'html-loader',
+                    options: {
+                        attrs: ['img:src'] // no need to import images in js files any more
+                    }
+                }
+
+            },
             // {
             //     // new rule to be defined here
             // },
@@ -82,7 +127,29 @@ module.exports = {
     },
     plugins: [
         // module hot reload, refresh module automatically while saving modifications.
+
+        new HtmlWebpackPlugin({
+            filename: 'index.html', // specify the name of published file, by default it is index.html
+            chunks: ['index'],
+            /*
+              specify which modules should be include, and if you want to sepcify css files, images or something else  as well,
+              done through importing them in the module specified just now.
+            */
+            template: './src/html/index.html', // where the file is built from
+        }),
+
+        // new HtmlWebpackPlugin({
+        //     ...
+        // })
+        // another html file
+
+        new MiniCssExtractPlugin({
+            filename: path.relative(
+                path.resolve(__dirname, dist),
+                path.resolve(__dirname, dist, 'css', '[name].css?[hash]')),
+            chunkFilename: '[id].css'
+        }),
+
         new webpack.HotModuleReplacementPlugin(),
-        new HtmlWebpackPlugin({template: 'src/index.html'}),
     ],
 };

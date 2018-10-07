@@ -1009,17 +1009,17 @@ The ROOT points to the directory where posts store on."
 
 
 
-  (setq
+  ;; (setq
 
-   npm-init.js (read-from-file (get-path-to-asset-file "webpack/.npm-init.js"))
+  ;;  npm-init.js (read-from-file (get-path-to-asset-file "webpack/.npm-init.js"))
 
-   webpack.config.js (read-from-file (get-path-to-asset-file "webpack/webpack.config.js"))
+  ;;  webpack.config.js (read-from-file (get-path-to-asset-file "webpack/webpack.config.js"))
 
-   webpack-index.js (read-from-file (get-path-to-asset-file "webpack/src/index.js"))
+  ;;  webpack-index.js (read-from-file (get-path-to-asset-file "webpack/src/index.js"))
 
-   webpack-index.html (read-from-file (get-path-to-asset-file "webpack/src/index.html"))
+  ;;  webpack-index.html (read-from-file (get-path-to-asset-file "webpack/src/index.html"))
 
-   webpack-api-mocker-example (read-from-file (get-path-to-asset-file "webpack/mocker/index.js")))
+  ;;  webpack-api-mocker-example (read-from-file (get-path-to-asset-file "webpack/mocker/index.js")))
 
   (defun create-webpack-project (parent name)
     "Create a empty project using webpack to develop.
@@ -1043,17 +1043,14 @@ After creating the new empty project, go to the directory execute \"npm run init
     (let ((webpack-project-root (format "%s%s/" parent name)))
       (condition-case exn
           (progn
-            (mkdir webpack-project-root)
-            (mkdir (concat webpack-project-root "src"))
-            (write-to-file webpack-index.html (concat webpack-project-root "src" "/index.html"))
-            (write-to-file webpack-index.js (concat webpack-project-root "src" "/index.js"))
-            (mkdir (concat webpack-project-root "dist"))
-            (mkdir (concat webpack-project-root "mocker"))
-            (write-to-file webpack-api-mocker-example
-                           (concat webpack-project-root "mocker" "/index.js"))
-            (write-to-file webpack.config.js (concat webpack-project-root "webpack.config.js"))
-            (write-to-file npm-init.js (expand-file-name "~/.npm-init.js"))
-            (shell-command (format "cd %s && npm init -y" webpack-project-root) nil nil))
+            (copy-directory
+             (get-path-to-asset-file "webpack")
+             webpack-project-root nil nil)
+            (write-to-file
+             (format (read-from-file (get-path-to-asset-file "webpack/.package-json-tpl")) name)
+             (concat webpack-project-root "package.json"))
+            ;; (shell-command (format "cd %s && npm init -y" webpack-project-root) nil nil)
+            )
         (error
          (when (file-directory-p webpack-project-root)
            (delete-directory webpack-project-root t))
