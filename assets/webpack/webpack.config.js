@@ -115,7 +115,7 @@ module.exports = {
                 use: {
                     loader: 'html-loader',
                     options: {
-                        attrs: ['img:src'] // no need to import images in js files any more
+                        attrs: ['img:src'] // no need to import images in js files anymore
                     }
                 }
 
