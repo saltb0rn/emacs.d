@@ -229,7 +229,9 @@ FILE should be a path to file."
          geiser-mode
          lisp-interaction-mode
          racket-mode
-         php-mode)
+         php-mode
+         js2-mode
+         js2-jsx-mode)
   :config
   (setq fic-highlighted-words
         (quote ("FIXME" "TODO" "BUG" "NOTE" "FIXED")))

@@ -9,148 +9,199 @@
 
   And find plugins here: https://webpack.js.org/plugins/.
 */
-var fs = require("fs");
-const path = require('path');
-const webpack = require('webpack');
+const Fs = require('fs');
+const Path = require('path');
+const WebPack = require('webpack');
 // package html files to dist directory: https://github.com/jantimon/html-webpack-plugin#options
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 // package css files from html files: https://webpack.js.org/plugins/mini-css-extract-plugin/
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 // build a api mocker: https://github.com/jaywcjlove/webpack-api-mocker/tree/master/example/webpack
-const apiMocker = require('webpack-api-mocker');
+const ApiMocker = require('webpack-api-mocker');
 
-const dist = "dist";
+const DIST = 'dist',
+      SRC = 'src',
+      JS = 'js',
+      HTML = 'html',
+      CSS = 'css';
 
-module.exports = {
-    mode: 'development',
-    entry: {
-        index: './src/js/index.js',
-        // main: './src/js/main.js', define new entries here
+const MODULE = module;
+
+var entry = {
+    index: `./${SRC}/${JS}/index.js`,
+};
+
+var output = {
+    path: Path.resolve(__dirname, DIST),
+    filename: `${JS}/[name].js?[hash]`,
+};
+
+var devServer = {
+    before(app) {
+        ApiMocker(
+            app,
+            Path.resolve('./mocker/index.js'),
+            /*
+              {
+              proxy: {
+              '/repos/*': 'https://api.github.com',
+              },
+              changeHost: true,
+              }
+              ...
+            */
+            // We can put options here instead of putting them in './mocker/index.js'
+        );
     },
-    // entry: fs.readdirSync("./src/js").filter(elt => /^(?!\.).*\.js$/),
-    output: {
-        path: path.resolve(__dirname, 'dist'),
-        filename: 'js/[name].js?[hash]',
-    },
-    devtool: 'inline-source-map',
-    devServer: {
-        before(app) {
-            apiMocker(
-                app,
-                path.resolve('./mocker/index.js'),
-                /*
-                {
-                    proxy: {
-                        '/repos/*': 'https://api.github.com',
-                    },
-                    changeHost: true,
-                }
-                ...
-                */
-                // We can put options here instead of putting them in './mocker/index.js'
-            );
-        },
-        contentBase: path.resolve( __dirname, dist),
-        compress: true,
-        inline: true,
-        hot: true,
-    },
-    // about module, we can configure loaders here
-    // https://webpack.js.org/configuration/module/
-    module: {
-        rules: [
-            {
-                test: /.jsx?$/,
-                exclude: /node_modules/,
-                use: {
-                    loader: 'babel-loader',
-                    // about 'options' key
-                    // https://webpack.js.org/configuration/module/#rule-options-rule-query
-                    options: {
-                        // about babel-present-env
-                        // https://babeljs.io/docs/en/babel-preset-env
-                        presets: [
-                            '@babel/preset-react',
-                            [
-                                '@babel/preset-env',
-                                {
-                                    // about browserslist reference
-                                    // https://github.com/browserslist/browserslist
-                                    // 'targets' : {
-                                    //     'browsers': ['> 5%', 'not dead, last 2 versions'],
-                                    // }
-                                    'targets': '> 5%, not dead, last 2 versions',
-                                },
-                            ],
+    contentBase: Path.resolve( __dirname, DIST),
+    compress: true,
+    inline: true,
+    hot: true,
+};
+
+var module = {
+    rules: [
+        {
+            test: /.js$/,
+            exclude: /node_modules/,
+            use: {
+                loader: 'babel-loader',
+                // about 'options' key
+                // https://webpack.js.org/configuration/module/#rule-options-rule-query
+                options: {
+                    // about babel-present-env
+                    // https://babeljs.io/docs/en/babel-preset-env
+                    presets: [
+                        '@babel/preset-react',
+                        [
+                            '@babel/preset-env',
+                            {
+                                // about browserslist reference
+                                // https://github.com/browserslist/browserslist
+                                // 'targets' : {
+                                //     'browsers': ['> 5%', 'not dead, last 2 versions'],
+                                // }
+                                'targets': '> 5%, not dead, last 2 versions',
+                            },
                         ],
-                    },
+                    ],
                 },
             },
-            {
-                test: /\.(?:c|sa|le)ss$/,
-                use: [
-                    MiniCssExtractPlugin.loader,
-                    'css-loader',
-                    // 'style-loader',
-                    // 'postcss-loader',
-                    'sass-loader',
-                    'less-loader'
-                ]
-            },
-            {
-                test: /\.(?:jpeg|png|gif|jpg)$/,
-                use: {
-                    loader: 'url-loader',
-                    options: {
-                        fallback: 'file-loader',
-                        limit: 1024,
-                        outputPath: path.relative(
-                            path.resolve(__dirname, dist),
-                            path.resolve(__dirname, dist, 'img')),
-                        name: '[name].[ext]?[hash]',
-                    }
+        },
+        {
+            test: /\.(?:c|sa|le)ss$/,
+            use: [
+                MiniCssExtractPlugin.loader,
+                'css-loader',
+                // 'style-loader',
+                // 'postcss-loader',
+                'sass-loader',
+                'less-loader'
+            ]
+        },
+        {
+            test: /\.(?:jpeg|png|gif|jpg)$/,
+            use: {
+                loader: 'url-loader',
+                options: {
+                    fallback: 'file-loader',
+                    limit: 1024,
+                    outputPath: Path.relative(
+                        Path.resolve(__dirname, DIST),
+                        Path.resolve(__dirname, DIST, 'img')),
+                    name: '[name].[ext]?[hash]',
                 }
-            },
-            {
-                test: /\.html$/,
-                use: {
-                    loader: 'html-loader',
-                    options: {
-                        attrs: ['img:src'] // no need to import images in js files anymore
-                    }
+            }
+        },
+        {
+            test: /\.html$/,
+            use: {
+                loader: 'html-loader',
+                options: {
+                    attrs: ['img:src'] // no need to import images in js files any more
                 }
+            }
 
-            },
-            // {
-            //     // new rule to be defined here
-            // },
-        ],
-    },
-    plugins: [
-        // module hot reload, refresh module automatically while saving modifications.
-
-        new HtmlWebpackPlugin({
-            filename: 'index.html', // specify the name of published file, by default it is index.html
-            chunks: ['index'],
-            /*
-              specify which modules should be include, and if you want to sepcify css files, images or something else  as well,
-              done through importing them in the module specified just now.
-            */
-            template: './src/html/index.html', // where the file is built from
-        }),
-
-        // new HtmlWebpackPlugin({
-        //     ...
-        // })
-        // another html file
-
-        new MiniCssExtractPlugin({
-            filename: path.relative(
-                path.resolve(__dirname, dist),
-                path.resolve(__dirname, dist, 'css', '[name].css?[hash]')),
-            chunkFilename: '[id].css'
-        }),
-
-        new webpack.HotModuleReplacementPlugin(),
+        },
+        // {
+        //     // new rule to be defined here
+        // },
     ],
 };
+
+var plugins = [
+    // module hot reload, refresh module automatically while saving modifications.
+
+    new HtmlWebpackPlugin({
+        filename: 'index.html', // specify the name of published file, by default it is index.html
+        chunks: ['index'],
+        /*
+          specify which modules should be include, and if you want to sepcify css files, images or something else  as well,
+          done through importing them in the module specified just now.
+        */
+        template: `./${SRC}/${HTML}/index.html`, // where the file is built from
+    }),
+
+    new MiniCssExtractPlugin({
+        filename: Path.relative(
+            Path.resolve(__dirname, DIST),
+            Path.resolve(__dirname, DIST, 'css', '[name].css?[hash]')),
+        chunkFilename: '[id].css'
+    }),
+
+    new WebPack.HotModuleReplacementPlugin(),
+];
+
+MODULE.exports = {
+    mode: 'development',
+    entry: entry,
+    output: output,
+    devtool: 'inline-source-map',
+    devServer: devServer,
+    module: module,
+    plugins: plugins
+};
+
+/*
+  Every time to build a new page will be annoying for creating a html file and related javascript files,
+  so I wrote this function to do these dirty works for me automatically.
+
+  The only thing left is to configure your HtmlWebpackplugin list.
+*/
+function confHtmlPage(confs) {
+    MODULE.exports.plugins = MODULE.exports.plugins.concat(
+        confs.map(
+            conf => {
+                let tpl = Path.resolve(__dirname, SRC, HTML, conf.template);
+                conf.template = `./${SRC}/${HTML}/${conf.template}`;
+                if (!Fs.existsSync(tpl))
+                    Fs.writeFileSync(
+                        tpl,
+                        '<!DOCTYPE html>\n<html>\n<head></head>\n<body></body>\n</html>');
+                for(let chunk of conf.chunks || []) {
+                    if (!MODULE.exports.entry[chunk]) {
+                        MODULE.exports.entry[chunk] = `./${SRC}/${JS}/${chunk}.js`;
+                        let entry = Path.resolve(__dirname, MODULE.exports.entry[chunk]);
+                        if (!Fs.existsSync(entry))
+                            Fs.writeFileSync(entry, `console.log('Find me here: ${tpl}')`);
+                    }
+
+                }
+                if (!conf.filename)
+                    conf.filename = `${conf.template.match(/(?:.*\/)*(.+).html$/)[1]}.html`;
+                if (!conf.inject === undefined) conf.inject = true;
+                return new HtmlWebpackPlugin(conf);
+            },
+            confs)
+    );
+}
+
+// Example for confHtmlPage
+// confHtmlPage([
+//     {
+//         inject: true,
+//         filename: 'rendering.html',
+//         chunks: ['rendering'],
+//         template: 'rendering.html',
+//     }
+// ]);
