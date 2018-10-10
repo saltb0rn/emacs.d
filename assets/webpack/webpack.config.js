@@ -177,13 +177,13 @@ function confHtmlPage(confs) {
                 if (!Fs.existsSync(tpl))
                     Fs.writeFileSync(
                         tpl,
-                        '<!DOCTYPE html>\n<html>\n<head></head>\n<body></body>\n</html>');
+                        '<!DOCTYPE html>\n<html>\n    <head></head>\n    <body></body>\n</html>');
                 for(let chunk of conf.chunks || []) {
                     if (!MODULE.exports.entry[chunk]) {
                         MODULE.exports.entry[chunk] = `./${SRC}/${JS}/${chunk}.js`;
                         let entry = Path.resolve(__dirname, MODULE.exports.entry[chunk]);
                         if (!Fs.existsSync(entry))
-                            Fs.writeFileSync(entry, `console.log('Find me here: ${tpl}')`);
+                            Fs.writeFileSync(entry, `console.log('Find me here: ${tpl}');`);
                     }
 
                 }
