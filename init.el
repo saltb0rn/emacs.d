@@ -667,7 +667,18 @@ the `org-capture-templates'. "
       (insert-file-contents post)
       (goto-char (point-min))
       (if (re-search-forward (concat "^#\\+" option ":[ \t]*\\(.*\\)") nil t)
-          (match-string-no-properties 1 nil)
+          (progn
+            (let* ((strs (split-string (match-string-no-properties 1 nil) "-"))
+                   (year (car strs))
+                   (month (cadr strs))
+                   (date (caddr strs)))
+              (format
+               "%s-%s-%s"
+               year
+               (or (and (= (length month) 1)
+                        (format "0%s" (cadr strs)))
+                   month)
+               date)))
         default)))
 
   (defun retrieve-posts (root)
