@@ -667,19 +667,20 @@ the `org-capture-templates'. "
       (insert-file-contents post)
       (goto-char (point-min))
       (if (re-search-forward (concat "^#\\+" option ":[ \t]*\\(.*\\)") nil t)
-          (progn
-            (let* ((strs (split-string (match-string-no-properties 1 nil) "-"))
-                   (year (car strs))
-                   (month (cadr strs))
-                   (date (caddr strs)))
-              (format
-               "%s-%s-%s"
-               year
-               (or (and (= (length month) 1)
-                        (format "0%s" (cadr strs)))
-                   month)
-               date)))
+          (match-string-no-properties 1 nil)
         default)))
+
+  (defun format-post-date (date)
+    (let* ((components (split-string date "-"))
+           (year (car components))
+           (month (cadr components))
+           (date (caddr components)))
+      (format
+       "%s-%s-%s"
+       year
+       (or (and (= (length month) 1) (format "0%s" month))
+           month)
+       date)))
 
   (defun retrieve-posts (root)
     "Search all the posts in `project-path', return a list of posts paths"
@@ -695,8 +696,8 @@ the `org-capture-templates'. "
         (sort res
               #'(lambda (f1 f2)
                   (string<
-                   (read-option-from-post f1 "date" (format-time-string "%Y-%m-%d"))
-                   (read-option-from-post f2 "date" (format-time-string "%Y-%m-%d"))))))))
+                   (format-post-date (read-option-from-post f1 "date" (format-time-string "%Y-%m-%d")))
+                   (format-post-date (read-option-from-post f2 "date" (format-time-string "%Y-%m-%d")))))))))
 
   (defun auto-generate-post-list (root)
     "Search the org files in `project-path', and generate a list of
