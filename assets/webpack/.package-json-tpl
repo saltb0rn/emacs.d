@@ -3,7 +3,7 @@
     "dev": "npx webpack-dev-server",
     "clean": "([ -d dist ] && [ `ls dist | wc -l` -gt '0' ] && rm -r dist/*) || ([ -f dist ] && rm dist) || echo \"already cleaned\"",
     "build": "npx webpack",
-    "init": "npm install --save-dev babel-loader @babel/core @babel/preset-env @babel/preset-react @babel/cli @babel/polyfill react-hot-loader webpack webpack-cli webpack-dev-server webpack-api-mocker html-webpack-plugin css-loader mini-css-extract-plugin less less-loader url-loader file-loader html-loader sass-loader node-sass"
+    "init": "npm install --save-dev babel-loader @babel/core @babel/preset-env @babel/preset-react @babel/cli @babel/polyfill react-hot-loader webpack webpack-cli webpack-dev-server webpack-api-mocker html-webpack-plugin css-loader mini-css-extract-plugin less less-loader url-loader file-loader html-loader sass-loader node-sass style-loader"
   },
   "name": "%s",
   "version": "1.0.0"

@@ -91,12 +91,12 @@ var module = {
         {
             test: /\.(?:c|sa|le)ss$/,
             use: [
-                MiniCssExtractPlugin.loader,
-                'css-loader',
-                // 'style-loader',
-                // 'postcss-loader',
+                'style-loader',
+                MiniCssExtractPlugin.loader, // extract the style from style elements
+                'css-loader', // return the CSS with imports and url(...) resolved via webpack's require functionality
                 'sass-loader',
-                'less-loader'
+                // 'less-loader'
+                // 'postcss-loader',
             ]
         },
         {
