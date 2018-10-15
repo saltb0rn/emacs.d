@@ -34,6 +34,7 @@ var entry = {
 var output = {
     path: Path.resolve(__dirname, DIST),
     filename: `${JS}/[name].js?[hash]`,
+    // don't do anything with publicPath here
 };
 
 var devServer = {
@@ -57,6 +58,7 @@ var devServer = {
     compress: true,
     inline: true,
     hot: true,
+    publicPath: '/'
 };
 
 var module = {
@@ -91,12 +93,30 @@ var module = {
         {
             test: /\.(?:c|sa|le)ss$/,
             use: [
-                'style-loader',
-                MiniCssExtractPlugin.loader, // extract the style from style elements
-                'css-loader', // return the CSS with imports and url(...) resolved via webpack's require functionality
-                'sass-loader',
-                // 'less-loader'
-                // 'postcss-loader',
+                {
+                    loader: 'style-loader',
+                    options: {
+                        hmr: true,
+                    }
+                },
+                {
+                    loader: MiniCssExtractPlugin.loader,
+                    options: {
+                        publicPath: "../img"
+                    }
+                },
+                {
+                    loader: 'css-loader',
+                    options: {
+                        publicPath: "css"
+                    }
+                },
+                {
+                    loader: 'sass-loader',
+                    options: {
+                        publicPath: "css"
+                    }
+                }
             ]
         },
         {
@@ -104,8 +124,16 @@ var module = {
             use: {
                 loader: 'url-loader',
                 options: {
+                    // limit: 1000,
+                    /* NOTE
+                       The the urls of images within style files will be incorrect,
+                       if the style files were processed by file-loader.
+                       The file-loader will resolve the urls of images incorrectly.
+                       We need to use url-loader instead of file-loader ,
+                       and MiniCssExtractPlugin to process the url by specifying publicPath
+                       unless you wan to inline style to solve this.
+                     */
                     fallback: 'file-loader',
-                    limit: 1024,
                     outputPath: Path.relative(
                         Path.resolve(__dirname, DIST),
                         Path.resolve(__dirname, DIST, 'img')),
@@ -152,15 +180,31 @@ var plugins = [
     new WebPack.HotModuleReplacementPlugin(),
 ];
 
-MODULE.exports = {
-    mode: 'development',
-    entry: entry,
-    output: output,
-    devtool: 'inline-source-map',
-    devServer: devServer,
-    module: module,
-    plugins: plugins
+MODULE.exports = function(env, argv) {
+    // MODULE.exports.isdist = env['dist'] === true;
+    let entry = MODULE.exports.entry,
+        plugins = MODULE.exports.plugins,
+        devServer = MODULE.exports.devServer,
+        module = MODULE.exports.module,
+        output = MODULE.exports.output;
+
+    // console.log(`dist is ${MODULE.exports.isdist}`);
+    return {
+        mode: 'development',
+        entry: entry,
+        output: output,
+        devtool: 'inline-source-map',
+        devServer: devServer,
+        module: module,
+        plugins: plugins
+    };
 };
+
+MODULE.exports.plugins = plugins;
+MODULE.exports.entry = entry;
+MODULE.exports.module = module;
+MODULE.exports.output = output;
+MODULE.exports.devServer = devServer;
 
 /*
   Every time to build a new page will be annoying for creating a html file and related javascript files,
@@ -200,8 +244,8 @@ function confHtmlPage(confs) {
 // confHtmlPage([
 //     {
 //         inject: true,
-//         filename: 'rendering.html',
-//         chunks: ['rendering'],
-//         template: 'rendering.html',
+//         filename: 'index.html',
+//         chunks: ['index'],
+//         template: 'index.html',
 //     }
 // ]);
