@@ -8,6 +8,16 @@
   You can find loaders here: https://webpack.js.org/loaders/.
 
   And find plugins here: https://webpack.js.org/plugins/.
+
+  There are three ways of building sources,
+
+  1. for development, the images will be inlined to avoid the bugs caused by file-loader, which will resolve the relative urls within css files
+
+  2. for being static, you can view the files throught filesystem without backend support
+
+  3. for backend depolyment, any urls of files are prefix "/", as "/css", "/js", "/html" "/img"
+
+  The 'dist' structure will be same as 'src'.
 */
 const Fs = require('fs');
 const Path = require('path');
@@ -23,9 +33,11 @@ const DIST = 'dist',
       SRC = 'src',
       JS = 'js',
       HTML = 'html',
-      CSS = 'css';
-
-const MODULE = module;
+      CSS = 'css',
+      MODULE = module,
+      FORDEV = 0,
+      FORSTAIC = 1,
+      FORBACKEND = 2;
 
 var entry = {
     index: `./${SRC}/${JS}/index.js`,
@@ -34,7 +46,6 @@ var entry = {
 var output = {
     path: Path.resolve(__dirname, DIST),
     filename: `${JS}/[name].js?[hash]`,
-    // don't do anything with publicPath here
 };
 
 var devServer = {
@@ -58,118 +69,86 @@ var devServer = {
     compress: true,
     inline: true,
     hot: true,
-    publicPath: '/'
 };
 
-var module = {
-    rules: [
-        {
-            test: /.js$/,
-            exclude: /node_modules/,
-            use: {
-                loader: 'babel-loader',
-                // about 'options' key
-                // https://webpack.js.org/configuration/module/#rule-options-rule-query
-                options: {
-                    // about babel-present-env
-                    // https://babeljs.io/docs/en/babel-preset-env
-                    presets: [
-                        '@babel/preset-react',
-                        [
-                            '@babel/preset-env',
-                            {
-                                // about browserslist reference
-                                // https://github.com/browserslist/browserslist
-                                // 'targets' : {
-                                //     'browsers': ['> 5%', 'not dead, last 2 versions'],
-                                // }
-                                'targets': '> 5%, not dead, last 2 versions',
-                            },
+function moduleProxy(fileInlined=true, imgPublicPath='/img'){
+    var module = {
+        rules: [
+            {
+                test: /.js$/,
+                exclude: /node_modules/,
+                use: {
+                    loader: 'babel-loader',
+                    // about 'options' key
+                    // https://webpack.js.org/configuration/module/#rule-options-rule-query
+                    options: {
+                        // about babel-present-env
+                        // https://babeljs.io/docs/en/babel-preset-env
+                        presets: [
+                            '@babel/preset-react',
+                            [
+                                '@babel/preset-env',
+                                {
+                                    // about browserslist reference
+                                    // https://github.com/browserslist/browserslist
+                                    // 'targets' : {
+                                    //     'browsers': ['> 5%', 'not dead, last 2 versions'],
+                                    // }
+                                    'targets': '> 5%, not dead, last 2 versions',
+                                },
+                            ],
                         ],
-                    ],
+                    },
                 },
             },
-        },
-        {
-            test: /\.(?:c|sa|le)ss$/,
-            use: [
-                {
-                    loader: 'style-loader',
-                    options: {
-                        hmr: true,
+            {
+                test: /\.(?:c|sa|le)ss$/,
+                use: [
+                    {
+                        loader: MiniCssExtractPlugin.loader,
+                    },
+                    {
+                        loader: 'css-loader',
+                    },
+                    {
+                        loader: 'sass-loader',
                     }
-                },
-                {
-                    loader: MiniCssExtractPlugin.loader,
+                ]
+            },
+            {
+                test: /\.(?:jpeg|png|gif|jpg)$/,
+                use: [
+                    {
+                        loader: 'url-loader',
+                        options: {
+                            limit: fileInlined ? undefined : 1000,
+                            fallback: 'file-loader',
+                            outputPath: Path.relative(
+                                Path.resolve(__dirname, DIST),
+                                Path.resolve(__dirname, DIST, 'img')),
+                            publicPath: imgPublicPath,
+                            name: '[name].[ext]?[hash]',
+                        }
+                    },
+                ]
+            },
+            {
+                test: /\.html$/,
+                use: {
+                    loader: 'html-loader',
                     options: {
-                        publicPath: "../img"
-                    }
-                },
-                {
-                    loader: 'css-loader',
-                    options: {
-                        publicPath: "css"
-                    }
-                },
-                {
-                    loader: 'sass-loader',
-                    options: {
-                        publicPath: "css"
+                        attrs: ['img:src'] // no need to import images in js files any more
                     }
                 }
-            ]
-        },
-        {
-            test: /\.(?:jpeg|png|gif|jpg)$/,
-            use: {
-                loader: 'url-loader',
-                options: {
-                    // limit: 1000,
-                    /* NOTE
-                       The the urls of images within style files will be incorrect,
-                       if the style files were processed by file-loader.
-                       The file-loader will resolve the urls of images incorrectly.
-                       We need to use url-loader instead of file-loader ,
-                       and MiniCssExtractPlugin to process the url by specifying publicPath
-                       unless you wan to inline style to solve this.
-                     */
-                    fallback: 'file-loader',
-                    outputPath: Path.relative(
-                        Path.resolve(__dirname, DIST),
-                        Path.resolve(__dirname, DIST, 'img')),
-                    name: '[name].[ext]?[hash]',
-                }
-            }
-        },
-        {
-            test: /\.html$/,
-            use: {
-                loader: 'html-loader',
-                options: {
-                    attrs: ['img:src'] // no need to import images in js files any more
-                }
-            }
+            },
+        ],
+    };
 
-        },
-        // {
-        //     // new rule to be defined here
-        // },
-    ],
-};
+    return module;
+}
 
 var plugins = [
     // module hot reload, refresh module automatically while saving modifications.
-
-    new HtmlWebpackPlugin({
-        filename: 'index.html', // specify the name of published file, by default it is index.html
-        chunks: ['index'],
-        /*
-          specify which modules should be include, and if you want to sepcify css files, images or something else  as well,
-          done through importing them in the module specified just now.
-        */
-        template: `./${SRC}/${HTML}/index.html`, // where the file is built from
-    }),
-
     new MiniCssExtractPlugin({
         filename: Path.relative(
             Path.resolve(__dirname, DIST),
@@ -181,14 +160,27 @@ var plugins = [
 ];
 
 MODULE.exports = function(env, argv) {
-    // MODULE.exports.isdist = env['dist'] === true;
+
     let entry = MODULE.exports.entry,
         plugins = MODULE.exports.plugins,
         devServer = MODULE.exports.devServer,
         module = MODULE.exports.module,
-        output = MODULE.exports.output;
+        output = MODULE.exports.output,
+        forwhat = env['forwhat'];
 
-    // console.log(`dist is ${MODULE.exports.isdist}`);
+    if (forwhat === FORDEV) {
+
+        module = moduleProxy(fileInlined=true, "/img");
+        output.publicPath = '/';
+    }
+    else if (forwhat === FORSTAIC){
+        module = moduleProxy(fileInlined=false, "../img");
+    }
+    else if (forwhat === FORBACKEND){
+        module = moduleProxy(fileInlined=false, "/img");
+        output.publicPath = '/';
+    }
+
     return {
         mode: 'development',
         entry: entry,
@@ -202,7 +194,7 @@ MODULE.exports = function(env, argv) {
 
 MODULE.exports.plugins = plugins;
 MODULE.exports.entry = entry;
-MODULE.exports.module = module;
+MODULE.exports.module = moduleProxy();
 MODULE.exports.output = output;
 MODULE.exports.devServer = devServer;
 
@@ -212,7 +204,11 @@ MODULE.exports.devServer = devServer;
 
   The only thing left is to configure your HtmlWebpackplugin list.
 */
-function confHtmlPage(confs) {
+function confHtmlPage(confs, htmlPath=HTML) {
+
+    // if (!Fs.existsSync(Path.resolve(__dirname, DIST, htmlPath)))
+    //     Fs.mkdirSync(Path.resolve(__dirname, DIST, htmlPath))
+
     MODULE.exports.plugins = MODULE.exports.plugins.concat(
         confs.map(
             conf => {
@@ -233,6 +229,7 @@ function confHtmlPage(confs) {
                 }
                 if (!conf.filename)
                     conf.filename = `${conf.template.match(/(?:.*\/)*(.+).html$/)[1]}.html`;
+                conf.filename = `${htmlPath}${htmlPath.endsWith('/') ? '' : '/'}${conf.filename}`;
                 if (!conf.inject === undefined) conf.inject = true;
                 return new HtmlWebpackPlugin(conf);
             },
@@ -241,11 +238,13 @@ function confHtmlPage(confs) {
 }
 
 // Example for confHtmlPage
-// confHtmlPage([
-//     {
-//         inject: true,
-//         filename: 'index.html',
-//         chunks: ['index'],
-//         template: 'index.html',
-//     }
-// ]);
+confHtmlPage(
+    [
+        {
+            inject: true,
+            filename: 'index.html',
+            chunks: ['index'],
+            template: 'index.html',
+        },
+    ]
+);
