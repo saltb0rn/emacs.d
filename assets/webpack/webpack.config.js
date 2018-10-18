@@ -102,7 +102,7 @@ function moduleProxy(fileInlined=true, imgPublicPath='/img'){
                 },
             },
             {
-                test: /\.(?:c|sa|le)ss$/,
+                test: /\.s?css$/,
                 use: [
                     {
                         loader: MiniCssExtractPlugin.loader,
