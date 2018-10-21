@@ -569,8 +569,8 @@ So that entire list of result will be showed."
 
   (defun publish-all-posts (project &optional force async)
     "Now the project of blog is isolated from `org-publish-project-alist'.
-That is, the when calling `org-publish-project' or `org-publish' would not
-publish the files in blog, vice versa."
+That is, when calling `org-publish-project' or `org-publish' would not see
+any project of blog, vice versa."
     (interactive
      (list (assoc (completing-read "Publish project: "
                                    blog-alist nil t)
