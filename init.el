@@ -437,7 +437,7 @@ So that entire list of result will be showed."
   (require 'simple-httpd)
   (require 'plantuml-mode)
   (require 'ox-publish)
-  
+
   (setq org-export-coding-system 'utf-8
         project-path "~/Documents/DarkSalt/"
         posts-path (concat project-path "posts/")
