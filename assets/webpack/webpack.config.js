@@ -168,7 +168,7 @@ MODULE.exports = function(env, argv) {
         output = MODULE.exports.output,
         forwhat;
 
-    // because of the error raise by tern, I have to avoid the problem like this.
+    // to avoid the lexical error raised by ternjs
     for (var prop in env) {
         if (prop === 'forwhat')
         {
