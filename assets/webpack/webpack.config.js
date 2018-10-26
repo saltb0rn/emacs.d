@@ -166,7 +166,16 @@ MODULE.exports = function(env, argv) {
         devServer = MODULE.exports.devServer,
         module = MODULE.exports.module,
         output = MODULE.exports.output,
-        forwhat = env['forwhat'];
+        forwhat;
+
+    // because of the error raise by tern, I have to avoid the problem like this.
+    for (var prop in env) {
+        if (prop === 'forwhat')
+        {
+            forwhat = env[prop];
+            break;
+        }
+    }
 
     if (forwhat === FORDEV) {
 
