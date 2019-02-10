@@ -15,8 +15,6 @@
 
 (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
 
-(package-initialize)
-
 ;; update the package metadata if the local cache is missing
 (unless (or package-archive-contents
             (file-exists-p package-user-dir))
@@ -993,19 +991,21 @@ A empty project should look like this:
 7 directories, 6 files
 
 After creating the new empty project, go to the directory execute \"npm run init\" to install dev dependencies and start to develop your project."
-    (interactive (list (read-directory-name "Run find in directory: " nil "" t)
+    (interactive (list (read-directory-name "Input location of new project: " nil "" t)
                        (read-string "Input the name of the project: ")))
     (let ((webpack-project-root (format "%s%s/" parent name)))
       (condition-case exn
           (progn
-            (copy-directory
-             (get-path-to-asset-file "webpack")
-             webpack-project-root nil nil)
-            (write-to-file
-             (format (read-from-file (get-path-to-asset-file "webpack/.package-json-tpl")) name)
-             (concat webpack-project-root "package.json"))
-            ;; (shell-command (format "cd %s && npm init -y" webpack-project-root) nil nil)
-            )
+            (when (not (file-exists-p webpack-project-root))
+              (make-directory webpack-project-root)
+              (copy-directory
+               (get-path-to-asset-file "webpack")
+               webpack-project-root nil nil)
+              (write-to-file
+               (format (read-from-file (get-path-to-asset-file "webpack/.package-json-tpl")) name)
+               (concat webpack-project-root "package.json"))
+              ;; (shell-command (format "cd %s && npm init -y" webpack-project-root) nil nil)
+              ))
         (error
          (when (file-directory-p webpack-project-root)
            (delete-directory webpack-project-root t))
