@@ -22,10 +22,17 @@
 
     - =npm run init=: install all the dependencies.
 
-    - =build command=: there are three build commands for there different conditions.
+    - =build command=: there are three build commands for there different conditions, their differences are all about =URIs= of sources.
 
       - =build:static=: built for static site.
 
-      - =build:dev=: built for development, supporting hot reload and live editing.
+      - =build:dev=: built for development.
 
-      - =build:backend=: built for backend development, the difference between =build:static= and itself is the uris of static files.
+      - =build:backend=: built for backend development.
+
+    - =npm run dev=: for development, supporting live editing, hot reload and mocker.
+
+
+*** Change logs
+
+    - 2019/2/13 Dependence =webpack-api-mocker= renamed to =mocker-api=, so I changed it, too. Otherwise, there will be a bug.

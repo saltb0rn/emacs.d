@@ -27,7 +27,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 // package css files from html files: https://webpack.js.org/plugins/mini-css-extract-plugin/
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 // build a api mocker: https://github.com/jaywcjlove/webpack-api-mocker/tree/master/example/webpack
-const ApiMocker = require('webpack-api-mocker');
+const ApiMocker = require('mocker-api');
 
 const DIST = 'dist',
       SRC = 'src',
