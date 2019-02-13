@@ -996,16 +996,14 @@ After creating the new empty project, go to the directory execute \"npm run init
     (let ((webpack-project-root (format "%s%s/" parent name)))
       (condition-case exn
           (progn
-            (when (not (file-exists-p webpack-project-root))
-              (make-directory webpack-project-root)
               (copy-directory
                (get-path-to-asset-file "webpack")
-               webpack-project-root nil nil)
+               webpack-project-root nil nil t)
               (write-to-file
                (format (read-from-file (get-path-to-asset-file "webpack/.package-json-tpl")) name)
                (concat webpack-project-root "package.json"))
               ;; (shell-command (format "cd %s && npm init -y" webpack-project-root) nil nil)
-              ))
+              )
         (error
          (when (file-directory-p webpack-project-root)
            (delete-directory webpack-project-root t))

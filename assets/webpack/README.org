@@ -1,0 +1,31 @@
+*** Requirements
+
+    The *latest* (not stable) =nodejs= and =npm= version, and Debian-based system.
+
+
+*** Problems you may have
+
+    There will be a permission problem while running =npm run init=, it's possible because of =node-sass= and can't be solved by simply adding =sudo=.
+
+    To solve this, you can check [[https://github.com/sass/node-sass/issues/2404][this]] out, =sudo npm install --unsafe-perm node-sass= probably works most of the times.
+
+    If that is the problem I am talking about, you can fix it by editing the =package.json= manually.
+
+    And the another possible problem is the version problem, like I said, make sure you do meet the requirements.
+
+
+*** Usage
+
+    The directory =webpack= is the template of the initialize project. If you want to create a new project just copy it to the location you want and edit the =package.json= according the =.package.json.tpl=.
+
+    Emacs as my main editor, I create a command =create-webpack-project= to do these works for me.
+
+    - =npm run init=: install all the dependencies.
+
+    - =build command=: there are three build commands for there different conditions.
+
+      - =build:static=: built for static site.
+
+      - =build:dev=: built for development, supporting hot reload and live editing.
+
+      - =build:backend=: built for backend development, the difference between =build:static= and itself is the uris of static files.
