@@ -71,7 +71,7 @@ var devServer = {
     hot: true,
 };
 
-function moduleProxy(fileInlined=true, imgPublicPath='/img'){
+function moduleProxy(fileInlined=true, imgPublicPath='/img', fontPublicPath='/font'){
     var module = {
         rules: [
             {
@@ -133,6 +133,21 @@ function moduleProxy(fileInlined=true, imgPublicPath='/img'){
                 ]
             },
             {
+                test: /\.(ttf|eot|svg|woff)$/,
+                use: [
+                    {
+                        loader: 'file-loader',
+                        options: {
+                            outputPath: Path.relative(
+                                Path.resolve(__dirname, DIST),
+                                Path.resolve(__dirname, DIST, 'fonts')),
+                            publicPath: fontPublicPath,
+                            name: '[name].[ext]?[hash]'
+                        }
+                    }
+                ]
+            },
+            {
                 test: /\.html$/,
                 use: {
                     loader: 'html-loader',
@@ -179,14 +194,14 @@ MODULE.exports = function(env, argv) {
 
     if (forwhat === FORDEV) {
 
-        module = moduleProxy(fileInlined=true, "/img");
+        module = moduleProxy(fileInlined=true, "/img", "/font");
         output.publicPath = '/';
     }
     else if (forwhat === FORSTAIC){
-        module = moduleProxy(fileInlined=false, "../img");
+        module = moduleProxy(fileInlined=false, "../img", "../font");
     }
     else if (forwhat === FORBACKEND){
-        module = moduleProxy(fileInlined=false, "/img");
+        module = moduleProxy(fileInlined=false, "/img", "/font");
         output.publicPath = '/';
     }
 
