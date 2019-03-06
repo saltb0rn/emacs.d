@@ -68,6 +68,7 @@ var devServer = {
     contentBase: Path.resolve( __dirname, DIST),
     compress: true,
     inline: true,
+    index: "/html/index.html",
     hot: true,
 };
 
