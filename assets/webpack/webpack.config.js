@@ -69,6 +69,9 @@ var devServer = {
     compress: true,
     inline: true,
     index: "/html/index.html",
+    historyApiFallback: {
+        index: "/html/index.html",
+    },
     hot: true,
 };
 
