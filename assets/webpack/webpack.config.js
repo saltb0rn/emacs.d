@@ -69,13 +69,19 @@ var devServer = {
     compress: true,
     inline: true,
     index: "/html/index.html",
+    hot: true,
     historyApiFallback: {
         index: "/html/index.html",
-    },
-    hot: true,
+    }
 };
 
-function moduleProxy(fileInlined=true, imgPublicPath='/img', fontPublicPath='/font'){
+function moduleProxy(
+    fileInlined=true, publicPaths={
+        imgPublicPath: '/img',
+        fontPublicPath: '/font',
+        audioPublicPath: '/audio',
+        videoPublicPath: '/video',
+    }){
     var module = {
         rules: [
             {
@@ -130,12 +136,43 @@ function moduleProxy(fileInlined=true, imgPublicPath='/img', fontPublicPath='/fo
                             outputPath: Path.relative(
                                 Path.resolve(__dirname, DIST),
                                 Path.resolve(__dirname, DIST, 'img')),
-                            publicPath: imgPublicPath,
+                            publicPath: publicPaths.imgPublicPath,
                             name: '[name].[ext]?[hash]',
                         }
                     },
                 ]
             },
+            {
+                test: /\.(mp3|ogg)$/,
+                use: [
+                    {
+                        loader: 'file-loader',
+                        options: {
+                            outputPath: Path.relative(
+                                Path.resolve(__dirname, DIST),
+                                Path.resolve(__dirname, DIST, 'audio')),
+                            publicPath: publicPaths.audioPublicPath,
+                            name: '[name].[ext]?[hash]'
+                        }
+                    }
+                ]
+            },
+            {
+                test: /\.(mp4)$/,
+                use: [
+                    {
+                        loader: 'file-loader',
+                        options: {
+                            outputPath: Path.relative(
+                                Path.resolve(__dirname, DIST),
+                                Path.resolve(__dirname, DIST, 'video')),
+                            publicPath: publicPaths.videoPublicPath,
+                            name: '[name].[ext]?[hash]'
+                        }
+                    }
+                ]
+            },
+            
             {
                 test: /\.(ttf|eot|svg|woff)$/,
                 use: [
@@ -144,8 +181,8 @@ function moduleProxy(fileInlined=true, imgPublicPath='/img', fontPublicPath='/fo
                         options: {
                             outputPath: Path.relative(
                                 Path.resolve(__dirname, DIST),
-                                Path.resolve(__dirname, DIST, 'fonts')),
-                            publicPath: fontPublicPath,
+                                Path.resolve(__dirname, DIST, 'font')),
+                            publicPath: publicPaths.fontPublicPath,
                             name: '[name].[ext]?[hash]'
                         }
                     }
@@ -156,7 +193,8 @@ function moduleProxy(fileInlined=true, imgPublicPath='/img', fontPublicPath='/fo
                 use: {
                     loader: 'html-loader',
                     options: {
-                        attrs: ['img:src'] // no need to import images in js files any more
+                        attrs: [':src', ':data-src'],
+                        // attrs: ['img:src', 'audio:src', 'source:src'] // no need to import images/audio/video in js files any more
                     }
                 }
             },
@@ -198,14 +236,36 @@ MODULE.exports = function(env, argv) {
 
     if (forwhat === FORDEV) {
 
-        module = moduleProxy(fileInlined=true, "/img", "/font");
+        module = moduleProxy(
+            fileInlined=true,
+            {
+                imgPublicPath: "/img",
+                fontPublicPath: '/font',
+                audioPublicPath: '/audio',
+                videoPublicPath: '/video',
+            });
         output.publicPath = '/';
     }
     else if (forwhat === FORSTAIC){
-        module = moduleProxy(fileInlined=false, "../img", "../font");
+        module = moduleProxy(
+            fileInlined=false,
+            {
+                imgPublicPath: "../img",
+                fontPublicPath: '../font',
+                audioPublicPath: '../audio',
+                videoPublicPath: '../video'
+            }            
+        );
     }
     else if (forwhat === FORBACKEND){
-        module = moduleProxy(fileInlined=false, "/img", "/font");
+        module = moduleProxy(
+            fileInlined=false,
+            {
+                imgPublicPath: "/img",
+                fontPublicPath: '/font',
+                audioPublicPath: '/audio',
+                videoPublicPath: '/video'
+            });
         output.publicPath = '/';
     }
 
@@ -273,6 +333,6 @@ confHtmlPage(
             filename: 'index.html',
             chunks: ['index'],
             template: 'index.html',
-        },
+        }
     ]
 );
