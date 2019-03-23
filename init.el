@@ -812,6 +812,13 @@ The ROOT points to the directory where posts store on."
  ;;   (rename-theindex-to-index))
   )
 
+;; (use-package pipenv
+;;   :ensure t
+;;   :init
+;;   (add-hook 'elpy-mode-hook #'pipenv-mode)
+;;   (setq pipenv-projectile-after-switch-function
+;;         #'pipenv-projectile-after-switch-extended))
+
 (use-package elpy
   :ensure t
   ;; :after (flycheck

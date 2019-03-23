@@ -29,6 +29,8 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 // build a api mocker: https://github.com/jaywcjlove/webpack-api-mocker/tree/master/example/webpack
 const ApiMocker = require('mocker-api');
 
+const { VueLoaderPlugin } = require('vue-loader');
+
 const DIST = 'dist',
       SRC = 'src',
       JS = 'js',
@@ -108,6 +110,10 @@ function moduleProxy(
                                 },
                             ],
                         ],
+                        plugins: [
+                            ['@babel/plugin-proposal-decorators', {"legacy": true}],
+                            ['@babel/plugin-proposal-class-properties']
+                        ]
                     },
                 },
             },
@@ -172,7 +178,7 @@ function moduleProxy(
                     }
                 ]
             },
-            
+
             {
                 test: /\.(ttf|eot|svg|woff)$/,
                 use: [
@@ -198,6 +204,10 @@ function moduleProxy(
                     }
                 }
             },
+            {
+                test: /\.vue$/,
+                loader: 'vue-loader'
+            }
         ],
     };
 
@@ -214,7 +224,18 @@ var plugins = [
     }),
 
     new WebPack.HotModuleReplacementPlugin(),
+
+    new VueLoaderPlugin(),
 ];
+
+var resolve = {
+    alias: {
+        'vue$': 'vue/dist/vue.js'
+    },
+    extensions: ['*', '.js', '.vue', '.json']
+};
+
+
 
 MODULE.exports = function(env, argv) {
 
@@ -223,6 +244,7 @@ MODULE.exports = function(env, argv) {
         devServer = MODULE.exports.devServer,
         module = MODULE.exports.module,
         output = MODULE.exports.output,
+        resolve = MODULE.exports.resolve,
         forwhat;
 
     // to avoid the lexical error raised by ternjs
@@ -254,7 +276,7 @@ MODULE.exports = function(env, argv) {
                 fontPublicPath: '../font',
                 audioPublicPath: '../audio',
                 videoPublicPath: '../video'
-            }            
+            }
         );
     }
     else if (forwhat === FORBACKEND){
@@ -276,7 +298,8 @@ MODULE.exports = function(env, argv) {
         devtool: 'inline-source-map',
         devServer: devServer,
         module: module,
-        plugins: plugins
+        plugins: plugins,
+        resolve: resolve
     };
 };
 
@@ -285,6 +308,7 @@ MODULE.exports.entry = entry;
 MODULE.exports.module = moduleProxy();
 MODULE.exports.output = output;
 MODULE.exports.devServer = devServer;
+MODULE.exports.resolve = resolve;
 
 /*
   Every time to build a new page will be annoying for creating a html file and related javascript files,

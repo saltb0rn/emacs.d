@@ -5,7 +5,7 @@
     "build:static": "npx webpack --env.forwhat=1",
     "build:dev": "npx webpack --env.forwhat=0",
     "build:backend": "npx webpack --env.forwhat=2",
-    "init": "npm install --save-dev babel-loader @babel/core @babel/preset-env @babel/preset-react @babel/cli @babel/polyfill react-hot-loader webpack webpack-cli webpack-dev-server mocker-api html-webpack-plugin css-loader mini-css-extract-plugin less less-loader url-loader file-loader html-loader sass-loader node-sass"
+    "init": "npm install --save-dev --unsafe-perm babel-loader @babel/core @babel/preset-env @babel/preset-react @babel/cli @babel/polyfill @babel/plugin-proposal-decorators @babel/plugin-proposal-class-properties react-hot-loader webpack webpack-cli webpack-dev-server mocker-api html-webpack-plugin css-loader mini-css-extract-plugin less less-loader url-loader file-loader html-loader sass-loader node-sass vue-loader vue-template-compiler && npm install vue"
   },
   "name": "%s",
   "version": "1.0.0"
