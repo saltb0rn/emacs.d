@@ -30,6 +30,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ApiMocker = require('mocker-api');
 
 const { VueLoaderPlugin } = require('vue-loader');
+const AutoPrefixer = require('autoprefixer');
 
 const DIST = 'dist',
       SRC = 'src',
@@ -125,6 +126,14 @@ function moduleProxy(
                     },
                     {
                         loader: 'css-loader',
+                    },
+                    {
+                        loader: 'postcss-loader',
+                        options: {
+                            plugins: [
+                                AutoPrefixer
+                            ]
+                        }
                     },
                     {
                         loader: 'sass-loader',
@@ -245,6 +254,7 @@ MODULE.exports = function(env, argv) {
         module = MODULE.exports.module,
         output = MODULE.exports.output,
         resolve = MODULE.exports.resolve,
+        mode,
         forwhat;
 
     // to avoid the lexical error raised by ternjs
@@ -267,6 +277,7 @@ MODULE.exports = function(env, argv) {
                 videoPublicPath: '/video',
             });
         output.publicPath = '/';
+        mode = 'development';
     }
     else if (forwhat === FORSTAIC){
         module = moduleProxy(
@@ -278,6 +289,7 @@ MODULE.exports = function(env, argv) {
                 videoPublicPath: '../video'
             }
         );
+        mode = 'production';
     }
     else if (forwhat === FORBACKEND){
         module = moduleProxy(
@@ -289,13 +301,13 @@ MODULE.exports = function(env, argv) {
                 videoPublicPath: '/video'
             });
         output.publicPath = '/';
+        mode = 'production';
     }
 
     return {
-        mode: 'development',
+        mode: mode,
         entry: entry,
         output: output,
-        devtool: 'inline-source-map',
         devServer: devServer,
         module: module,
         plugins: plugins,
