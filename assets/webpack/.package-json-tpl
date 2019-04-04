@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "dev": "npm run clean && npm run build:dev && npx webpack-dev-server --env.forwhat=0",
+    "dev": "npm run build:dev && npx webpack-dev-server --env.forwhat=0",
     "clean": "([ -d dist ] && [ `ls dist | wc -l` -gt '0' ] && rm -r dist/*) || ([ -f dist ] && rm dist) || echo \"already cleaned\"",
     "build:static": "npx webpack --env.forwhat=1",
     "build:dev": "npx webpack --env.forwhat=0",
