@@ -409,7 +409,7 @@ So that entire list of result will be showed."
   :ensure t)
 
 (use-package org
-  :ensure t
+  :ensure org-plus-contrib
   :init
   (define-skeleton org-insert-src-block
     "Insert source block in org-mode"
