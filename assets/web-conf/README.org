@@ -13,6 +13,7 @@
 
     +And the another possible problem is the version problem, like I said, make sure you do meet the requirements.+
 
+
 *** Purpose
 
     The reason for creating directory =web-conf= is because newly creating a project will take me much time to write docker-compose file, =nginx= configuration files and =mysql= configuration files.
