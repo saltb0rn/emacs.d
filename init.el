@@ -1001,7 +1001,11 @@ example/
 After creating the new empty project, go to the example/example and execute \"npm run init\" to install dev dependencies and start to develop your project."
     (interactive (list (read-directory-name "Input location of new project: " nil "" t)
                        (read-string "Input the name of the project: ")))
-    (let ((webpack-project-root (format "%s%s/" parent name)))
+    (let ((webpack-project-root (format "%s%s/"
+                                        (if (char-equal (car (last (string-to-list parent))) ?\c)
+                                            parent
+                                          (concat parent "/"))
+                                        name)))
       (condition-case exn
           (progn
               (copy-directory

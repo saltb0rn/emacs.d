@@ -1,3 +1,4 @@
+#! /bin/bash
 HOST_DOMAIN="host.docker.internal"
 ping -q -c1 $HOST_DOMAIN > /dev/null 2>&1
 if [ $? -ne 0 ]; then
