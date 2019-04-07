@@ -1,0 +1,46 @@
+version: "3"
+
+services:
+
+  mysql:
+    container_name: mysql_example
+    image: mysql
+    restart: on-failure
+    environment:
+      - MYSQL_USER=root
+      - MYSQL_ROOT_PASSWORD=root
+    ports:
+      - "3306:3306"
+    volumes:
+      - "./mysql/init.sql:/docker-entrypoint-initdb.d"
+      - "./mysql/data:/var/lib/mysql"
+      - "./mysql/conf.d:/etc/mysql/conf.d"
+
+  api:
+    container_name: api_example
+    build: ./server/docker-build
+    image: saltborn/api:latest
+    restart: on-failure
+    depends_on:
+      - mysql
+    environment:
+      - DATABASE=MYSQL
+      - MYSQL_HOST=mysql
+    volumes:
+      - "./server:/server"
+    command: sh -c "/server/wait-for-it.sh mysql:3306 -- python3 /server/run.py"
+
+  nginx:
+    container_name: nginx_example
+    build: ./nginx
+    image: nginx-with-ip:latest
+    restart: on-failure
+    depends_on:
+      - api
+    ports:
+      - "8000:80"
+    volumes:
+      - "./nginx/dev.conf.d:/etc/nginx/conf.d"
+      - "./dist:/dist"
+      - "./nginx/dockerhost.sh:/dockerhost.sh"
+    command: sh -c "/dockerhost.sh && nginx -g 'daemon off;'"

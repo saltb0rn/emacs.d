@@ -1,0 +1,5 @@
+/dist/
+/%s/node_modules/
+/%s/\.package-json-tpl
+\.gitignore-tpl
+__pycache__/

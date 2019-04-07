@@ -1,0 +1,13 @@
+version: "3"
+
+services:
+
+  nginx:
+    container_name: nginx_example
+    image: nginx:latest
+    restart: on-failure
+    ports:
+      - "8000:80"
+    volumes:
+      - "./nginx/frontend.conf.d:/etc/nginx/conf.d"
+      - "./dist:/dist"

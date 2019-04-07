@@ -32,7 +32,7 @@ const ApiMocker = require('mocker-api');
 const { VueLoaderPlugin } = require('vue-loader');
 const AutoPrefixer = require('autoprefixer');
 
-const DIST = 'dist',
+const DIST = '../dist',
       SRC = 'src',
       JS = 'js',
       HTML = 'html',
@@ -68,6 +68,9 @@ var devServer = {
             // We can put options here instead of putting them in './mocker/index.js'
         );
     },
+    port: 8080,
+    host: '0.0.0.0', // needed if it was accessed from nginx container
+    disableHostCheck: true, // this is needed because I have my docker container (Nginx) accesses the port
     contentBase: Path.resolve( __dirname, DIST),
     compress: true,
     inline: true,

@@ -326,6 +326,7 @@ BUFFER is the buffer to list the lines where keywords located in."
             (fic--append-line-to-buffer buffer)))))))
 
 (use-package helm
+  :disabled
   :ensure t
   :bind (("M-x" . helm-M-x)
          ("C-x C-f" . helm-find-files)
@@ -976,39 +977,46 @@ The ROOT points to the directory where posts store on."
                 (add-hook 'xref-backend-functions
                           #'xref-js2-xref-backend nil t)))
 
-  (defun create-webpack-project (parent name)
+  (defun create-web-project (parent name)
     "Create a empty project using webpack to develop.
 A empty project should look like this:
 
-.
-├── dist
-├── mocker
-│   └── index.js
-├── package.json
-├── src
-│   ├── css
-│   │   └── index.css
-│   ├── html
-│   │   └── index.html
-│   ├── img
-│   └── js
-│       └── index.js
-└── webpack.config.js
+example/
+├── docker-compose.yml.example
+├── example
+│   ├── mocker
+│   │   ├── index.js
+│   │   └── user.js
+│   ├── package.json
+│   ├── src
+│   │   ├── css
+│   │   │   └── index.css
+│   │   ├── html
+│   │   │   └── index.html
+│   │   └── js
+│   │       └── index.js
+│   └── webpack.config.js
+└── README.org
 
-7 directories, 6 files
-
-After creating the new empty project, go to the directory execute \"npm run init\" to install dev dependencies and start to develop your project."
+After creating the new empty project, go to the example/example and execute \"npm run init\" to install dev dependencies and start to develop your project."
     (interactive (list (read-directory-name "Input location of new project: " nil "" t)
                        (read-string "Input the name of the project: ")))
     (let ((webpack-project-root (format "%s%s/" parent name)))
       (condition-case exn
           (progn
               (copy-directory
-               (get-path-to-asset-file "webpack")
+               (get-path-to-asset-file "web-conf")
                webpack-project-root nil nil t)
               (write-to-file
-               (format (read-from-file (get-path-to-asset-file "webpack/.package-json-tpl")) name)
-               (concat webpack-project-root "package.json"))
+               (format (read-from-file (get-path-to-asset-file "web-conf/.gitignore-tpl")) name name)
+               (concat webpack-project-root "/" ".gitignore"))
+              
+              (write-to-file
+               (format (read-from-file (get-path-to-asset-file "web-conf/webpack/.package-json-tpl")) name)
+               (concat webpack-project-root "webpack/package.json"))
+              ;; (rename-file (concat webpack-project-root "webpack")
+              ;;              (concat webpack-project-root name))
+              ;; NOTE: avoid the name already exists in root
               ;; (shell-command (format "cd %s && npm init -y" webpack-project-root) nil nil)
               )
         (error
