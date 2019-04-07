@@ -1,24 +1,36 @@
 *** Requirements
 
-    The *latest* (not stable) =nodejs= and =npm= version, and Debian-based system.
+    The *latest* (not stable) =nodejs= and =npm= version, Debian-based system, docker and docker-compose that supports version 3.
 
 
 *** Problems you may have
 
-    There will be a permission problem while running =npm run init=, it's possible because of =node-sass= and can't be solved by simply adding =sudo=.
+    +There will be a permission problem while running =npm run init=, it's possible because of =node-sass= and can't be solved by simply adding =sudo=.+
 
-    To solve this, you can check [[https://github.com/sass/node-sass/issues/2404][this]] out, =sudo npm install --unsafe-perm node-sass= probably works most of the times.
+    +To solve this, you can check [[https://github.com/sass/node-sass/issues/2404][this]] out, =sudo npm install --unsafe-perm node-sass= probably works most of the times.+
 
-    If that is the problem I am talking about, you can fix it by editing the =package.json= manually.
+    +If that is the problem I am talking about, you can fix it by editing the =package.json= manually.+
 
-    And the another possible problem is the version problem, like I said, make sure you do meet the requirements.
+    +And the another possible problem is the version problem, like I said, make sure you do meet the requirements.+
+
+*** Purpose
+
+    The reason for creating directory =web-conf= is because newly creating a project will take me much time to write docker-compose file, =nginx= configuration files and =mysql= configuration files.
+
+    When the project is almost finished, I have to think about what are needed and what are not, because the production environment is not the production environment, this will also take me much time.
+
+    Especially when using hot-reloading function from =webpack= in development, I have to modify the docker-compose file and =nginx= configuration file for deploying just because I would not use =webpack devserver= in production.
+
+    So another compose file for deploying is needed. In short, this directory will save my life.
 
 
-*** Usage
+*** Files
 
-    The directory =webpack= is the template of the initialize project. If you want to create a new project just copy it to the location you want and edit the =package.json= according the =.package.json.tpl=.
+    Emacs is my main editor, I create a command =create-web-project= to do these works for me.
 
-    Emacs as my main editor, I create a command =create-webpack-project= to do these works for me.
+    These are the directories in =webpack-conf=,
+
+    =webpack=: the template of the initialize =frontend= project using =webpack=. If you want to create a new project just copy it to the location you want and edit the =package.json= according the =.package.json.tpl=.
 
     - =npm run init=: install all the dependencies.
 
@@ -30,7 +42,22 @@
 
       - =build:backend=: built for backend development.
 
-    - =npm run dev=: for development, supporting live editing, hot reload and mocker.
+      - =npm run dev=: for development, supporting live editing, hot reloading and mocker.
+
+    =server=: the template of the initialize =backend= project for =frontend=, I am using Python3, Tornado and Peewee to develop.
+
+    =nginx=: the directory of =nginx= configuration files, there are 4 different configurations for different conditions.
+
+    =mysql=: the configuration of =mysql=.
+
+    =*.yml.example=: the examples aims to save your time, you can rename the file you want to use and modify it to meet your need.
+
+
+*** Usage
+
+    Execute =docker-compose -f your-compose-file up= command to kick off the project.
+
+    NOTE: when using =docker-compose-frontend.yml.example= or file based on it, just execute the =npm run build:static= command first under the =webpack= directory before running the project.
 
 
 *** Change logs
