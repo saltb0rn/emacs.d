@@ -15,6 +15,13 @@
 
 (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
 
+(setq package-archives-origin package-archives
+      emacs-elpa-mirror "~/.emacs-elpa-mirror")
+
+(when (file-exists-p emacs-elpa-mirror)
+  (setq package-archives `(("elpamr" . ,(concat emacs-elpa-mirror "/"))))
+  (package-refresh-contents))
+
 ;; update the package metadata if the local cache is missing
 (unless (or package-archive-contents
             (file-exists-p package-user-dir))
@@ -218,7 +225,7 @@ FILE should be a path to file."
 (use-package zenburn-theme
   :ensure t
   :config
-  (when window-system
+  (when (display-graphic-p)
     (load-theme 'zenburn t)))
 
 (use-package fic-mode
@@ -1014,12 +1021,12 @@ After creating the new empty project, go to the example/example and execute \"np
               (write-to-file
                (format (read-from-file (get-path-to-asset-file "web-conf/.gitignore-tpl")) name name)
                (concat webpack-project-root "/" ".gitignore"))
-              
+
               (write-to-file
                (format (read-from-file (get-path-to-asset-file "web-conf/webpack/.package-json-tpl")) name)
                (concat webpack-project-root "webpack/package.json"))
-              ;; (rename-file (concat webpack-project-root "webpack")
-              ;;              (concat webpack-project-root name))
+              (rename-file (concat webpack-project-root "webpack")
+                           (concat webpack-project-root name))
               ;; NOTE: avoid the name already exists in root
               ;; (shell-command (format "cd %s && npm init -y" webpack-project-root) nil nil)
               )
@@ -1204,6 +1211,11 @@ After creating the new empty project, go to the example/example and execute \"np
   (when (executable-find browse-url-chrome-program)
     (setq browse-url-browser-function 'browse-url-chrome)))
 
+(use-package elpa-mirror
+  :ensure t
+  :config
+  (setq elpamr-default-output-directory emacs-elpa-mirror))
+
 (use-package socks
   :disabled
   :init (setq socks-server-on nil)
@@ -1229,5 +1241,7 @@ After creating the new empty project, go to the example/example and execute \"np
             socks-server-on t)))
 
   (toggle-socks-proxy))
+
+(setq package-archives package-archives-origin)
 
 (provide 'init)
