@@ -3,6 +3,9 @@
 
 (require 'package)
 
+
+;; (add-to-list 'package-archives '("elpamrgh" . "https://raw.githubusercontent.com/saltb0rn/emacs-pkg-backup/master/") t)
+
 (let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
                     (not (gnutls-available-p))))
        (proto (if no-ssl "http" "https")))
@@ -15,17 +18,16 @@
 
 (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
 
-(setq package-archives-origin package-archives
-      emacs-elpa-mirror "~/.emacs-elpa-mirror")
+(setq emacs-elpa-mirror "~/.emacs-elpa-mirror"
+      package-archives-origin package-archives)
 
-(when (file-exists-p emacs-elpa-mirror)
-  (setq package-archives `(("elpamr" . ,(concat emacs-elpa-mirror "/"))))
-  (package-refresh-contents))
+(if (file-exists-p emacs-elpa-mirror)
+    (setq package-archives `(("elpamr" . ,(concat emacs-elpa-mirror "/"))))
+  (setq package-archives `(("elpamr" . "https://raw.githubusercontent.com/saltb0rn/emacs-pkg-backup/master/"))))
 
 ;; update the package metadata if the local cache is missing
-(unless (or package-archive-contents
-            (file-exists-p package-user-dir))
-  (package-refresh-contents))
+(cond ((null package-archive-contents) (package-refresh-contents))
+      ((null (file-exists-p package-user-dir)) (package-refresh-contents)))
 
 (setq user-full-name "saltb0rn"
       user-mail-address "asche34@outlook.com")
@@ -986,24 +988,6 @@ The ROOT points to the directory where posts store on."
 
   (defun create-web-project (parent name)
     "Create a empty project using webpack to develop.
-A empty project should look like this:
-
-example/
-├── docker-compose.yml.example
-├── example
-│   ├── mocker
-│   │   ├── index.js
-│   │   └── user.js
-│   ├── package.json
-│   ├── src
-│   │   ├── css
-│   │   │   └── index.css
-│   │   ├── html
-│   │   │   └── index.html
-│   │   └── js
-│   │       └── index.js
-│   └── webpack.config.js
-└── README.org
 
 After creating the new empty project, go to the example/example and execute \"npm run init\" to install dev dependencies and start to develop your project."
     (interactive (list (read-directory-name "Input location of new project: " nil "" t)
