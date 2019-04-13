@@ -1226,6 +1226,9 @@ After creating the new empty project, go to the example/example and execute \"np
 
   (toggle-socks-proxy))
 
+(unless (file-exists-p elpamr-default-output-directory)
+  (elpamr-create-mirror-for-installed))
+
 (setq package-archives package-archives-origin)
 
 (provide 'init)
