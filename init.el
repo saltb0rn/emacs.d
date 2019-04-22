@@ -1,8 +1,14 @@
 ;; -*- lexical-binding: t -*-
 ;; I put all configurations into a single file and `use-package' to configure packages.
 
+
+;; Added by Package.el.  This must come before configurations of
+;; installed packages.  Don't delete this line.  If you don't want it,
+;; just comment it out by adding a semicolon to the start of the line.
+;; You may delete these explanatory comments.
 (require 'package)
 
+(package-initialize)
 
 ;; (add-to-list 'package-archives '("elpamrgh" . "https://raw.githubusercontent.com/saltb0rn/emacs-pkg-backup/master/") t)
 
@@ -1019,7 +1025,9 @@ After creating the new empty project, go to the example/example and execute \"np
            (delete-directory webpack-project-root t))
          (prin1 exn))))))
 
+
 (use-package company-tern
+  :unless (memq system-type '(windows-nt ms-dos cygwin))
   :ensure t
   :ensure-system-package
   (tern . "npm install -g tern")
@@ -1047,6 +1055,7 @@ After creating the new empty project, go to the example/example and execute \"np
   :ensure t)
 
 (use-package magit
+  :unless (memq system-type '(windows-nt ms-dos cygwin))
   :bind
   (("C-x g" . #'magit-status))
   :ensure-system-package git
