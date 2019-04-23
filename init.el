@@ -12,7 +12,7 @@
 
 ;; (add-to-list 'package-archives '("elpamrgh" . "https://raw.githubusercontent.com/saltb0rn/emacs-pkg-backup/master/") t)
 
-(let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
+(let* ((no-ssl (and (memq system-type '(windows-nt ms-dos cygwin))
                     (not (gnutls-available-p))))
        (proto (if no-ssl "http" "https")))
   ;; Comment/uncomment these two lines to enable/disable MELPA and MELPA Stable as desired
