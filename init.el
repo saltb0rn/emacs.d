@@ -1243,6 +1243,8 @@ After creating the new empty project, go to the example/example and execute \"np
 
 (setq package-archives package-archives-origin)
 
-;; TODO: bind `kill-ring-save' to `M-w' on Windows operating system, on Windows, it will display `M-w' but binding `M-W', a.k.a, `M-Shift-w';
+;; NOTE: In my case, `kill-ring-save' will bound to `M-w' on Windows operating system, it will display `M-w' but binding `M-W', a.k.a, `M-Shift-w' while using QQ;
+;; So, please change either your key binding or Emacs key binding for `kill-ring-save'.
+;; I prefer changing key binding of QQ for `M-w';
 
 (provide 'init)
