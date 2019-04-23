@@ -1247,4 +1247,6 @@ After creating the new empty project, go to the example/example and execute \"np
 ;; So, please change either your key binding or Emacs key binding for `kill-ring-save'.
 ;; I prefer changing key binding of QQ for `M-w';
 
+;; NOTE: To show the path to init file you can view either variable `user-init-file' or `M-:' (expand-file-name "~/.emacs.d/init.el")
+
 (provide 'init)
