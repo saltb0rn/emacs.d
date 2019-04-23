@@ -900,6 +900,9 @@ The ROOT points to the directory where posts store on."
                 (push 'company-ac-php-backend company-backends))))
 
 (use-package pyim
+  :unless (memq system-type '(windows-nt ms-dos cygwin))
+  ;; This will slow down Emacs when on Windows operating system.
+  ;; And we can use system input method on Windows system (tested on Windows 10 only), so this package is not needed anymore.
   :ensure t
   :custom
   (pyim-fuzzy-pinyin-alist
@@ -1239,5 +1242,7 @@ After creating the new empty project, go to the example/example and execute \"np
   (elpamr-create-mirror-for-installed))
 
 (setq package-archives package-archives-origin)
+
+;; TODO: bind `kill-ring-save' to `M-w' on Windows operating system, on Windows, it will display `M-w' but binding `M-W', a.k.a, `M-Shift-w';
 
 (provide 'init)
