@@ -1249,4 +1249,30 @@ After creating the new empty project, go to the example/example and execute \"np
 
 ;; NOTE: To show the path to init file you can view either variable `user-init-file' or `M-:' (expand-file-name "~/.emacs.d/init.el")
 
+(use-package url
+  :ensure t
+  :config
+  (defun guid-generater (&optional guidNum chr2 chr13)
+    (let ((url-request-data
+           (mapconcat (lambda (arg)
+                        (when (cadr arg)
+                          (concat (url-hexify-string (car arg))
+                                  "="
+                                  (url-hexify-string (cadr arg)))))
+                      `(("guidNum" ,(or guidNum "1"))
+                        ("chr2" ,(or chr2 ""))
+                        ("chr13" ,(or chr13 "")))
+                      "&"))
+          (url-request-method "POST")
+          (url-request-extra-headers
+           '(("Content-Type" . "application/x-www-form-urlencoded; charset=UTF-8")
+             ("Accept" . "application/json, text/javascript, */*; q=0.01")
+             ("User-Agent" .
+              "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:67.0) Gecko/20100101 Firefox/67.0"))))
+      (url-retrieve "https://www.qvdv.com/tools/qvdv-guid-_index.html"
+                    (lambda (status)
+                      (let ((buf (current-buffer)))
+                        (switch-to-buffer buf)
+                        ))))))
+
 (provide 'init)
