@@ -9,4 +9,5 @@
 !\.gitignore
 !/init.el
 !/assets
+!/site-lisp
 
