@@ -1238,14 +1238,12 @@ After creating the new empty project, go to the example/example and execute \"np
 
   (toggle-socks-proxy))
 
-(unless (file-exists-p elpamr-default-output-directory)
-  (elpamr-create-mirror-for-installed))
-
-(setq package-archives package-archives-origin)
-
 ;; NOTE: In my case, `kill-ring-save' will bound to `M-w' on Windows operating system, it will display `M-w' but binding `M-W', a.k.a, `M-Shift-w' while using QQ;
 ;; So, please change either your key binding or Emacs key binding for `kill-ring-save'.
 ;; I prefer changing key binding of QQ for `M-w';
+(use-package go-mode
+  :ensure t
+  :init (add-to-list 'auto-mode-alist '("\\.go\\'" . go-mode)))
 
 (use-package url
   :ensure t
@@ -1264,7 +1262,7 @@ After creating the new empty project, go to the example/example and execute \"np
           (url-request-method "POST")
           (url-request-extra-headers
            '(("Content-Type" . "application/x-www-form-urlencoded; charset=UTF-8")
-             ("Accept" . "application/json, text/javascript, */*; q=0.01")
+             ("Accept" . "text/html, application/json, text/javascript, */*; q=0.01")
              ("User-Agent" .
               "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:67.0) Gecko/20100101 Firefox/67.0"))))
       (url-retrieve "https://www.qvdv.com/tools/qvdv-guid-_index.html"
@@ -1272,5 +1270,10 @@ After creating the new empty project, go to the example/example and execute \"np
                       (let ((buf (current-buffer)))
                         (switch-to-buffer buf)
                         ))))))
+
+(unless (file-exists-p elpamr-default-output-directory)
+  (elpamr-create-mirror-for-installed))
+
+(setq package-archives package-archives-origin)
 
 (provide 'init)
