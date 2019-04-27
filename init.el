@@ -7,6 +7,7 @@
 ;; just comment it out by adding a semicolon to the start of the line.
 ;; You may delete these explanatory comments.
 (require 'package)
+(add-to-list 'load-path (expand-file-name "~/.emacs.d/site-lisp"))
 
 (package-initialize)
 
@@ -1238,12 +1239,16 @@ After creating the new empty project, go to the example/example and execute \"np
 
   (toggle-socks-proxy))
 
-;; NOTE: In my case, `kill-ring-save' will bound to `M-w' on Windows operating system, it will display `M-w' but binding `M-W', a.k.a, `M-Shift-w' while using QQ;
-;; So, please change either your key binding or Emacs key binding for `kill-ring-save'.
-;; I prefer changing key binding of QQ for `M-w';
 (use-package go-mode
   :ensure t
-  :init (add-to-list 'auto-mode-alist '("\\.go\\'" . go-mode)))
+  :init (add-to-list 'auto-mode-alist '("\\.go\\'" . go-mode))
+  :config
+  (add-hook 'go-mode-hook
+            (lambda ()
+              (make-local-variable 'company-backends)
+              (push 'company-go 'company-backends)
+              (setq tab-width 4)
+              (company-mode))))
 
 (use-package url
   :ensure t
@@ -1268,12 +1273,15 @@ After creating the new empty project, go to the example/example and execute \"np
       (url-retrieve "https://www.qvdv.com/tools/qvdv-guid-_index.html"
                     (lambda (status)
                       (let ((buf (current-buffer)))
-                        (switch-to-buffer buf)
-                        ))))))
+                        (switch-to-buffer buf)))))))
 
 (unless (file-exists-p elpamr-default-output-directory)
   (elpamr-create-mirror-for-installed))
 
 (setq package-archives package-archives-origin)
+
+;; NOTE: In my case, `kill-ring-save' will bound to `M-w' on Windows operating system, it will display `M-w' but binding `M-W', a.k.a, `M-Shift-w' while using QQ;
+;; So, please change either your key binding or Emacs key binding for `kill-ring-save'.
+;; I prefer changing key binding of QQ for `M-w';
 
 (provide 'init)
