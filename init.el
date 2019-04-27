@@ -1250,6 +1250,8 @@ After creating the new empty project, go to the example/example and execute \"np
               (setq tab-width 4)
               (company-mode))))
 
+;; NOTE: To show the path to init file you can view either variable `user-init-file' or `M-:' (expand-file-name "~/.emacs.d/init.el")
+
 (use-package url
   :ensure t
   :config
