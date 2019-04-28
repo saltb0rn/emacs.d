@@ -1243,10 +1243,19 @@ After creating the new empty project, go to the example/example and execute \"np
   :ensure t
   :init (add-to-list 'auto-mode-alist '("\\.go\\'" . go-mode))
   :config
+  (require 'company)
+  (require 'company-go)
+  (setq company-tooltip-limit 20)
+  (setq company-idle-delay .3)
+  (setq company-echo-delay 0)
+  (setq company-begin-commands '(self-insert-command))
   (add-hook 'go-mode-hook
             (lambda ()
-              (make-local-variable 'company-backends)
-              (push 'company-go 'company-backends)
+              (unless (getenv "GOPATH")
+                (setenv "GOPATH" (expand-file-name "~/go/bin")))
+              (unless (string-match (getenv "GOPATH") (getenv "PATH"))
+                (setenv "PATH" (concat (getenv "PATH") ":" (getenv "GOPATH"))))
+              (set (make-local-variable 'company-backends) '(company-go))
               (setq tab-width 4)
               (company-mode))))
 
