@@ -202,10 +202,17 @@ FILE should be a path to file."
 
 (use-package company
   :ensure t
-  :hook ((c-mode
-          c++-mode
-          php-mode
-          js2-mode) . company-mode))
+  :hook
+  (cond
+   ((memq system-type '(windows-nt ms-dos cygwin)) ;; dsiable js2-mode when on Windows because I can not find way to  use nodejs
+     '((c-mode
+        c++-mode
+        php-mode) . company-mode))
+    ((null nil)
+     '((c-mode
+        c++-mode
+        php-mode
+        js2-mode) . company-mode))))
 
 (use-package flycheck
   :ensure t
@@ -1239,25 +1246,25 @@ After creating the new empty project, go to the example/example and execute \"np
 
   (toggle-socks-proxy))
 
-(use-package go-mode
-  :ensure t
-  :init (add-to-list 'auto-mode-alist '("\\.go\\'" . go-mode))
-  :config
-  (require 'company)
-  (require 'company-go)
-  (setq company-tooltip-limit 20)
-  (setq company-idle-delay .3)
-  (setq company-echo-delay 0)
-  (setq company-begin-commands '(self-insert-command))
-  (add-hook 'go-mode-hook
-            (lambda ()
-              (unless (getenv "GOPATH")
-                (setenv "GOPATH" (expand-file-name "~/go/bin")))
-              (unless (string-match (getenv "GOPATH") (getenv "PATH"))
-                (setenv "PATH" (concat (getenv "PATH") ":" (getenv "GOPATH"))))
-              (set (make-local-variable 'company-backends) '(company-go))
-              (setq tab-width 4)
-              (company-mode))))
+;; (use-package go-mode
+;;   :ensure t
+;;   :init (add-to-list 'auto-mode-alist '("\\.go\\'" . go-mode))
+;;   :config
+;;   (require 'company)
+;;   (require 'company-go)
+;;   (setq company-tooltip-limit 20)
+;;   (setq company-idle-delay .3)
+;;   (setq company-echo-delay 0)
+;;   (setq company-begin-commands '(self-insert-command))
+;;   (add-hook 'go-mode-hook
+;;             (lambda ()
+;;               (unless (getenv "GOPATH")
+;;                 (setenv "GOPATH" (expand-file-name "~/go/bin")))
+;;               (unless (string-match (getenv "GOPATH") (getenv "PATH"))
+;;                 (setenv "PATH" (concat (getenv "PATH") ":" (getenv "GOPATH"))))
+;;               (set (make-local-variable 'company-backends) '(company-go))
+;;               (setq tab-width 4)
+;;               (company-mode))))
 
 ;; NOTE: To show the path to init file you can view either variable `user-init-file' or `M-:' (expand-file-name "~/.emacs.d/init.el")
 
