@@ -466,6 +466,8 @@ So that entire list of result will be showed."
         tags-path (concat project-path "tags/")
         files-path (concat project-path "files/")
         publish-path (concat project-path "site/")
+        todos-path (concat project-path "todos/")
+        about-path (concat project-path "about/")
         httpd-listings nil
         httpd-root publish-path)
 
@@ -553,10 +555,17 @@ So that entire list of result will be showed."
       :html-postamble ,(postamble-dispatcher 'default)
       :exclude "site")
      ("about"
-
       :base-directory ,(concat project-path "about/")
       :base-extension "org"
-      :publishing-directory ,(concat publish-path "about/")
+      :publishing-directory ,about-path
+      :publishing-function org-html-publish-to-html
+      :html-postamble ,(postamble-dispatcher 'disqus)
+      :recursive t
+      :exclude "site")
+     ("todos"
+      :base-directory ,todos-path
+      :base-extension "org"
+      :publishing-directory ,(concat publish-path "todos/")
       :publishing-function org-html-publish-to-html
       :html-postamble ,(postamble-dispatcher 'disqus)
       :recursive t
@@ -586,7 +595,7 @@ So that entire list of result will be showed."
       :publishing-function org-publish-attachment
       :exclude "site"
       :recursive t)
-     ("DarkSalt" :components ("static" "home" "about" "posts" "files" "tags")))
+     ("DarkSalt" :components ("static" "home" "about" "posts" "files" "tags" "todos")))
    )
 
   (defun publish-all-posts (project &optional force async)
@@ -806,7 +815,8 @@ The ROOT points to the directory where posts store on."
   (defun create-project-directory-if-necessary ()
     "Create Project directory if it does not exist."
     (dolist (path (list tags-path posts-path
-                        publish-path (concat project-path "about/")))
+                        todos-path about-path
+                        publish-path))
       (unless (file-directory-p path)
         (make-directory path t))))
 
@@ -1293,6 +1303,13 @@ After creating the new empty project, go to the example/example and execute \"np
                       (let ((buf (current-buffer)))
                         (switch-to-buffer buf)))))))
 
+
+;;-----------------------------------------------------------------------------
+;; Libraries for development
+(use-package websocket :ensure t)
+
+;;-----------------------------------------------------------------------------
+;; the package setup must be preceding this part
 (unless (file-exists-p elpamr-default-output-directory)
   (elpamr-create-mirror-for-installed))
 
