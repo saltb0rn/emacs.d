@@ -434,31 +434,23 @@ So that entire list of result will be showed."
 
 (use-package org
   :ensure org-plus-contrib
-  :init
-  (define-skeleton org-insert-src-block
-    "Insert source block in org-mode"
-    "Insert the code name of language: "
-    "#+BEGIN_SRC " str \n
-    > _ \n
-    "#+END_SRC")
-  ;; :requires (htmlize
-  ;;            dash
-  ;;            ht
-  ;;            simple-httpd
-  ;;            plantuml-mode
-  ;;            ox-publish)
+  :requires (htmlize
+             dash
+             ht
+             simple-httpd
+             plantuml-mode)
   :bind (:map org-mode-map
          ("C-c i" . #'org-insert-src-block)
          :map global-map
          ("\C-c c" . org-capture))
   :config
-
-  (require 'htmlize)
-  (require 'dash)
-  (require 'ht)
-  (require 'simple-httpd)
-  (require 'plantuml-mode)
   (require 'ox-publish)
+  (define-skeleton org-insert-src-block
+    "Insert source block in org-mode"
+    "Insert the code name of language: "
+    "#+BEGIN_SRC " str \n
+    > _ \n
+    "#+END_SRC")  
 
   (setq org-export-coding-system 'utf-8
         project-path "~/Documents/DarkSalt/"
@@ -1084,6 +1076,7 @@ After creating the new empty project, go to the example/example and execute \"np
 
 
 (use-package interaction-log
+  :unless (memq system-type '(windows-nt ms-dos cygwin))
   :ensure t
   :config
   (interaction-log-mode +1)
