@@ -1275,13 +1275,25 @@ After creating the new empty project, go to the example/example and execute \"np
   :ensure t
   :config
   (defun guid-generater (&optional guidNum chr2 chr13)
+    (interactive (let* ((arg1
+                         (read-string "Amount of guids (default 1): "))
+                        (arg2
+                         (read-string (format "The concat char for guid%s (default as none): "
+                                              (if (or
+                                                   (string-equal arg1 "1")
+                                                   (string-equal arg1 ""))
+                                                  ""
+                                                "s"))))
+                        (arg3
+                         (read-string "Do you need {} around the guid (input anything if you want so): ")))
+                   `(,arg1 ,arg2 ,arg3)))
     (let ((url-request-data
            (mapconcat (lambda (arg)
                         (when (cadr arg)
                           (concat (url-hexify-string (car arg))
                                   "="
                                   (url-hexify-string (cadr arg)))))
-                      `(("guidNum" ,(or guidNum "1"))
+                      `(("guidNum" ,(if (string-equal guidNum "") "1" guidNum))
                         ("chr2" ,(or chr2 ""))
                         ("chr13" ,(or chr13 "")))
                       "&"))
