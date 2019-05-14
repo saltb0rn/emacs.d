@@ -9,9 +9,30 @@
 (require 'package)
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/site-lisp"))
 
+;; Put the customized variables into another file to "protect" "init.el" file
+(setq custom-file (expand-file-name "emacs-custom.el" user-emacs-directory))
+(unless (file-exists-p custom-file)
+  (write-region "" "" custom-file))
+(load custom-file)
+
 (package-initialize)
 
 ;; (add-to-list 'package-archives '("elpamrgh" . "https://raw.githubusercontent.com/saltb0rn/emacs-pkg-backup/master/") t)
+
+;; NOTE: about how to use bash on Windows, maybe I can try this thread: https://www.reddit.com/r/emacs/comments/4z8gpe/using_bash_on_windows_for_mx_shell/
+(defcustom path-to-bash-on-Windows nil "Set the path to bash while on Windows")
+
+(when (memq system-type '(windows-nt ms-dos cygwim))
+  (when path-to-bash-on-Windows
+    (setq shell-file-name (concat
+                           path-to-bash-on-Windows
+                           (if (string-suffix-p "/" path-to-bash-on-Windows)
+                               "bash.exe"
+                             (concat "/" "bash.exe"))))
+    (setenv "PATH" (concat
+                    path-to-bash-on-Windows
+                    ";"
+                    (getenv "PATH")))))
 
 (let* ((no-ssl (and (memq system-type '(windows-nt ms-dos cygwin))
                     (not (gnutls-available-p))))
@@ -117,11 +138,7 @@
 ;; smart tab behavior - (or indent complete)
 (setq tab-always-indent 'complete)
 
-;; Put the customized variables into another file to "protect" "init.el" file
-(setq custom-file (expand-file-name "emacs-custom.el" user-emacs-directory))
-(unless (file-exists-p custom-file)
-  (write-region "" "" custom-file))
-(load custom-file)
+
 
 ;; Load additional files for reading
 (and load-file-name
@@ -450,7 +467,7 @@ So that entire list of result will be showed."
     "Insert the code name of language: "
     "#+BEGIN_SRC " str \n
     > _ \n
-    "#+END_SRC")  
+    "#+END_SRC")
 
   (setq org-export-coding-system 'utf-8
         project-path "~/Documents/DarkSalt/"
@@ -919,8 +936,10 @@ The ROOT points to the directory where posts store on."
    '(("en" "eng") ("in" "ing") ("un" "ung")
      ("on" "ong") ("z" "zh") ("an" "ang")))
   :config
+  (message "You should not able to see me")
   ;; 激活 basedict 拼音词库
   (use-package pyim-basedict
+    :unless (memq system-type '(windows-nt ms-dos cygwin))
     :ensure nil
     :config (pyim-basedict-enable))
 
@@ -1073,7 +1092,6 @@ After creating the new empty project, go to the example/example and execute \"np
   (("C-x g" . #'magit-status))
   :ensure-system-package git
   :ensure t)
-
 
 (use-package interaction-log
   :unless (memq system-type '(windows-nt ms-dos cygwin))
@@ -1311,7 +1329,8 @@ After creating the new empty project, go to the example/example and execute \"np
 
 ;;-----------------------------------------------------------------------------
 ;; Libraries for development
-(use-package websocket :ensure t)
+(use-package websocket
+  :unless (memq system-type '(windows-nt ms-dos cygwin)))
 
 ;;-----------------------------------------------------------------------------
 ;; the package setup must be preceding this part
