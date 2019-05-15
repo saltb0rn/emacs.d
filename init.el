@@ -1092,7 +1092,7 @@ After creating the new empty project, go to the example/example and execute \"np
   :ensure t)
 
 (use-package interaction-log
-  ;; :unless (memq system-type '(windows-nt ms-dos cygwin))
+  :unless (memq system-type '(windows-nt ms-dos cygwin))
   :ensure t
   :config
   (interaction-log-mode +1)
