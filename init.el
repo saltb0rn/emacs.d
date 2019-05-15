@@ -245,7 +245,9 @@ FILE should be a path to file."
   (setq web-mode-enable-auto-closing t
         web-mode-enable-auto-pairing t))
 
+;; NOTE: Bad performance for rendering on Windows, the worst part is (nyan-start-animation), you can only disable that.
 (use-package nyan-mode
+  :unless (memq system-type '(windows-nt ms-dos cygwin))
   :ensure t
   :config
   (nyan-mode)
