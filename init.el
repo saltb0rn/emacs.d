@@ -1123,6 +1123,31 @@ After creating the new empty project, go to the example/example and execute \"np
     :keybinding "w"
     :docstring "Searchin' the wikis."))
 
+;; (use-package cedet
+;;   ;; :disabled
+;;   ;; TODO: write a general setup for c/c++ language
+;;   ;; http://alexott.net/en/writings/emacs-devenv/EmacsCedet.html
+;;   ;; http://tuhdo.github.io/c-ide.html
+;;   ;;
+;;   :config
+;;   (require 'ede)
+
+;;   (ede-cpp-root-project "Test"
+;;                         :name "Test Project"
+;;                         :file "~/Documents/code/c/c-demo-project/Makefile"
+;;                         :include-path '("/include1"
+;;                                         "/include2")
+;;                         :system-include-path '("/usr/include"))
+
+;;   (global-ede-mode) ;; ede-minor-mode
+
+;;   (semantic-mode 1)
+;;   (global-semantic-idle-completions-mode t) ; semantic-idle-completions-mode
+;;   (global-semantic-decoration-mode t) ; semantic-decoration-mode
+;;   (global-semantic-highlight-func-mode t) ; semantic-highlight-func-mode
+;;   (global-semantic-show-unmatched-syntax-mode t)) ; semantic-show-unmatched-syntax-mode
+
+
 ;; (use-package ggtags
 ;;   :ensure t
 ;;   :bind
