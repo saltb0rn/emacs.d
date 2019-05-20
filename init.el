@@ -200,13 +200,14 @@ FILE should be a path to file."
 
 (setq use-package-verbose t)
 
-(defadvice async-shell-command (around
-                                async-shell-command-ask-password
-                                (command &optional output-buffer error-buffer)
-                                activate)
-  (let ((default-directory "/sudo::"))
-    (funcall (ad-get-orig-definition 'async-shell-command)
-                        command output-buffer error-buffer)))
+(unless (memq system-type '(windows-nt ms-dos cygwin))
+  (defadvice async-shell-command (around
+                                  async-shell-command-ask-password
+                                  (command &optional output-buffer error-buffer)
+                                  activate)
+    (let ((default-directory "/sudo::"))
+      (funcall (ad-get-orig-definition 'async-shell-command)
+               command output-buffer error-buffer))))
 
 ;; this package would install system packages if they were missing.
 (use-package use-package-ensure-system-package
@@ -1195,6 +1196,7 @@ After creating the new empty project, go to the example/example and execute \"np
   (desktop-save-mode 1))
 
 (use-package flyspell
+  :unless (memq system-type '(windows-nt ms-dos cygwin))
   :hook ((elpy-mode. flyspell-prog-mode)
          (org-mode . flyspell-mode)))
 
