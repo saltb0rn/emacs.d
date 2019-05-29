@@ -22,6 +22,13 @@
 ;; NOTE: about how to use bash on Windows, maybe I can try this thread: https://www.reddit.com/r/emacs/comments/4z8gpe/using_bash_on_windows_for_mx_shell/
 (defcustom path-to-bash-on-Windows nil "Set the path to bash while on Windows")
 
+;; Path to blog
+(defcustom path-to-blog nil "Set the path to Blog"
+  :set (lambda (variable value)
+         (if (string-suffix-p "/" value)
+             (set-default variable value)
+           (set-default variable (concat value "/")))))
+
 ;; NOTE: this one will improve performance while on Windows compared to CMD
 (when (memq system-type '(windows-nt ms-dos cygwim))
   (when path-to-bash-on-Windows
@@ -210,8 +217,8 @@ FILE should be a path to file."
                command output-buffer error-buffer))))
 
 ;; this package would install system packages if they were missing.
-(use-package use-package-ensure-system-package
-  :ensure t)
+;; (use-package use-package-ensure-system-package
+;;   :ensure t)
 
 ;; third-party packages
 
@@ -388,7 +395,7 @@ So that entire list of result will be showed."
     eshell-mode
     c-mode
     c++-mode) . helm-gtags-mode)
-  :ensure-system-package (gtags . global)
+  ;; :ensure-system-package (gtags . global)
   :bind
   (:map helm-gtags-mode-map
         ("C-c g a" . #'helm-gtags-in-this-function)
@@ -450,6 +457,7 @@ So that entire list of result will be showed."
   :ensure t)
 
 (use-package org
+  :unless (null path-to-blog)
   :ensure org-plus-contrib
   :requires (htmlize
              dash
@@ -469,14 +477,16 @@ So that entire list of result will be showed."
     > _ \n
     "#+END_SRC")
 
+
+
   (setq org-export-coding-system 'utf-8
-        project-path "~/Documents/DarkSalt/"
-        posts-path (concat project-path "posts/")
-        tags-path (concat project-path "tags/")
-        files-path (concat project-path "files/")
-        publish-path (concat project-path "site/")
-        todos-path (concat project-path "todos/")
-        about-path (concat project-path "about/")
+        ;; path-to-blog "~/Documents/DarkSalt/"
+        posts-path (concat path-to-blog "posts/")
+        tags-path (concat path-to-blog "tags/")
+        files-path (concat path-to-blog "files/")
+        publish-path (concat path-to-blog "site/")
+        todos-path (concat path-to-blog "todos/")
+        about-path (concat path-to-blog "about/")
         httpd-listings nil
         httpd-root publish-path)
 
@@ -548,14 +558,14 @@ So that entire list of result will be showed."
 
    blog-alist
    `(("static"
-      :base-directory ,project-path
+      :base-directory ,path-to-blog
       :base-extension "js\\|css\\|png\\|jpg\\|pdf"
       :publishing-directory ,publish-path
       :publishing-function org-publish-attachment
       :exclude "site"
       :recursive t)
      ("home"
-      :base-directory ,project-path
+      :base-directory ,path-to-blog
       :base-extension "org"
       :publishing-directory ,publish-path
       :publishing-function org-html-publish-to-html
@@ -564,7 +574,7 @@ So that entire list of result will be showed."
       :html-postamble ,(postamble-dispatcher 'default)
       :exclude "site")
      ("about"
-      :base-directory ,(concat project-path "about/")
+      :base-directory ,(concat path-to-blog "about/")
       :base-extension "org"
       :publishing-directory ,about-path
       :publishing-function org-html-publish-to-html
@@ -689,7 +699,7 @@ the `org-capture-templates'. "
        date)))
 
   (defun retrieve-posts (root)
-    "Search all the posts in `project-path', return a list of posts paths"
+    "Search all the posts in `path-to-blog', return a list of posts paths"
     (when (file-directory-p root)
       (let ((files (directory-files root t "^[^.][^.].*$" 'time-less-p))
             (res nil))
@@ -706,7 +716,7 @@ the `org-capture-templates'. "
                    (format-post-date (read-option-from-post f2 "date" (format-time-string "%Y-%m-%d")))))))))
 
   (defun auto-generate-post-list (root)
-    "Search the org files in `project-path', and generate a list of
+    "Search the org files in `path-to-blog', and generate a list of
 string consisting of url and title of org-file"
     (let ((files (retrieve-posts root))
           res)
@@ -715,7 +725,7 @@ string consisting of url and title of org-file"
                                             (url-encode-url
                                              (replace-regexp-in-string
                                               "\\.org" ".html"
-                                              (file-relative-name file project-path)))
+                                              (file-relative-name file path-to-blog)))
                                             (read-option-from-post
                                              file "TITLE" (file-name-base file))
                                             (with-temp-buffer
@@ -778,14 +788,14 @@ The ROOT points to the directory where posts store on."
       (message "Renamed %s to %s" old-index new-index)))
 
   (defun rewrite-theindex-inc ()
-    "Rewrite theindex.inc in `project-path'"
+    "Rewrite theindex.inc in `path-to-blog'"
       (write-region
        (mapconcat
         #'(lambda (str) (format "*** %s\n\t" str))
         (auto-generate-post-list posts-path)
         "\n")
        nil
-       (concat project-path "theindex.inc")))
+       (concat path-to-blog "theindex.inc")))
 
   (defun write-posts-to-tag-inc ()
     (let ((grouped-posts (group-posts-by-tags posts-path))
@@ -800,12 +810,13 @@ The ROOT points to the directory where posts store on."
                             (url-encode-url
                              (file-relative-name
                               (concat tags-path tag ".html")
-                              project-path))
+                              path-to-blog))
                             tag))
                 (tag-list posts-path)
                 "\n"))
        nil (concat tags-path "index.org"))
       (dolist (tag tags)
+        ;; FIXME: should not be any tag like React:FrontEnd.
         (write-region
          (mapconcat
           #'(lambda (post)
@@ -1001,8 +1012,8 @@ The ROOT points to the directory where posts store on."
 
 (use-package indium
   :ensure t
-  :ensure-system-package
-  ((indium . "npm install -g indium"))
+  ;; :ensure-system-package
+  ;; ((indium . "npm install -g indium"))
   :hook (js2-mode . indium-interaction-mode)
   :config
   ;; to define a skeleton to auto insert .indium config file
@@ -1011,9 +1022,9 @@ The ROOT points to the directory where posts store on."
 (use-package js2-mode
   :ensure t
   :mode ("\\.js\\'" . js2-mode)
-  :ensure-system-package
-  ((node . nodejs)
-   npm)
+  ;; :ensure-system-package
+  ;; ((node . nodejs)
+  ;;  npm)
   :bind (:map js-mode-map
               ("M-." . nil)
               :map js2-mode-map
@@ -1060,8 +1071,8 @@ After creating the new empty project, go to the example/example and execute \"np
 (use-package company-tern
   :unless (memq system-type '(windows-nt ms-dos cygwin))
   :ensure t
-  :ensure-system-package
-  (tern . "npm install -g tern")
+  ;; :ensure-system-package
+  ;; (tern . "npm install -g tern")
   :hook
   ((js2-mode . tern-mode)
   (js2-mode . company-mode))
@@ -1089,7 +1100,7 @@ After creating the new empty project, go to the example/example and execute \"np
   :unless (memq system-type '(windows-nt ms-dos cygwin))
   :bind
   (("C-x g" . #'magit-status))
-  :ensure-system-package git
+  ;; :ensure-system-package git
   :ensure t)
 
 (use-package interaction-log
