@@ -1369,6 +1369,21 @@ After creating the new empty project, go to the example/example and execute \"np
   :unless (memq system-type '(windows-nt ms-dos cygwin)))
 
 ;;-----------------------------------------------------------------------------
+;; Extensions for some functions
+(defun re-kill-buffers (regexp)
+  "Kill buffers according to `REGEXP' and return the amounts of killed buffers.
+But there is difference between being used as a command and being called in function,
+like if you want to kill all html files with matching `.html`, then just input `.html`
+when used as a command instead of `\\.html`."
+  (interactive "sInput regexp:\s")
+  (let ((buf-list (buffer-list))
+        (count 0))
+    (dolist (buf buf-list count)
+      (when (string-match-p regexp (buffer-name buf))
+        (setq count (+ count 1))
+        (kill-buffer buf)))))
+
+;;-----------------------------------------------------------------------------
 ;; the package setup must be preceding this part
 (unless (file-exists-p elpamr-default-output-directory)
   (elpamr-create-mirror-for-installed))
