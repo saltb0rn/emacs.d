@@ -484,7 +484,7 @@ So that entire list of result will be showed."
         posts-path (concat path-to-blog "posts/")
         tags-path (concat path-to-blog "tags/")
         files-path (concat path-to-blog "files/")
-        publish-path (concat path-to-blog "site/")
+        publish-path (concat path-to-blog "docs/")
         todos-path (concat path-to-blog "todos/")
         about-path (concat path-to-blog "about/")
         httpd-listings nil
@@ -569,7 +569,7 @@ So that entire list of result will be showed."
       :base-extension "org"
       :publishing-directory ,publish-path
       :publishing-function org-html-publish-to-html
-      :html-head-extra "<link rel=\"stylesheet\" type=\"text/css\" href=\"../../../css/index.css\"/>\n"
+      :html-head-extra "<link rel=\"stylesheet\" type=\"text/css\" href=\"css/index.css\"/>\n"
       :recursive t
       :html-postamble ,(postamble-dispatcher 'default)
       :exclude "site")
@@ -603,7 +603,7 @@ So that entire list of result will be showed."
       :base-extension "org"
       :publishing-directory ,(concat publish-path "tags/")
       :publishing-function org-html-publish-to-html
-      :html-head-extra "<link rel=\"stylesheet\" type=\"text/css\" href=\"../../../css/tags.css\"/>\n"
+      :html-head-extra "<link rel=\"stylesheet\" type=\"text/css\" href=\"css/tags.css\"/>\n"
       :recursive t
       :html-postamble ,(postamble-dispatcher 'default)
       :exclude "site")
@@ -803,7 +803,7 @@ The ROOT points to the directory where posts store on."
       (write-region
        (format "
 #+TITLE: TAGS\n
-#+HTML_HEAD_EXTRA:<link rel=\"stylesheet\" type=\"text/css\" href=\"../../../css/tags.css\"/>\n\n%s"
+#+HTML_HEAD_EXTRA:<link rel=\"stylesheet\" type=\"text/css\" href=\"css/tags.css\"/>\n\n%s"
                (mapconcat
                 #'(lambda (tag)
                     (format "- [[file:%s][%s]]"
