@@ -481,13 +481,15 @@ So that entire list of result will be showed."
 
   (setq org-export-coding-system 'utf-8
         ;; path-to-blog "~/Documents/DarkSalt/"
-        src-path (concat path-to-blog "src/")
-        posts-path (concat path-to-blog "src/posts/")
-        tags-path (concat path-to-blog "src/tags/")
-        files-path (concat path-to-blog "src/files/")
-        publish-path (concat path-to-blog "docs/")
-        todos-path (concat path-to-blog "src/todos/")
-        about-path (concat path-to-blog "src/about/")
+        src-name "src"
+        output-name "docs"
+        src-path (concat path-to-blog src-name "/")
+        posts-path (concat path-to-blog src-name "/posts/")
+        tags-path (concat path-to-blog src-name "/tags/")
+        files-path (concat path-to-blog src-name "/files/")
+        publish-path (concat path-to-blog output-name "/")
+        todos-path (concat path-to-blog src-name "/todos/")
+        about-path (concat path-to-blog src-name "/about/")
         httpd-listings nil
         httpd-root publish-path)
 
@@ -735,9 +737,9 @@ string consisting of url and title of org-file"
       (dolist (file files res)
         (setq res (add-to-list 'res (format "[[file:%s][%s]]%s"
                                             (url-encode-url
-                                             (replace-regexp-in-string
-                                              "\\.org" ".html"
-                                              (file-relative-name file path-to-blog)))
+                                              (replace-regexp-in-string
+                                               "\\.org" ".html"
+                                               (file-relative-name file src-path)))
                                             (read-option-from-post
                                              file "TITLE" (file-name-base file))
                                             (with-temp-buffer
@@ -822,7 +824,7 @@ The ROOT points to the directory where posts store on."
                             (url-encode-url
                              (file-relative-name
                               (concat tags-path tag ".html")
-                              path-to-blog))
+                              src-path))
                             tag))
                 (tag-list posts-path)
                 "\n"))
