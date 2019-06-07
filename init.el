@@ -481,12 +481,13 @@ So that entire list of result will be showed."
 
   (setq org-export-coding-system 'utf-8
         ;; path-to-blog "~/Documents/DarkSalt/"
-        posts-path (concat path-to-blog "posts/")
-        tags-path (concat path-to-blog "tags/")
-        files-path (concat path-to-blog "files/")
+        src-path (concat path-to-blog "src/")
+        posts-path (concat path-to-blog "src/posts/")
+        tags-path (concat path-to-blog "src/tags/")
+        files-path (concat path-to-blog "src/files/")
         publish-path (concat path-to-blog "docs/")
-        todos-path (concat path-to-blog "todos/")
-        about-path (concat path-to-blog "about/")
+        todos-path (concat path-to-blog "src/todos/")
+        about-path (concat path-to-blog "src/about/")
         httpd-listings nil
         httpd-root publish-path)
 
@@ -497,28 +498,21 @@ So that entire list of result will be showed."
   ;; 2. an auto-generated post list ordered by capital letter of post name in "posts" category;
 
   ;; The structure of my blog project:
-  ;; Project
-  ;;    |- index.org
-  ;;    |- theindex.inc
-  ;;    |- about/
-  ;;    |     `- index.org
-  ;;    |- posts/
-  ;;    |     |- theindex.org
-  ;;    |     |- theindex.inc
-  ;;    |     |- 2018/
-  ;;    |     |     |- 05/
-  ;;    |     |     |    |- hello-world.org
-  ;;    |     |     |    `- other posts
-  ;;    |     |     `- other months
-  ;;    |     `- 20XX/
-  ;;    |
-  ;;    |- publish/, a mirror of Project, is the another project used to publish
-  ;;    |- tags/
-  ;;    |     |- tag1.org
-  ;;    |-    `- tagxxx.org
-  ;;    |- js/
-  ;;    |- img/
-  ;;    `- css/
+  ;; .
+  ;; ├── conf.d
+  ;; │   ├── darksalt.conf
+  ;; │   └── passwd
+  ;; ├── docker-compose.yml
+  ;; ├── Dockerfile
+  ;; ├── docs
+  ;; │   └── posts
+  ;; │       └── index.html
+  ;; └── src
+  ;;     └── posts
+  ;;         └── index.org
+  ;;
+  ;; `src' is the directory to source files, `docs' is the directory where the compiled files was put
+
 
   (defun postamble-dispatcher (scheme)
     (cadar
@@ -558,37 +552,34 @@ So that entire list of result will be showed."
 
    blog-alist
    `(("static"
-      :base-directory ,path-to-blog
+      :base-directory ,src-path
       :base-extension "js\\|css\\|png\\|jpg\\|pdf"
       :publishing-directory ,publish-path
       :publishing-function org-publish-attachment
-      :exclude "site"
+      ;; :exclude "src"
       :recursive t)
      ("home"
-      :base-directory ,path-to-blog
+      :base-directory ,src-path
       :base-extension "org"
       :publishing-directory ,publish-path
       :publishing-function org-html-publish-to-html
       :html-head-extra "<link rel=\"stylesheet\" type=\"text/css\" href=\"css/index.css\"/>\n"
       :recursive t
-      :html-postamble ,(postamble-dispatcher 'default)
-      :exclude "site")
+      :html-postamble ,(postamble-dispatcher 'default))
      ("about"
       :base-directory ,(concat path-to-blog "about/")
       :base-extension "org"
       :publishing-directory ,about-path
       :publishing-function org-html-publish-to-html
       :html-postamble ,(postamble-dispatcher 'disqus)
-      :recursive t
-      :exclude "site")
+      :recursive t)
      ("todos"
       :base-directory ,todos-path
       :base-extension "org"
       :publishing-directory ,(concat publish-path "todos/")
       :publishing-function org-html-publish-to-html
       :html-postamble ,(postamble-dispatcher 'disqus)
-      :recursive t
-      :exclude "site")
+      :recursive t)
      ("posts"
       :base-directory ,posts-path
       :makeindex t
@@ -605,14 +596,13 @@ So that entire list of result will be showed."
       :publishing-function org-html-publish-to-html
       :html-head-extra "<link rel=\"stylesheet\" type=\"text/css\" href=\"css/tags.css\"/>\n"
       :recursive t
-      :html-postamble ,(postamble-dispatcher 'default)
-      :exclude "site")
+      :html-postamble ,(postamble-dispatcher 'default))
      ("files"
       :base-directory ,files-path
       :base-extension "js\\|css\\|png\\|jpg\\|pdf\\|jpeg"
       :publishing-directory ,(concat publish-path "files/")
       :publishing-function org-publish-attachment
-      :exclude "site"
+      ;; :exclude "site"
       :recursive t)
      ("DarkSalt" :components ("static" "home" "about" "posts" "files" "tags" "todos")))
    )
@@ -795,7 +785,7 @@ The ROOT points to the directory where posts store on."
         (auto-generate-post-list posts-path)
         "\n")
        nil
-       (concat path-to-blog "theindex.inc")))
+       (concat src-path "theindex.inc")))
 
   (defun write-posts-to-tag-inc ()
     (let ((grouped-posts (group-posts-by-tags posts-path))
