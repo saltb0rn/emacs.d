@@ -583,9 +583,9 @@ So that entire list of result will be showed."
       :html-home/up-format ,(home/up-format-dispatcher 'index)
       :html-postamble ,(postamble-dispatcher 'default))
      ("about"
-      :base-directory ,(concat path-to-blog "about/")
+      :base-directory ,about-path
       :base-extension "org"
-      :publishing-directory ,about-path
+      :publishing-directory ,(concat publish-path "about/")
       :publishing-function org-html-publish-to-html
       :html-head ,(html-head-dispatcher 'page)
       :html-home/up-format ,(home/up-format-dispatcher 'page)
