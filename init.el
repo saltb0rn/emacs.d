@@ -519,6 +519,14 @@ So that entire list of result will be showed."
      (ht-get postambles scheme
              (ht-get postambles 'default))))
 
+  (defun home/up-format-dispatcher (scheme)
+     (ht-get home/up-formats scheme
+             (ht-get home/up-formats 'default)))
+
+  (defun html-head-dispatcher (scheme)
+    (ht-get html-heads scheme
+            (ht-get html-heads 'default)))
+
   (defun read-html-tpl (name)
     (read-from-file
      (concat
@@ -541,14 +549,18 @@ So that entire list of result will be showed."
    home/up-formats (ht
                     ('default
                       (read-html-tpl "default-home-up-format.html"))
-                    ('blog
-                     (read-html-tpl "blog-home-up-format.html")))
+                    ('index
+                     (read-html-tpl "index-home-up-format.html"))
+                    ('page
+                     (read-html-tpl "page-home-up-format.html")))
 
    html-heads (ht
                ('default
                  (read-html-tpl "default-html-head.html"))
-               ('blog
-                (read-html-tpl "blog-html-head.html")))
+               ('index
+                (read-html-tpl "index-html-head.html"))
+               ('page
+                (read-html-tpl "page-html-head.html")))
 
    blog-alist
    `(("static"
@@ -565,12 +577,16 @@ So that entire list of result will be showed."
       :publishing-function org-html-publish-to-html
       :html-head-extra "<link rel=\"stylesheet\" type=\"text/css\" href=\"css/index.css\"/>\n"
       :recursive t
+      :html-head ,(html-head-dispatcher 'index)
+      :html-home/up-format ,(home/up-format-dispatcher 'index)
       :html-postamble ,(postamble-dispatcher 'default))
      ("about"
       :base-directory ,(concat path-to-blog "about/")
       :base-extension "org"
       :publishing-directory ,about-path
       :publishing-function org-html-publish-to-html
+      :html-head ,(html-head-dispatcher 'page)
+      :html-home/up-format ,(home/up-format-dispatcher 'page)
       :html-postamble ,(postamble-dispatcher 'disqus)
       :recursive t)
      ("todos"
@@ -578,6 +594,8 @@ So that entire list of result will be showed."
       :base-extension "org"
       :publishing-directory ,(concat publish-path "todos/")
       :publishing-function org-html-publish-to-html
+      :html-head ,(html-head-dispatcher 'page)
+      :html-home/up-format ,(home/up-format-dispatcher 'page)
       :html-postamble ,(postamble-dispatcher 'disqus)
       :recursive t)
      ("posts"
@@ -586,6 +604,8 @@ So that entire list of result will be showed."
       :base-extension "org"
       :publishing-directory ,(concat publish-path "posts/")
       :publishing-function org-html-publish-to-html
+      :html-head ,(html-head-dispatcher 'page)
+      :html-home/up-format ,(home/up-format-dispatcher 'page)
       :html-postamble ,(postamble-dispatcher 'disqus)
       ;; :exclude "site"  this setting will stop org to compile all posts, so commented it out.
       :recursive t)
@@ -596,6 +616,8 @@ So that entire list of result will be showed."
       :publishing-function org-html-publish-to-html
       :html-head-extra "<link rel=\"stylesheet\" type=\"text/css\" href=\"css/tags.css\"/>\n"
       :recursive t
+      :html-head ,(html-head-dispatcher 'page)
+      :html-home/up-format ,(home/up-format-dispatcher 'page)
       :html-postamble ,(postamble-dispatcher 'default))
      ("files"
       :base-directory ,files-path
@@ -620,8 +642,8 @@ any project of blog, vice versa."
     (write-posts-to-tag-inc)
     (rewrite-theindex-inc)
     (let ((org-publish-project-alist blog-alist)
-          (org-html-home/up-format (ht-get home/up-formats 'blog))
-          (org-html-head (ht-get html-heads 'blog))
+          ;; (org-html-home/up-format (ht-get home/up-formats 'blog))
+          ;; (org-html-head (ht-get html-heads 'blog))
           (org-html-preamble nil)
           (org-html-doctype "html5")
           (org-html-link-home "/")
