@@ -551,6 +551,8 @@ So that entire list of result will be showed."
    home/up-formats (ht
                     ('default
                       (read-html-tpl "default-home-up-format.html"))
+                    ('single
+                     (read-html-tpl "single-home-up-format.html"))
                     ('index
                      (read-html-tpl "index-home-up-format.html"))
                     ('page
@@ -559,6 +561,8 @@ So that entire list of result will be showed."
    html-heads (ht
                ('default
                  (read-html-tpl "default-html-head.html"))
+               ('single
+                (read-html-tpl "single-html-head.html"))
                ('index
                 (read-html-tpl "index-html-head.html"))
                ('page
@@ -587,8 +591,8 @@ So that entire list of result will be showed."
       :base-extension "org"
       :publishing-directory ,(concat publish-path "about/")
       :publishing-function org-html-publish-to-html
-      :html-head ,(html-head-dispatcher 'page)
-      :html-home/up-format ,(home/up-format-dispatcher 'page)
+      :html-head ,(html-head-dispatcher 'single)
+      :html-home/up-format ,(home/up-format-dispatcher 'single)
       :html-postamble ,(postamble-dispatcher 'disqus)
       :recursive t)
      ("todos"
@@ -596,8 +600,8 @@ So that entire list of result will be showed."
       :base-extension "org"
       :publishing-directory ,(concat publish-path "todos/")
       :publishing-function org-html-publish-to-html
-      :html-head ,(html-head-dispatcher 'page)
-      :html-home/up-format ,(home/up-format-dispatcher 'page)
+      :html-head ,(html-head-dispatcher 'single)
+      :html-home/up-format ,(home/up-format-dispatcher 'single)
       :html-postamble ,(postamble-dispatcher 'disqus)
       :recursive t)
      ("posts"
@@ -618,8 +622,8 @@ So that entire list of result will be showed."
       :publishing-function org-html-publish-to-html
       :html-head-extra "<link rel=\"stylesheet\" type=\"text/css\" href=\"css/tags.css\"/>\n"
       :recursive t
-      :html-head ,(html-head-dispatcher 'page)
-      :html-home/up-format ,(home/up-format-dispatcher 'page)
+      :html-head ,(html-head-dispatcher 'single)
+      :html-home/up-format ,(home/up-format-dispatcher 'single)
       :html-postamble ,(postamble-dispatcher 'default))
      ("files"
       :base-directory ,files-path
