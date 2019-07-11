@@ -56,6 +56,14 @@
     (add-to-list 'exec-path path-to-node.js-on-Windows)))
 
 
+(defcustom path-to-tern-binary-on-Windows nil "Set the path to tern binary on Windows")
+
+(when (and
+       (memq system-type '(windows-nt ms-dos cygwim))
+       path-to-tern-binary-on-Windows)
+  (setq tern-command (list path-to-tern-binary-on-Windows "--no-port-file")))
+
+
 (let* ((no-ssl (and (memq system-type '(windows-nt ms-dos cygwin))
                     (not (gnutls-available-p))))
        (proto (if no-ssl "http" "https")))
@@ -1103,15 +1111,10 @@ After creating the new empty project, go to the example/example and execute \"np
          (prin1 exn))))))
 
 (use-package company-tern
-  :unless (and
-           (memq system-type '(windows-nt ms-dos cygwin))
-           (null path-to-node.js-on-Windows))
   :ensure t
-  ;; :ensure-system-package
-  ;; (tern . "npm install -g tern")
   :hook
   ((js2-mode . tern-mode)
-  (js2-mode . company-mode))
+   (js2-mode . company-mode))
   :config
   (add-to-list 'company-backends 'company-tern)
   (define-key tern-mode-keymap (kbd "M-.") nil)
