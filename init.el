@@ -42,6 +42,14 @@
                     ";"
                     (getenv "PATH")))))
 
+;; Git on Windows, you'll need to specify path for it.
+(defcustom path-to-git-on-Windows nil "Set the path to Git while on Windows")
+
+(when (memq system-type '(windows-nt ms-dos cygwim))
+  (when path-to-git-on-Windows
+    (add-to-list 'exec-path path-to-git-on-Windows)))
+
+
 (let* ((no-ssl (and (memq system-type '(windows-nt ms-dos cygwin))
                     (not (gnutls-available-p))))
        (proto (if no-ssl "http" "https")))
@@ -1115,7 +1123,9 @@ After creating the new empty project, go to the example/example and execute \"np
   :ensure t)
 
 (use-package magit
-  :unless (memq system-type '(windows-nt ms-dos cygwin))
+  :unless (and
+           (memq system-type '(windows-nt ms-dos cygwin))
+           (null path-to-git-on-Windows))
   :bind
   (("C-x g" . #'magit-status))
   ;; :ensure-system-package git
