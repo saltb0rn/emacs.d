@@ -49,6 +49,12 @@
   (when path-to-git-on-Windows
     (add-to-list 'exec-path path-to-git-on-Windows)))
 
+(defcustom path-to-node.js-on-Windows nil "Set the path to node.js on Windows")
+
+(when (memq system-type '(window-nt ms-dos cygwim))
+  (when path-to-node.js-on-Windows
+    (add-to-list 'exec-path path-to-node.js-on-Windows)))
+
 
 (let* ((no-ssl (and (memq system-type '(windows-nt ms-dos cygwin))
                     (not (gnutls-available-p))))
@@ -234,7 +240,9 @@ FILE should be a path to file."
   :ensure t
   :hook
   (cond
-   ((memq system-type '(windows-nt ms-dos cygwin)) ;; dsiable js2-mode when on Windows because I can not find way to  use nodejs
+   ((and (memq system-type '(windows-nt ms-dos cygwin))
+         (null path-to-node.js-on-Windows))
+    ;; dsiable js2-mode when on Windows because I can not find way to  use nodejs
      '((c-mode
         c++-mode
         php-mode) . company-mode))
@@ -1095,7 +1103,9 @@ After creating the new empty project, go to the example/example and execute \"np
          (prin1 exn))))))
 
 (use-package company-tern
-  :unless (memq system-type '(windows-nt ms-dos cygwin))
+  :unless (and
+           (memq system-type '(windows-nt ms-dos cygwin))
+           (null path-to-node.js-on-Windows))
   :ensure t
   ;; :ensure-system-package
   ;; (tern . "npm install -g tern")
