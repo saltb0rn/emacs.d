@@ -617,7 +617,7 @@ So that entire list of result will be showed."
       :publishing-function org-html-publish-to-html
       :html-head ,(html-head-dispatcher 'single)
       :html-home/up-format ,(home/up-format-dispatcher 'single)
-      :html-postamble ,(postamble-dispatcher 'disqus)
+      :html-postamble ,(postamble-dispatcher 'default)
       :recursive t)
      ("todos"
       :base-directory ,todos-path
@@ -626,7 +626,7 @@ So that entire list of result will be showed."
       :publishing-function org-html-publish-to-html
       :html-head ,(html-head-dispatcher 'single)
       :html-home/up-format ,(home/up-format-dispatcher 'single)
-      :html-postamble ,(postamble-dispatcher 'disqus)
+      :html-postamble ,(postamble-dispatcher 'default)
       :recursive t)
      ("posts"
       :base-directory ,posts-path
@@ -636,7 +636,7 @@ So that entire list of result will be showed."
       :publishing-function org-html-publish-to-html
       :html-head ,(html-head-dispatcher 'page)
       :html-home/up-format ,(home/up-format-dispatcher 'page)
-      :html-postamble ,(postamble-dispatcher 'disqus)
+      :html-postamble ,(postamble-dispatcher 'default)
       ;; :exclude "site"  this setting will stop org to compile all posts, so commented it out.
       :recursive t)
      ("tags"
