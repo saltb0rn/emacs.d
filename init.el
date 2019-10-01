@@ -749,7 +749,8 @@ the `org-capture-templates'. "
           (if (file-directory-p file)
               (setq res (append res (retrieve-posts file)))
             (when (and (string-suffix-p ".org" file)
-                       (not (string-suffix-p "theindex.org" file)))
+                       (not (string-suffix-p "theindex.org" file))
+                       (not (string= (downcase (read-option-from-post file "status" "f")) "wd")))
               (setq res (add-to-list 'res file)))))
         (sort res
               #'(lambda (f1 f2)
@@ -849,10 +850,12 @@ The ROOT points to the directory where posts store on."
                (mapconcat
                 #'(lambda (tag)
                     (format "- [[file:%s][%s]]"
+                            ;; (url-encode-url
+                            ;;  (file-relative-name
+                            ;;   (concat tags-path tag ".html")
+                            ;;   tags-path))
                             (url-encode-url
-                             (file-relative-name
-                              (concat tags-path tag ".html")
-                              src-path))
+                             (concat tag ".html"))
                             tag))
                 (tag-list posts-path)
                 "\n"))
