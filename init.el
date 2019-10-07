@@ -412,22 +412,22 @@ So that entire list of result will be showed."
     (let ((helm-candidate-number-limit nil))
       (funcall (ad-get-orig-definition 'helm-etags-select) reinit))))
 
-(use-package helm-gtags
-  :ensure t
-  :hook
-  ((dired-mode
-    eshell-mode
-    c-mode
-    c++-mode) . helm-gtags-mode)
-  ;; :ensure-system-package (gtags . global)
-  :bind
-  (:map helm-gtags-mode-map
-        ("C-c g a" . #'helm-gtags-in-this-function)
-        ("C-j" . #'helm-gtags-select)
-        ("M-." . #'helm-gtags-dwim)
-        ("M-," . #'helm-gtags-pop-stack)
-        ("C-c <" . #'helm-gtags-previous-history)
-        ("C-c >" . #'helm-gtags-next-history)))
+;; (use-package helm-gtags
+;;   :ensure t
+;;   :hook
+;;   ((dired-mode
+;;     eshell-mode
+;;     c-mode
+;;     c++-mode) . helm-gtags-mode)
+;;   ;; :ensure-system-package (gtags . global)
+;;   :bind
+;;   (:map helm-gtags-mode-map
+;;         ("C-c g a" . #'helm-gtags-in-this-function)
+;;         ("C-j" . #'helm-gtags-select)
+;;         ("M-." . #'helm-gtags-dwim)
+;;         ("M-," . #'helm-gtags-pop-stack)
+;;         ("C-c <" . #'helm-gtags-previous-history)
+;;         ("C-c >" . #'helm-gtags-next-history)))
 
 (use-package function-args
   :ensure t)
@@ -1297,19 +1297,19 @@ After creating the new empty project, go to the example/example and execute \"np
   :config
   (add-hook 'eww-mode-hook #'(lambda () (read-only-mode -1))))
 
-(use-package etags
-  :config
-  ;; TODO: use `helm-etags-select' to navigate tags
-  (defun generate-or-update-ctags-of-current-buffer ()
-    (when (derived-mode-p 'prog-mode)
-      (shell-command
-       (string-join
-        (list "ctags" "-e" "-f" tag-path buffer-file-name) " "))))
-  ;; TODO: to check if the major-mode is derived from `prog-mode'
-  ;; (derived-mode-p prog-mode)
-  ;; TODO: find-file-hook, create ctags file
-  ;; TODO: after-save-hook, refresh ctags file
-  )
+;; (use-package etags
+;;   :config
+;;   ;; TODO: use `helm-etags-select' to navigate tags
+;;   (defun generate-or-update-ctags-of-current-buffer ()
+;;     (when (derived-mode-p 'prog-mode)
+;;       (shell-command
+;;        (string-join
+;;         (list "ctags" "-e" "-f" tag-path buffer-file-name) " "))))
+;;   ;; TODO: to check if the major-mode is derived from `prog-mode'
+;;   ;; (derived-mode-p prog-mode)
+;;   ;; TODO: find-file-hook, create ctags file
+;;   ;; TODO: after-save-hook, refresh ctags file
+;;   )
 
 (use-package browse-url
   :config
