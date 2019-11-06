@@ -1434,8 +1434,13 @@ when used as a command instead of `\\.html`."
 
 (setq package-archives package-archives-origin)
 
-;; NOTE: In my case, `kill-ring-save' will bound to `M-w' on Windows operating system, it will display `M-w' but binding `M-W', a.k.a, `M-Shift-w' while using QQ;
+;; NOTE: In my case, `kill-ring-save' will bound to `M-w' on Windows operating system,
+;; it will display `M-w' but binding `M-W', a.k.a, `M-Shift-w' while using QQ;
 ;; So, please change either your key binding or Emacs key binding for `kill-ring-save'.
 ;; I prefer changing key binding of QQ for `M-w';
+
+
+;; some commands confuse me, like `with-editor-cancel' which will sometimes "delete my file" by "accident"
+(put 'with-editor-cancel 'disabled t)
 
 (provide 'init)
