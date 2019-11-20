@@ -15,10 +15,6 @@
   (write-region "" "" custom-file))
 (load custom-file)
 
-(package-initialize)
-
-;; (add-to-list 'package-archives '("elpamrgh" . "https://raw.githubusercontent.com/saltb0rn/emacs-pkg-backup/master/") t)
-
 ;; NOTE: about how to use bash on Windows, maybe I can try this thread: https://www.reddit.com/r/emacs/comments/4z8gpe/using_bash_on_windows_for_mx_shell/
 (defcustom path-to-bash-on-Windows nil "Set the path to bash while on Windows")
 
@@ -55,7 +51,6 @@
   (when path-to-node.js-on-Windows
     (add-to-list 'exec-path path-to-node.js-on-Windows)))
 
-
 (defcustom path-to-tern-binary-on-Windows nil "Set the path to tern binary on Windows")
 
 (when (and
@@ -67,21 +62,12 @@
 (let* ((no-ssl (and (memq system-type '(windows-nt ms-dos cygwin))
                     (not (gnutls-available-p))))
        (proto (if no-ssl "http" "https")))
-  ;; Comment/uncomment these two lines to enable/disable MELPA and MELPA Stable as desired
-  (add-to-list 'package-archives (cons "melpa" (concat proto "://melpa.org/packages/")) t)
-  ;;(add-to-list 'package-archives (cons "melpa-stable" (concat proto "://stable.melpa.org/packages/")) t)
-  (when (< emacs-major-version 24)
-    ;; For important compatibility libraries like cl-lib
-    (add-to-list 'package-archives '("gnu" . (concat proto "://elpa.gnu.org/packages/")))))
+  (when (> emacs-major-version 24)
+    (add-to-list 'package-archives (cons "melpa" (concat proto "://melpa.org/packages/")) t)))
 
 (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
 
-(setq emacs-elpa-mirror "~/.emacs-elpa-mirror"
-      package-archives-origin package-archives)
-
-(if (file-exists-p emacs-elpa-mirror)
-    (setq package-archives `(("elpamr" . ,(concat emacs-elpa-mirror "/"))))
-  (setq package-archives `(("elpamr" . "https://raw.githubusercontent.com/saltb0rn/emacs-pkg-backup/master/"))))
+(package-initialize)
 
 ;; update the package metadata if the local cache is missing
 (cond ((null package-archive-contents) (package-refresh-contents))
@@ -482,7 +468,7 @@ So that entire list of result will be showed."
 
 (use-package org
   :unless (null path-to-blog)
-  :ensure org-plus-contrib
+  :ensure 'org-plus-contrib
   :requires (htmlize
              dash
              ht
@@ -986,7 +972,6 @@ The ROOT points to the directory where posts store on."
   :unless (memq system-type '(windows-nt ms-dos cygwin))
   ;; This will slow down Emacs when on Windows operating system.
   ;; And we can use system input method on Windows system (tested on Windows 10 only), so this package is not needed anymore.
-  :ensure t
   :custom
   (pyim-fuzzy-pinyin-alist
    '(("en" "eng") ("in" "ing") ("un" "ung")
@@ -1043,12 +1028,10 @@ The ROOT points to the directory where posts store on."
 (use-package restart-emacs
   :ensure t)
 
-(use-package undo-tree
-  :ensure t)
+;; (use-package undo-tree)
 
 (use-package realgud
-  :ensure t
-  :config)
+  :ensure t)
 
 (use-package company-c-headers
   :ensure t
@@ -1316,11 +1299,6 @@ After creating the new empty project, go to the example/example and execute \"np
   (when (executable-find browse-url-chrome-program)
     (setq browse-url-browser-function 'browse-url-chrome)))
 
-(use-package elpa-mirror
-  :ensure t
-  :config
-  (setq elpamr-default-output-directory emacs-elpa-mirror))
-
 (use-package socks
   :disabled
   :init (setq socks-server-on nil)
@@ -1428,11 +1406,6 @@ when used as a command instead of `\\.html`."
         (kill-buffer buf)))))
 
 ;;-----------------------------------------------------------------------------
-;; the package setup must be preceding this part
-(unless (file-exists-p elpamr-default-output-directory)
-  (elpamr-create-mirror-for-installed))
-
-(setq package-archives package-archives-origin)
 
 ;; NOTE: In my case, `kill-ring-save' will bound to `M-w' on Windows operating system,
 ;; it will display `M-w' but binding `M-W', a.k.a, `M-Shift-w' while using QQ;
