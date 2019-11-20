@@ -468,7 +468,7 @@ So that entire list of result will be showed."
 
 (use-package org
   :unless (null path-to-blog)
-  :ensure 'org-plus-contrib
+  :ensure org-plus-contrib
   :requires (htmlize
              dash
              ht
