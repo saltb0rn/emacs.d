@@ -473,7 +473,6 @@ So that entire list of result will be showed."
              dash
              ht
              simple-httpd
-             sub-x
              plantuml-mode)
   :bind (:map org-mode-map
          ("C-c i" . #'org-insert-src-block)
