@@ -467,19 +467,18 @@ So that entire list of result will be showed."
   :ensure t)
 
 (use-package org
-  :unless (null path-to-blog)
+  ;; :unless (null path-to-blog)
   :ensure org-plus-contrib
-  :requires (htmlize
-             dash
-             ht
-             simple-httpd
-             sub-x
-             plantuml-mode)
   :bind (:map org-mode-map
          ("C-c i" . #'org-insert-src-block)
          :map global-map
          ("\C-c c" . org-capture))
   :config
+  (require 'htmlize)
+  (require 'dash)
+  (require 'ht)
+  (require 'simple-httpd)
+  (require 'plantuml-mode)
   (require 'ox-publish)
   (define-skeleton org-insert-src-block
     "Insert source block in org-mode"
@@ -487,8 +486,6 @@ So that entire list of result will be showed."
     "#+BEGIN_SRC " str \n
     > _ \n
     "#+END_SRC")
-
-
 
   (setq org-export-coding-system 'utf-8
         ;; path-to-blog "~/Documents/DarkSalt/"
