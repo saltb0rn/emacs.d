@@ -501,7 +501,7 @@ So that entire list of result will be showed."
         httpd-listings nil
         httpd-root publish-path)
 
-  ;; `publish-all-posts' to publish
+ ;; `publish-all-posts' to publish
   ;; the rest of configuration of `org' is all about the blogging with Emacs.
   ;; the blog provides following features,
   ;; 1. an auto-generated post list ordered by creation date in index;
