@@ -237,14 +237,14 @@ FILE should be a path to file."
    ((and (memq system-type '(windows-nt ms-dos cygwin))
          (null path-to-node.js-on-Windows))
     ;; dsiable js2-mode when on Windows because I can not find way to  use nodejs
-     '((c-mode
-        c++-mode
-        php-mode) . company-mode))
-    ((null nil)
-     '((c-mode
-        c++-mode
-        php-mode
-        js2-mode) . company-mode))))
+    '((c-mode
+       c++-mode
+       php-mode) . company-mode))
+   ((null nil)
+    '((c-mode
+       c++-mode
+       php-mode
+       js2-mode) . company-mode))))
 
 (use-package flycheck
   :ensure t
@@ -294,28 +294,30 @@ FILE should be a path to file."
   (defvar fic-jump-buffer "*Fic-Jump*" "The buffer jump from")
 
   (defun fic--keyword-positions (&optional buffer limit)
-  "Return the LIMIT positions of keywords in BUFFER."
-  (with-current-buffer (or buffer (current-buffer))
-    (save-excursion
-      (save-match-data
-        (let (pos)
-          (goto-char (point-min))
-          (while (re-search-forward (fic-search-re) limit t)
-            (pcase (match-data)
-              (`(,s ,e . ,_)
-               (when (eq (get-char-property s 'face) 'fic-face)
-                 (add-to-list 'pos e)))))
-          (reverse pos))))))
+    "Return the LIMIT positions of keywords in BUFFER."
+    (with-current-buffer (or buffer (current-buffer))
+      (save-excursion
+        (save-match-data
+          (let (pos)
+            (goto-char (point-min))
+            (while (re-search-forward (fic-search-re) limit t)
+              (pcase (match-data)
+                (`(,s ,e . ,_)
+                 (when (eq (get-char-property s 'face) 'fic-face)
+                   ;; (add-to-list 'pos e)
+                   (push e pos)
+                   ))))
+            (reverse pos))))))
 
   (defun fic--content-in-line-in-position (marker)
-  "Return the content in line in location MARKER."
-  (let ((frombuf (marker-buffer marker))
-        (pos (marker-position marker)))
-    (if (not (buffer-live-p frombuf))
-        (message "Buffer %s is not alive"  (buffer-name frombuf))
-      (with-current-buffer frombuf
-        (goto-line (line-number-at-pos pos))
-        (buffer-substring (line-beginning-position) (line-end-position))))))
+    "Return the content in line in location MARKER."
+    (let ((frombuf (marker-buffer marker))
+          (pos (marker-position marker)))
+      (if (not (buffer-live-p frombuf))
+          (message "Buffer %s is not alive"  (buffer-name frombuf))
+        (with-current-buffer frombuf
+          (goto-line (line-number-at-pos pos))
+          (buffer-substring (line-beginning-position) (line-end-position))))))
 
   (defun fic--lineno-in-position (marker)
     "Return line number in MARKER."
@@ -349,7 +351,7 @@ By default, BUFFER is named \"*Fic-Jump*\"."
               (let ((inhibit-read-only t))
                 (dolist (marker markers)
                   (let ((beg (point)))
-                    (insert (format "Visit" (fic--content-in-line-in-position marker)))
+                    (insert (format "Visit %s" (fic--content-in-line-in-position marker)))
                     (make-text-button
                      beg (point)
                      'follow-link t
@@ -470,9 +472,9 @@ So that entire list of result will be showed."
   ;; :unless (null path-to-blog)
   :ensure org-plus-contrib
   :bind (:map org-mode-map
-         ("C-c i" . #'org-insert-src-block)
-         :map global-map
-         ("\C-c c" . org-capture))
+              ("C-c i" . #'org-insert-src-block)
+              :map global-map
+              ("\C-c c" . org-capture))
   :config
   (require 'htmlize)
   (require 'dash)
@@ -501,7 +503,7 @@ So that entire list of result will be showed."
         httpd-listings nil
         httpd-root publish-path)
 
- ;; `publish-all-posts' to publish
+  ;; `publish-all-posts' to publish
   ;; the rest of configuration of `org' is all about the blogging with Emacs.
   ;; the blog provides following features,
   ;; 1. an auto-generated post list ordered by creation date in index;
@@ -530,8 +532,8 @@ So that entire list of result will be showed."
              (ht-get postambles 'default))))
 
   (defun home/up-format-dispatcher (scheme)
-     (ht-get home/up-formats scheme
-             (ht-get home/up-formats 'default)))
+    (ht-get home/up-formats scheme
+            (ht-get home/up-formats 'default)))
 
   (defun html-head-dispatcher (scheme)
     (ht-get html-heads scheme
@@ -735,7 +737,9 @@ the `org-capture-templates'. "
             (when (and (string-suffix-p ".org" file)
                        (not (string-suffix-p "theindex.org" file))
                        (not (string= (downcase (read-option-from-post file "status" "f")) "wd")))
-              (setq res (add-to-list 'res file)))))
+              (push file res)
+              ;; (setq res (add-to-list 'res file)
+              )))
         (sort res
               #'(lambda (f1 f2)
                   (string<
@@ -748,25 +752,30 @@ string consisting of url and title of org-file"
     (let ((files (retrieve-posts root))
           res)
       (dolist (file files res)
-        (setq res (add-to-list 'res (format "[[file:%s][%s]]%s"
-                                            (url-encode-url
-                                              (replace-regexp-in-string
-                                               "\\.org" ".html"
-                                               (file-relative-name file src-path)))
-                                            (read-option-from-post
-                                             file "TITLE" (file-name-base file))
-                                            (with-temp-buffer
-                                              (insert-file-contents file)
-                                              (goto-char (point-min))
-                                              (if (re-search-forward
-                                                   (concat
-                                                    "#\\+begin_abstract"
-                                                    ;; "\\([[:ascii:][:nonascii:]]*\\)"
-                                                    "\\(\\(?:.*\n\\)*.*\\)"
-                                                    "#\\+end_abstract")
-                                                   nil t)
-                                                  (match-string-no-properties 1 nil)
-                                                ""))))))))
+
+        (push (format "[[file:%s][%s]]%s"
+                      (url-encode-url
+                       (replace-regexp-in-string
+                        "\\.org" ".html"
+                        (file-relative-name file src-path)))
+                      (read-option-from-post
+                       file "TITLE" (file-name-base file))
+                      (with-temp-buffer
+                        (insert-file-contents file)
+                        (goto-char (point-min))
+                        (if (re-search-forward
+                             (concat
+                              "#\\+begin_abstract"
+                              ;; "\\([[:ascii:][:nonascii:]]*\\)"
+                              "\\(\\(?:.*\n\\)*.*\\)"
+                              "#\\+end_abstract")
+                             nil t)
+                            (match-string-no-properties 1 nil)
+                          "")))
+              res
+              )
+
+        )))
 
   (defun retrieve-tags-from-post (post)
     "Retrieve tags from a post"
@@ -775,11 +784,11 @@ string consisting of url and title of org-file"
          (--> elt
               downcase
               capitalize))
-       (let ((tags (read-option-from-post post "tags")))
-         (cond
-          ((or (null tags)
-               (string= (string-trim tags) "")) (list "Others"))
-          (t (split-string (string-trim tags) " "))))))
+     (let ((tags (read-option-from-post post "tags")))
+       (cond
+        ((or (null tags)
+             (string= (string-trim tags) "")) (list "Others"))
+        (t (split-string (string-trim tags) " "))))))
 
   (defun tag-list (root)
     "Retrieve tags from posts, return a list of tags"
@@ -796,7 +805,9 @@ The ROOT points to the directory where posts store on."
           res)
       (dolist (file files res)
         (when (member tag (retrieve-tags-from-post file))
-          (setq res (add-to-list 'res file))))
+          (push file res)
+          ;; (setq res (add-to-list 'res file))
+          ))
       (cons tag (list (sort res 'string<)))))
 
   (defun group-posts-by-tags (root)
@@ -805,7 +816,9 @@ The ROOT points to the directory where posts store on."
     (let ((tags (tag-list root))
           res)
       (dolist (tag tags res)
-        (setq res (add-to-list 'res (posts-of-tag tag))))))
+        (push (posts-of-tag tag) res)
+        ;; (setq res (add-to-list 'res (posts-of-tag tag)))
+        )))
 
   (defun rename-theindex-to-index ()
     "Rename theindex.html to index.html"
@@ -816,13 +829,13 @@ The ROOT points to the directory where posts store on."
 
   (defun rewrite-theindex-inc ()
     "Rewrite theindex.inc in `path-to-blog'"
-      (write-region
-       (mapconcat
-        #'(lambda (str) (format "*** %s\n\t" str))
-        (auto-generate-post-list posts-path)
-        "\n")
-       nil
-       (concat src-path "theindex.inc")))
+    (write-region
+     (mapconcat
+      #'(lambda (str) (format "*** %s\n\t" str))
+      (auto-generate-post-list posts-path)
+      "\n")
+     nil
+     (concat src-path "theindex.inc")))
 
   (defun write-posts-to-tag-inc ()
     (let ((grouped-posts (group-posts-by-tags posts-path))
@@ -874,25 +887,25 @@ The ROOT points to the directory where posts store on."
   ;; Define a advice after `org-publish-project' and `org-publish-projects' to
   ;; rename "theindex.html" to "index.html", because doing this manually is annoyed.
 
- ;;(defadvice org-publish-project
- ;;     (before org-publish-project-rewrite-theindex-inc activate)
- ;;   (create-project-directory-if-necessary)
- ;;   (write-posts-to-tag-inc)
- ;;   (rewrite-theindex-inc))
+  ;;(defadvice org-publish-project
+  ;;     (before org-publish-project-rewrite-theindex-inc activate)
+  ;;   (create-project-directory-if-necessary)
+  ;;   (write-posts-to-tag-inc)
+  ;;   (rewrite-theindex-inc))
 
- ;;(defadvice org-publish-project
- ;;     (after og-publish-project-rename-theindex-to-index activate)
- ;;   (rename-theindex-to-index))
+  ;;(defadvice org-publish-project
+  ;;     (after og-publish-project-rename-theindex-to-index activate)
+  ;;   (rename-theindex-to-index))
 
- ;;(defadvice org-publish-projects
- ;;     (before org-publish-projects-rewrite-theindex-inc activate)
- ;;   (create-project-directory-if-necessary)
- ;;   (write-posts-to-tag-inc)
- ;;   (rewrite-theindex-inc))
+  ;;(defadvice org-publish-projects
+  ;;     (before org-publish-projects-rewrite-theindex-inc activate)
+  ;;   (create-project-directory-if-necessary)
+  ;;   (write-posts-to-tag-inc)
+  ;;   (rewrite-theindex-inc))
 
- ;; (defadvice org-publish-projects
- ;;     (after org-publish-projects-rename-theindex-to-index activate)
- ;;   (rename-theindex-to-index))
+  ;; (defadvice org-publish-projects
+  ;;     (after org-publish-projects-rename-theindex-to-index activate)
+  ;;   (rename-theindex-to-index))
   )
 
 ;; (use-package pipenv
@@ -1074,21 +1087,21 @@ After creating the new empty project, go to the example/example and execute \"np
                                         name)))
       (condition-case exn
           (progn
-              (copy-directory
-               (get-path-to-asset-file "web-conf")
-               webpack-project-root nil nil t)
-              (write-to-file
-               (format (read-from-file (get-path-to-asset-file "web-conf/.gitignore-tpl")) name name)
-               (concat webpack-project-root "/" ".gitignore"))
+            (copy-directory
+             (get-path-to-asset-file "web-conf")
+             webpack-project-root nil nil t)
+            (write-to-file
+             (format (read-from-file (get-path-to-asset-file "web-conf/.gitignore-tpl")) name name)
+             (concat webpack-project-root "/" ".gitignore"))
 
-              (write-to-file
-               (format (read-from-file (get-path-to-asset-file "web-conf/webpack/.package-json-tpl")) name)
-               (concat webpack-project-root "webpack/package.json"))
-              (rename-file (concat webpack-project-root "webpack")
-                           (concat webpack-project-root name))
-              ;; NOTE: avoid the name already exists in root
-              ;; (shell-command (format "cd %s && npm init -y" webpack-project-root) nil nil)
-              )
+            (write-to-file
+             (format (read-from-file (get-path-to-asset-file "web-conf/webpack/.package-json-tpl")) name)
+             (concat webpack-project-root "webpack/package.json"))
+            (rename-file (concat webpack-project-root "webpack")
+                         (concat webpack-project-root name))
+            ;; NOTE: avoid the name already exists in root
+            ;; (shell-command (format "cd %s && npm init -y" webpack-project-root) nil nil)
+            )
         (error
          (when (file-directory-p webpack-project-root)
            (delete-directory webpack-project-root t))
