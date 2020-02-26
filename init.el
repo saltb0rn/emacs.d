@@ -7,7 +7,25 @@
 ;; just comment it out by adding a semicolon to the start of the line.
 ;; You may delete these explanatory comments.
 (require 'package)
-(add-to-list 'load-path (expand-file-name "~/.emacs.d/site-lisp"))
+(require 'autoload)
+
+;;-----------------------------------------------------------------------------
+;; packages to install manually
+(unless (file-directory-p (expand-file-name "site-lisp" user-emacs-directory))
+  (make-directory (expand-file-name "site-lisp" user-emacs-directory)))
+
+(add-to-list 'load-path (expand-file-name "site-lisp" user-emacs-directory) t)
+
+(let ((files (directory-files
+              (expand-file-name "site-lisp" user-emacs-directory)
+              t
+              "^[^.]\\(?:.*\\)\\(?:\\.elc?\\)?$")))
+  (mapcar
+   (lambda (file)
+     (when (file-directory-p file)
+       (add-to-list 'load-path file t)))
+   files))
+;;-----------------------------------------------------------------------------
 
 ;; Put the customized variables into another file to "protect" "init.el" file
 (setq custom-file (expand-file-name "emacs-custom.el" user-emacs-directory))
@@ -968,72 +986,18 @@ The ROOT points to the directory where posts store on."
 (use-package company-php
   :ensure t)
 
-(use-package php-mode
-  :ensure t
-  :bind (:map php-mode-map
-              ("M-j" . #'pyim-convert-code-at-point))
-  :config
-  (add-hook 'php-mode-hook
-            #'(lambda ()
-                "Add `company-ac-php-backend' to buffer-local version of `company-backends'."
-                (make-local-variable 'company-backends)
-                (push 'company-ac-php-backend company-backends))))
 
 (use-package pyim
-  :unless (memq system-type '(windows-nt ms-dos cygwin))
-  ;; This will slow down Emacs when on Windows operating system.
-  ;; And we can use system input method on Windows system (tested on Windows 10 only), so this package is not needed anymore.
-  :custom
-  (pyim-fuzzy-pinyin-alist
-   '(("en" "eng") ("in" "ing") ("un" "ung")
-     ("on" "ong") ("z" "zh") ("an" "ang")))
+  :ensure t
+  :demand t
   :config
-  (message "You should not able to see me")
-  ;; 激活 basedict 拼音词库
   (use-package pyim-basedict
-    :unless (memq system-type '(windows-nt ms-dos cygwin))
-    :ensure nil
+    :ensure t
     :config (pyim-basedict-enable))
-
-  ;; 五笔用户使用 wbdict 词库
-  ;; (use-package pyim-wbdict
-  ;;   :ensure nil
-  ;;   :config (pyim-wbdict-gbk-enable))
-
   (setq default-input-method "pyim")
 
-  ;; 我使用全拼
-  (setq pyim-default-scheme 'quanpin)
-
-  ;; 设置 pyim 探针设置，这是 pyim 高级功能设置，可以实现 *无痛* 中英文切换 :-)
-  ;; 我自己使用的中英文动态切换规则是：
-  ;; 1. 光标只有在注释里面时，才可以输入中文。
-  ;; 2. 光标前是汉字字符时，才能输入中文。
-  ;; 3. 使用 M-j 快捷键，强制将光标前的拼音字符串转换为中文。
-  (setq-default pyim-english-input-switch-functions
-                '(pyim-probe-dynamic-english
-                  pyim-probe-isearch-mode
-                  pyim-probe-program-mode
-                  pyim-probe-org-structure-template))
-
-  (setq-default pyim-punctuation-half-width-functions
-                '(pyim-probe-punctuation-line-beginning
-                  pyim-probe-punctuation-after-punctuation))
-
-  ;; 开启拼音搜索功能
-  (pyim-isearch-mode 1)
-
-  ;; 使用 pupup-el 来绘制选词框
-  (setq pyim-page-tooltip 'popup)
-
-  ;; 选词框显示5个候选词
-  (setq pyim-page-length 5)
-
-  ;; 让 Emacs 启动时自动加载 pyim 词库
-  (add-hook 'emacs-startup-hook
-            #'(lambda () (pyim-restart-1 t)))
   :bind
-  (("M-j" . pyim-convert-code-at-point) ;与 pyim-probe-dynamic-english 配合
+  (("M-j" . pyim-convert-string-at-point) ;与 pyim-probe-dynamic-english 配合
    ("C-;" . pyim-delete-word-from-personal-buffer)))
 
 (use-package restart-emacs
@@ -1287,7 +1251,6 @@ After creating the new empty project, go to the example/example and execute \"np
         eshell-smart-space-goes-to-end t))
 
 (use-package eww
-  :requires pyim
   :config
   (add-hook 'eww-mode-hook #'(lambda () (read-only-mode -1))))
 
@@ -1398,8 +1361,8 @@ After creating the new empty project, go to the example/example and execute \"np
 
 ;;-----------------------------------------------------------------------------
 ;; Libraries for development
-(use-package websocket
-  :unless (memq system-type '(windows-nt ms-dos cygwin)))
+;; (use-package websocket
+;;   :unless (memq system-type '(windows-nt ms-dos cygwin)))
 
 ;;-----------------------------------------------------------------------------
 ;; Extensions for some functions
@@ -1415,6 +1378,14 @@ when used as a command instead of `\\.html`."
       (when (string-match-p regexp (buffer-name buf))
         (setq count (+ count 1))
         (kill-buffer buf)))))
+
+;;-----------------------------------------------------------------------------
+;; configurations for packages which needs to be installed manually
+(use-package godot-gdscript
+  :config
+  (require 'company-godot-gdscript)
+  (add-to-list 'company-backends 'company-godot-gdscript)
+  (add-hook 'godot-gdscript-mode-hook 'company-mode))
 
 ;;-----------------------------------------------------------------------------
 

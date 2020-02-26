@@ -1,3 +1,6 @@
 [submodule "site-lisp/ycmd"]
 	path = site-lisp/ycmd
 	url = https://github.com/Valloric/ycmd.git
+[submodule "site-lisp/godot-gdscript.el"]
+	path = site-lisp/godot-gdscript.el
+	url = https://github.com/francogarcia/godot-gdscript.el.git
