@@ -965,6 +965,7 @@ The ROOT points to the directory where posts store on."
   (set-default 'geiser-active-implementations '(racket))
   (set-default 'geiser-repl-query-on-kill-p nil)
   (set-default 'geiser-repl-query-on-exit-p nil)
+  ;; (set-default 'geiser-racket-binary "C:/Program Files/Racket/Racket.exe")
   (add-hook 'geiser-mode-hook #'prettify-symbols-mode))
 
 (use-package racket-mode

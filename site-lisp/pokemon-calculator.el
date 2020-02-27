@@ -1,4 +1,6 @@
-(defstruct specStr-baseStat spec base) ;; 种族 基础点数 
+(require 'tabulated-list)
+
+(defstruct specStr-baseStat spec base) ;; 种族 基础点数
 
 (defstruct type
   name
@@ -51,23 +53,72 @@
 
 ;;; support dervided type, like fighting type with scrappy ability will be fighting-effective-to-ghost, it is neccessay because it's effective to ghost type
 
-(setq const-damage-rate (make-damage-rate))
+;;(setq const-damage-rate (make-damage-rate))
 
-(setq element-rules
-      (list) ;; gen1 to genN
-      (list)) ;; genN to genM, etc.
+;; (setq element-rules
+;;       (list) ;; gen1 to genN
+;;       (list)) ;; genN to genM, etc.
 
+(defun pokemon-sorted-by-base-stat (A B)
+  (< (string-to-number A) (string-to-number B)))
+
+(define-derived-mode pokemon-list-mode tabulated-list-mode "Pokemon Dex"
+  "Pokemon dex"
+  (interactive)
+  (setq tabulated-list-format
+        [
+         ("No" 5 (lambda (A B) (string< A B)))
+         ("Pokemon" 18 nil)
+         ("Type1" 10 nil)
+         ("Type2" 10 nil)
+         ("HP" 5 #'pokemon-sorted-by-base-stat)
+         ("Atk" 5 #'pokemon-sorted-by-base-stat)
+         ("Def" 5 #'pokemon-sorted-by-base-stat)
+         ("SpA" 5 #'pokemon-sorted-by-base-stat)
+         ("SpD" 5 #'pokemon-sorted-by-base-stat)
+         ("Spd" 5 #'pokemon-sorted-by-base-stat)
+         ("Ability" 30 nil)
+         ("Hidden Ability" 15 nil)
+         ("Gen" 5 #'(lambda (A B) (string< A B)))
+         ("Area" 18 nil)
+         ("Description" 0 nil)
+         ])
+  (setq tabulated-list-sort-key '("No"))
+  (tabulated-list-init-header))
+
+(defun pokemon-load-dex--read-from-file (&optional generation)
+  "Read Pokemons data from file"
+  )
+
+(defun pokemon-load-dex (&optional generation async)
+  (interactive)
+  (unless (derived-mode-p 'pokemon-list-mode)
+    (user-error "The current buffer is not a Pokemon Dex"))
+  (tabulated-list-init-header)
+  (setq tabulated-list-entries
+        (list
+         (list "001"
+               ["001" "喷火龙" "火" "飞行" "100" "90" "90" "100" "90" "100" "猛火" "太阳之力" "" "" "老喷"])
+
+         ;; (list "002"
+         ;;       ["002" "喷火龙" "火" "飞行" "100" "90" "90" "100" "90" "100" "猛火" "太阳之力" "" "" "老喷"])
+         ))
+  (tabulated-list-print))
+
+(defun pokemon-dex ()
+  (interactive)
+  (let* ((buf (get-buffer-create "*Pokemon Dex*"))
+        (win (get-buffer-window buf)))
+    (with-current-buffer buf
+      (setq buffer-file-coding-system 'utf-8)
+      (pokemon-list-mode)
+      (pokemon-load-dex))
+    (if win
+        (select-window win)
+      (switch-to-buffer buf))))
 
 (defun get-element-damage-rate
     (generation field weather move-type attacker-types attacker-ability defender-types defender-ability critical)
-  ;; (let ((element-rule (nth (- n 1) element-rules))
-  ;;       (same-type-attack-bonus (if (equal attack-type move-type) 1.5 1)))
-  ;;   (loop for r in element-rule
-  ;;         when (let ((mtype (element-rate-move-type r))
-  ;;                    (dtype (element-rate-denfender-type r)))
-  ;;                (and (equal mtype move-type)
-  ;;                     (equal dtype defender-type)))
-  ;;         return (element-rate-rate r)))
   )
 
 (defun pokemon-damage-calculator
