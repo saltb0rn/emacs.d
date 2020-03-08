@@ -121,6 +121,12 @@
     (generation field weather move-type attacker-types attacker-ability defender-types defender-ability critical)
   )
 
+(defun pokemon-round (arg &optional divisor)
+  (let ((val (/ arg (or divisor 1) 1.0)))
+    (if (> (- val (truncate val)) 0.5)
+        (ceiling val)
+      (floor val))))
+
 (defun pokemon-damage-calculator
     (generation
      attacker
@@ -152,6 +158,35 @@
                     dtype)))
           )
     rate))
+
+(defun pokemon-stat (level base invidual effort &optional modifier)
+  "stat calculator for the generations since gen3"
+  (let* ((step1 (* base 2))
+         (step2 (+ step1 invidual))
+         (step3 (/  effort 4.0))
+         (step4 (+ step2 step3))
+         (step5 (* step4 level))
+         (step6 (/ step5 100.0))
+         (step7 (+ step6 5))
+         (step8 (* step7 (or modifier 1))))
+    (truncate step8)))
+
+(defun pokemon-damage-formula
+    (move-power attacker-level attacker-atk/spA defender-def/spD modifier)
+  (let* (
+         (step1 (* 2.00 attacker-level))
+         (step2 (/ step1 5.00))
+         (step3 (+ step2 2.00))
+         (step4 (* step3 move-power))
+         (step5 (* step4 attacker-atk/spA))
+         (step6 (/ step5 defender-def/spD 1.00))
+         (step7 (/ step6 50.00))
+         (step8 (+ step7 2.00))
+         (step9 (* step8 modifier 1.00)))
+    (round step9)))
+
+(defun pokemon-damage-modifier-formula ()
+  )
 
 (defun pokemon-damage-calculator (attacker-info defender-info attack-move)
   nil
