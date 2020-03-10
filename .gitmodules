@@ -9,7 +9,6 @@
 [submodule "site-lisp/mmm-mode"]
 	path = site-lisp/mmm-mode
 	url = https://github.com/purcell/mmm-mode.git
-
 [submodule "site-lisp/vue-mode"]
 	path = site-lisp/vue-mode
 	url = https://github.com/AdamNiederer/vue-mode.git
