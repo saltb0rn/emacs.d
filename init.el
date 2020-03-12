@@ -1388,6 +1388,8 @@ when used as a command instead of `\\.html`."
   (add-to-list 'company-backends 'company-godot-gdscript)
   (add-hook 'godot-gdscript-mode-hook 'company-mode))
 
+(use-package vue-mode)
+
 ;;-----------------------------------------------------------------------------
 
 ;; NOTE: In my case, `kill-ring-save' will bound to `M-w' on Windows operating system,
