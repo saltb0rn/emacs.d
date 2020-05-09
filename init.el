@@ -1390,6 +1390,10 @@ when used as a command instead of `\\.html`."
 
 (use-package vue-mode)
 
+(use-package org-reveal
+  :config
+  (setq org-reveal-root "https://cdn.jsdelivr.net/npm/reveal.js"))
+
 ;;-----------------------------------------------------------------------------
 
 ;; NOTE: In my case, `kill-ring-save' will bound to `M-w' on Windows operating system,
