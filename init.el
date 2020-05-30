@@ -112,14 +112,17 @@
 (setq large-file-warning-threshold 100000000)
 
 ;; Put backup files into specified directory
-(setq backup-directory-alist
-      `((".*" . ,(concat user-emacs-directory "backups/"))))
+(setq temporary-file-directory
+      (concat user-emacs-directory "autosaved/"))
 
-(unless (file-exists-p (concat user-emacs-directory "autosaved/"))
-  (make-directory-internal (concat user-emacs-directory "autosaved/")))
+(setq backup-directory-alist
+      `((".*" . ,temporary-file-directory)))
+
+(unless (file-exists-p temporary-file-directory)
+  (make-directory-internal temporary-file-directory))
 
 (setq auto-save-file-name-transforms
-      `((".*" ,(concat user-emacs-directory "autosaved/") t)))
+      `((".*" ,temporary-file-directory t)))
 
 ;; Disable tool-bar, menu-bar and scroll-bar.
 (when (fboundp 'tool-bar-mode)
@@ -254,7 +257,7 @@ FILE should be a path to file."
   (cond
    ((and (memq system-type '(windows-nt ms-dos cygwin))
          (null path-to-node.js-on-Windows))
-    ;; dsiable js2-mode when on Windows because I can not find way to  use nodejs
+    ;; dsiable js2-mode when on Windows because I can not find way to use nodejs
     '((c-mode
        c++-mode
        php-mode) . company-mode))
