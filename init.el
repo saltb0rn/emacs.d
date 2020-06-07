@@ -524,6 +524,10 @@ So that entire list of result will be showed."
         httpd-listings nil
         httpd-root publish-path)
 
+  (setf
+   (cdr (assoc 'path org-html-mathjax-options))
+   (list "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"))
+
   ;; `publish-all-posts' to publish
   ;; the rest of configuration of `org' is all about the blogging with Emacs.
   ;; the blog provides following features,
