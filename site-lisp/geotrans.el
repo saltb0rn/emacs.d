@@ -11,6 +11,9 @@ and the equation is
 | a b e |   | x |   | x' |
 | c d f | * | y | = | y' |
 | 0 0 1 |   | 1 |   | 1  |
+
+Some docs may haves different order of [a b c d e f],
+there is no problem, totally.
 "
   (let ((x (car coordinate))
         (y (cdr coordinate)))
@@ -24,7 +27,11 @@ and the equation is
   (geotrans-matrix-2d coordinate
                       (cos radians) (- (sin radians))
                       (sin radians) (cos radians)
-                      0 0)),
+                      0 0)).
+
+I will use degrees instead radians below,
+
+and keep in mind that to use radians in programming.
 
 The matrix should be like this:
 
@@ -41,7 +48,7 @@ You can think of the plane vector basis
 | 1 0 |
 | 0 1 |
 
-rotates 30 degrees clockwise so that it becomes
+rotates d degrees clockwise so that it becomes
 
 | cos(d) cos(90+d) |
 | sin(d) cos(d)    |
