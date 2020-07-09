@@ -1366,6 +1366,11 @@ After creating the new empty project, go to the example/example and execute \"np
                       (let ((buf (current-buffer)))
                         (switch-to-buffer buf)))))))
 
+(use-package dictionary
+  :ensure t
+  :config
+  (global-set-key "\C-cs" 'dictionary-search)
+  (global-set-key "\C-cm" 'dictionary-match-words))
 
 ;;-----------------------------------------------------------------------------
 ;; Libraries for development
@@ -1377,7 +1382,7 @@ After creating the new empty project, go to the example/example and execute \"np
 (defun re-kill-buffers (regexp)
   "Kill buffers according to `REGEXP' and return the amounts of killed buffers.
 But there is difference between being used as a command and being called in function,
-like if you want to kill all html files with matching `.html`, then just input `.html`
+like if you want to kill all html files with matching `.html`, then just input `\.html`
 when used as a command instead of `\\.html`."
   (interactive "sInput regexp:\s")
   (let ((buf-list (buffer-list))
