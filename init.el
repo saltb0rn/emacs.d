@@ -1260,7 +1260,8 @@ After creating the new empty project, go to the example/example and execute \"np
 
 (use-package eww
   :config
-  (add-hook 'eww-mode-hook #'(lambda () (read-only-mode -1))))
+  (add-hook 'eww-mode-hook #'(lambda () (read-only-mode -1)))
+  (setq eww-search-prefix "https://cn.bing.com/search?ensearch=1&q="))
 
 ;; (use-package etags
 ;;   :config
