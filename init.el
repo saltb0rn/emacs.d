@@ -286,8 +286,7 @@ FILE should be a path to file."
 
 ;; NOTE: Bad performance for rendering on Windows, the worst part is (nyan-start-animation), you can only disable that.
 (use-package nyan-mode
-  :unless (memq system-type '(windows-nt ms-dos cygwin))
-  :ensure t
+  :if (not (memq system-type '(windows-nt ms-dos cygwin)))
   :config
   (nyan-mode)
   (nyan-start-animation)
@@ -490,7 +489,7 @@ So that entire list of result will be showed."
   :ensure t)
 
 (use-package org
-  ;; :unless (null path-to-blog)
+  ;; :if (not (null path-to-blog))
   :ensure org-plus-contrib
   :bind (:map org-mode-map
               ("C-c i" . #'org-insert-src-block)
@@ -996,8 +995,7 @@ The ROOT points to the directory where posts store on."
 
 
 (use-package pyim
-  :ensure t
-  :demand t
+  :if (not (memq system-type '(windows-nt ms-dos cygwin)))
   :config
   (use-package pyim-basedict
     :ensure t
@@ -1105,17 +1103,16 @@ After creating the new empty project, go to the example/example and execute \"np
   :ensure t)
 
 (use-package magit
-  :unless (and
-           (memq system-type '(windows-nt ms-dos cygwin))
-           (null path-to-git-on-Windows))
+  :if (not (and
+            (memq system-type '(windows-nt ms-dos cygwin))
+            (null path-to-git-on-Windows)))
   :bind
   (("C-x g" . #'magit-status))
   ;; :ensure-system-package git
   :ensure t)
 
 (use-package interaction-log
-  :unless (memq system-type '(windows-nt ms-dos cygwin))
-  :ensure t
+  :if (not (memq system-type '(windows-nt ms-dos cygwin)))
   :config
   (interaction-log-mode +1)
   (global-set-key (kbd "C-h C-l")
@@ -1217,7 +1214,7 @@ After creating the new empty project, go to the example/example and execute \"np
   (desktop-save-mode 1))
 
 (use-package flyspell
-  :unless (memq system-type '(windows-nt ms-dos cygwin))
+  :if (not (memq system-type '(windows-nt ms-dos cygwin)))
   :hook ((elpy-mode. flyspell-prog-mode)
          (org-mode . flyspell-mode)))
 
@@ -1261,6 +1258,11 @@ After creating the new empty project, go to the example/example and execute \"np
 (use-package eww
   :config
   (add-hook 'eww-mode-hook #'(lambda () (read-only-mode -1)))
+  (let ((eww-bookmarks-path
+         (expand-file-name "eww-bookmarks" user-emacs-directory)))
+    (unless (file-directory-p eww-bookmarks-path)
+      (make-directory-internal eww-bookmarks-path))
+    (setq eww-bookmarks-directory eww-bookmarks-path))
   (setq eww-search-prefix "https://cn.bing.com/search?ensearch=1&q="))
 
 ;; (use-package etags
@@ -1376,7 +1378,7 @@ After creating the new empty project, go to the example/example and execute \"np
 ;;-----------------------------------------------------------------------------
 ;; Libraries for development
 ;; (use-package websocket
-;;   :unless (memq system-type '(windows-nt ms-dos cygwin)))
+;;   :if (not (memq system-type '(windows-nt ms-dos cygwin))))
 
 ;;-----------------------------------------------------------------------------
 ;; Extensions for some functions
@@ -1413,7 +1415,6 @@ when used as a command instead of `\\.html`."
 ;; it will display `M-w' but binding `M-W', a.k.a, `M-Shift-w' while using QQ;
 ;; So, please change either your key binding or Emacs key binding for `kill-ring-save'.
 ;; I prefer changing key binding of QQ for `M-w';
-
 
 ;; some commands confuse me, like `with-editor-cancel' which will sometimes "delete my file" by "accident"
 (put 'with-editor-cancel 'disabled t)
