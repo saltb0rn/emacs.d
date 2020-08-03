@@ -4,7 +4,7 @@
 
 ;; This file is not part of GNU Emacs.
 
-;;; Code
+;;; Code:
 
 (require 'gl-matrix-vec2)
 (require 'gl-matrix-vec3)

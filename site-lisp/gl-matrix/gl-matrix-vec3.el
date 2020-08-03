@@ -1,7 +1,7 @@
-;;; Code
+;;; Code:
 
 (defun gl-matrix-vec3-add (vec1 vec2)
-  "Adds two 3-dimension vector.
+  "Adds two 3-dimension vectors.
 
 Return a new 3-dimension vector."
   (let ((vec1-x (elt vec1 0))

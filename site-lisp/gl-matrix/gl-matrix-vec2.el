@@ -1,4 +1,4 @@
-;;; Code
+;;; Code:
 
 (defun gl-matrix-vec2-add (vec1 vec2)
   (let ((vec1-x (elt vec1 0))
