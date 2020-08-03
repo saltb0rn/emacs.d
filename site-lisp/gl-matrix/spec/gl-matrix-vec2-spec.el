@@ -38,3 +38,51 @@
         (vec2 '(2 1))
         (result '(0.0 0.0 -5.0)))
     (should (equal (gl-matrix-vec2-cross vec1 vec2) result))))
+
+(ert-deftest gl-matrix-vec2-angle-spec ()
+  "Angle between two 2-dimension vectors"
+  (let ((vec1 '(1 0))
+        (vec2 '(0 1))
+        (result (degrees-to-radians 90)))
+    (should (equal (gl-matrix-vec2-angle vec1 vec2) result))))
+
+(ert-deftest gl-matrix-vec2-distance-spec ()
+  "Euclidian distance between two 2-dimension vectors"
+  (let ((vec1 '(1 3))
+        (vec2 '(2 1))
+        (result (sqrt 5)))
+    (should (equal (gl-matrix-vec2-distance vec1 vec2) result))
+    (should (equal (gl-matrix-vec2-distance vec2 vec1) result))))
+
+(ert-deftest gl-matrix-vec2-negate-spec ()
+  "Negates the components of the 2-dimension vector"
+  (let ((vec1 '(1 3))
+        (result '(-1.0 -3.0)))
+    (should (equal (gl-matrix-vec2-negate vec1) result))))
+
+(ert-deftest gl-matrix-vec2-scale-spec ()
+  "Scales the 2-dimension vector"
+  (let ((vec1 '(1 2))
+        (ratio 2)
+        (result '(2.0 4.0)))
+    (should (equal (gl-matrix-vec2-scale vec1 ratio) result))))
+
+(ert-deftest gl-matrix-vec2-multiply-spec ()
+  "Multiplication of two 2-dimension vectors"
+  (let ((vec1 '(1 2))
+        (vec2 '(2 1))
+        (result '(2.0 2.0)))
+    (should (equal (gl-matrix-vec2-multiply vec1 vec2) result))))
+
+(ert-deftest gl-matrix-vec2-divide-spec ()
+  "Division between two 2-dimension vectors"
+  (let ((vec1 '(1 2))
+        (vec2 '(2 1))
+        (result '(0.5 2.0)))
+    (should (equal (gl-matrix-vec2-divide vec1 vec2) result))))
+
+(ert-deftest gl-matrix-vec2-inverse-spec ()
+  "Inverse the 2-dimension vectors"
+  (let ((vec1 '(1 2))
+        (result '(1.0 0.5)))
+    (should (equal (gl-matrix-vec2-inverse vec1) result))))
