@@ -10,6 +10,10 @@
 (require 'gl-matrix-vec3)
 (require 'gl-matrix-vec4)
 
+;; (defvar gl-matrix-epsilon 0.000001
+;;   ""
+;;   )
+
 (defun sin-degrees (deg)
   (sin (degrees-to-radians deg)))
 
