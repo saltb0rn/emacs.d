@@ -14,14 +14,49 @@
                    (numerator &optional (denominator 1) (ef-gcd 1))))
   numerator denominator ef-gcd)
 
-(defun exact-float-to-fraction (float &optional precision)
-  "https://stackoverflow.com/questions/95727/how-to-convert-floats-to-human-readable-fractions"
-  (let* ((precision (or precision 1000000000))
-         (floating-part (- float (floor float)))
-         (ef-gcd (gcd (round (* floating-part precision)) precision))
-         (denominator (/ precision ef-gcd))
-         (numerator (/ (round (* floating-part precision)) ef-gcd)))
-    (list numerator denominator)))
+(defun exact-float-to-fraction (f &optional maxden)
+  "Finds the approximate fraction of the floating-point number.
+This function based on the theory of continued fraction.
+
+BUG: This function is buggy.
+
+Inspired by following resources:
+https://github.com/python/cpython/blob/master/Lib/fractions.py#L201
+https://www.ics.uci.edu/~eppstein/numth/frap.c
+https://stackoverflow.com/questions/95727/how-to-convert-floats-to-human-readable-fractions.
+
+  Argument `REAL' is the real number to be converted to the fraction.
+  Argument `MAXDEN' is the max denomintor."
+  (let ((mat (vector 1 0 0 1))
+        (maxden (or maxden (expt 10 7)))
+        (x f)
+        (ai (floor f)))
+    (catch 'break
+      (while (<= (+ (* (aref mat 2) ai) (aref mat 3)) maxden)
+        (let ((t1 (+ (* (aref mat 0) ai)
+                     (aref mat 1))))
+          (aset mat 1 (aref mat 0))
+          (aset mat 0 t1)
+          (setq t1 (+ (* (aref mat 2) ai)
+                      (aref mat 3)))
+          (aset mat 3 (aref mat 2))
+          (aset mat 2 t1)
+          (when (= x ai)
+            (throw 'break nil))
+          (setq x (/ 1.0 (- x ai)))
+          (setq ai (floor x))
+          (when (> x #x7FFFFFFF)
+            (throw 'break nil)))))
+    (setq ai (/ (- maxden (aref mat 3)) (aref mat 2)))
+    (aset mat 0
+          (+
+           (* (aref mat 0) ai)
+           (aref mat 1)))
+    (aset mat 2
+          (+
+           (* (aref mat 2) ai)
+           (aref mat 3)))
+    (list (aref mat 0) (aref mat 2) (- f (/ (aref mat 0) (aref mat 2))))))
 
 (defsubst exact-fraction--from-number (num)
   (unless (numberp num)
@@ -42,15 +77,6 @@
          (* (exact-fraction-numerator d) (exact-fraction-denominator n))))
     (exact-fraction--from-number num)))
 
-(defun exact-fraction-normalize (num)
-  (let* ((snum (exact-fraction--simplify num))
-         (n (exact-fraction-numerator snum))
-         (d (exact-fraction-denominator snum))
-         (ef-gcd (gcd n d)))
-    (exact-fraction--create (/ n ef-gcd) (/ d ef-gcd) ef-gcd)))
-
-(exact-fraction-normalize (exact-fraction--create 10 (exact-fraction--create 3 (exact-fraction--create 2 5))))
-
 (defun exact-fraction-create (numerator &optional denominator)
   (let* ((denominator (or denominator 1))
          (ef-gcd (gcd numerator denominator))
@@ -58,28 +84,26 @@
          (ef-denominator (/ denominator ef-gcd)))
     (exact-fraction--create ef-numerator ef-denominator ef-gcd)))
 
-;; (defmacro exact-add (&rest args)
-;;   (let ((e-args (make-symbol "evaluated-args"))
-;;         (ns (make-symbol "numerators"))
-;;         (ds (make-symbol "denominator"))
-;;         (nfs (make-symbol "nfs"))
-;;         (ef-lcm (make-symbol "ef-lcm")))
-;;     `(let* ((,e-args (list ,@args))
-;;             (,ns (mapcar #'exact-fraction-numerator ,e-args))
-;;             (,ds (mapcar #'exact-fraction-denominator ,e-args))
-;;             (,ef-lcm (apply #'lcm ,ds))
-;;             (,nfs
-;;              (mapcar* (lambda (x y) (* (/ ,ef-lcm x) y)) ,ds ,ns)))
-;;        (exact-fraction-create (reduce #'+ ,nfs) ,ef-lcm))))
-;; (pp-macroexpand-expression
-;;  '(exact-add (exact-fraction-create 10) (exact-fraction-create 3 4) (exact-fraction-create 7 4)))
-
 (defun exact-add (&rest args)
-  (let* ((numerators (mapcar #'exact-fraction-numerator args))
-         (denominators (mapcar #'exact-fraction-denominator args))
+  (let* ((fractions (mapcar #'exact-fraction--simplify args))
+         (numerators (mapcar #'exact-fraction-numerator fractions))
+         (denominators (mapcar #'exact-fraction-denominator fractions))
          (ef-lcm (apply #'lcm denominators))
          (nfs (mapcar* (lambda (x y) (* (/ ef-lcm x) y)) denominators numerators)))
     (exact-fraction-create (reduce #'+ nfs) ef-lcm)))
+
+(defun exact-sub (&rest args))
+
+(defun exact-mul (&rest args))
+
+(defun exact-div (&rest args))
+
+(defun exact-fraction-reduce (num)
+  (let* ((snum (exact-fraction--simplify num))
+         (n (exact-fraction-numerator snum))
+         (d (exact-fraction-denominator snum))
+         (ef-gcd (gcd n d)))
+    (exact-fraction--create (/ n ef-gcd) (/ d ef-gcd) ef-gcd)))
 
 (provide 'exact)
 
