@@ -34,8 +34,6 @@
        res (funcall kont val)))
     res))
 
-(exact-tampoline (fib-bounce 7 (lambda (v) v)))
-
 (defun exact-float-to-fraction (f &optional maxden)
   "Finds the approximate fraction of the floating-point number.
 This function based on the theory of continued fraction.
@@ -87,32 +85,42 @@ https://stackoverflow.com/questions/95727/how-to-convert-floats-to-human-readabl
         ((floatp num) (exact-float-to-fraction num))
         (nil ((error "exact-number-to-fraction: Argument must be a number")))))
 
-(defsubst exact-fraction--simplify (num)
-  "TODO: Deals with floating-point number."
-  (if (exact-fraction-p num)
-      (let* ((n
-              (exact-fraction--simplify (exact-fraction-numerator num)))
-             (d
-              (exact-fraction--simplify (exact-fraction-denominator num))))
-        (exact-fraction--create
-         (* (exact-fraction-numerator n) (exact-fraction-denominator d))
-         (* (exact-fraction-numerator d) (exact-fraction-denominator n))))
-    (exact-fraction--from-number num)))
+;; (defsubst exact-fraction--simplify (num)
+;;   "Old impelmentation."
+;;   (if (exact-fraction-p num)
+;;       (let* ((n
+;;               (exact-fraction--simplify (exact-fraction-numerator num)))
+;;              (d
+;;               (exact-fraction--simplify (exact-fraction-denominator num))))
+;;         (exact-fraction--create
+;;          (* (exact-fraction-numerator n) (exact-fraction-denominator d))
+;;          (* (exact-fraction-numerator d) (exact-fraction-denominator n))))
+;;     (exact-fraction--from-number num)))
 
-(defsubst exact-fraction--simplify/k (num cont)
+(defsubst exact-fraction--simplify-bounce (num cont)
   "TODO: Deals with floating-point number."
   (if (exact-fraction-p num)
-      (exact-fraction--simplify/k
+      (exact-bounce
        (exact-fraction-numerator num)
-       (lambda (n)
-         (exact-fraction--simplify/k
-          (exact-fraction-denominator num)
-          (lambda (d)
-            (funcall cont
-                    (exact-fraction--create
-                     (* (exact-fraction-numerator n) (exact-fraction-denominator d))
-                     (* (exact-fraction-numerator d) (exact-fraction-denominator n))))))))
-    (funcall cont (exact-fraction--from-number num))))
+       (lambda (t1)
+         (exact-fraction--simplify-bounce
+          t1
+          (lambda (n)
+            (exact-bounce
+             (exact-fraction-denominator num)
+             (lambda (t2)
+               (exact-fraction--simplify-bounce
+                t2
+                (lambda (d)
+                  (exact-bounce
+                   (exact-fraction--create
+                    (* (exact-fraction-numerator n) (exact-fraction-denominator d))
+                    (* (exact-fraction-numerator d) (exact-fraction-denominator n)))
+                   cont)))))))))
+    (exact-bounce (exact-fraction--from-number num) cont)))
+
+(defsubst exact-fraction--simplify (num)
+  (exact-tampoline (exact-fraction--simplify-bounce num (lambda (v) v))))
 
 (defun exact-fraction-create (numerator &optional denominator)
   (let* ((denominator (or denominator 1))
@@ -120,8 +128,6 @@ https://stackoverflow.com/questions/95727/how-to-convert-floats-to-human-readabl
          (ef-numerator (/ numerator ef-gcd))
          (ef-denominator (/ denominator ef-gcd)))
     (exact-fraction--create ef-numerator ef-denominator ef-gcd)))
-
-(exact-fraction--simplify/k (exact-fraction-create 1 2) #'(lambda (v) v))
 
 (defun exact-add (&rest args)
   (let* ((fractions (mapcar #'exact-fraction--simplify args))
