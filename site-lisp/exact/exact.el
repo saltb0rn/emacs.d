@@ -4,6 +4,9 @@
 
 ;;; Code:
 
+
+(setq lexical-binding t)
+
 (eval-and-compile
   (require 'cl-lib))
 
@@ -13,6 +16,25 @@
      (:constructor exact-fraction--create
                    (numerator &optional (denominator 1) (ef-gcd 1))))
   numerator denominator ef-gcd)
+
+(cl-defstruct
+    (exact-bounce
+     (:constructor nil)
+     (:constructor exact-bounce (res cont)))
+  res cont)
+
+(defun exact-tampoline (b)
+  (let* ((kont (exact-bounce-cont b))
+         (val (exact-bounce-res b))
+         (res (funcall kont val)))
+    (while (exact-bounce-p res)
+      (setq
+       kont (exact-bounce-cont res)
+       val (exact-bounce-res res)
+       res (funcall kont val)))
+    res))
+
+(exact-tampoline (fib-bounce 7 (lambda (v) v)))
 
 (defun exact-float-to-fraction (f &optional maxden)
   "Finds the approximate fraction of the floating-point number.
@@ -77,12 +99,29 @@ https://stackoverflow.com/questions/95727/how-to-convert-floats-to-human-readabl
          (* (exact-fraction-numerator d) (exact-fraction-denominator n))))
     (exact-fraction--from-number num)))
 
+(defsubst exact-fraction--simplify/k (num cont)
+  "TODO: Deals with floating-point number."
+  (if (exact-fraction-p num)
+      (exact-fraction--simplify/k
+       (exact-fraction-numerator num)
+       (lambda (n)
+         (exact-fraction--simplify/k
+          (exact-fraction-denominator num)
+          (lambda (d)
+            (funcall cont
+                    (exact-fraction--create
+                     (* (exact-fraction-numerator n) (exact-fraction-denominator d))
+                     (* (exact-fraction-numerator d) (exact-fraction-denominator n))))))))
+    (funcall cont (exact-fraction--from-number num))))
+
 (defun exact-fraction-create (numerator &optional denominator)
   (let* ((denominator (or denominator 1))
          (ef-gcd (gcd numerator denominator))
          (ef-numerator (/ numerator ef-gcd))
          (ef-denominator (/ denominator ef-gcd)))
     (exact-fraction--create ef-numerator ef-denominator ef-gcd)))
+
+(exact-fraction--simplify/k (exact-fraction-create 1 2) #'(lambda (v) v))
 
 (defun exact-add (&rest args)
   (let* ((fractions (mapcar #'exact-fraction--simplify args))
