@@ -129,6 +129,7 @@ https://stackoverflow.com/questions/95727/how-to-convert-floats-to-human-readabl
          (ef-denominator (/ denominator ef-gcd)))
     (exact-fraction--create ef-numerator ef-denominator ef-gcd)))
 
+;;;###autoload
 (defun exact-add (&rest args)
   (let* ((fractions (mapcar #'exact-fraction--simplify args))
          (numerators (mapcar #'exact-fraction-numerator fractions))
@@ -137,9 +138,21 @@ https://stackoverflow.com/questions/95727/how-to-convert-floats-to-human-readabl
          (nfs (mapcar* (lambda (x y) (* (/ ef-lcm x) y)) denominators numerators)))
     (exact-fraction-create (reduce #'+ nfs) ef-lcm)))
 
-(defun exact-sub (&rest args))
+;;;###autoload
+(defun exact-sub (&rest args)
+  (let* ((fractions (mapcar #'exact-fraction--simplify args))
+         (numerators (mapcar #'exact-fraction-numerator fractions))
+         (denominators (mapcar #'exact-fraction-denominator fractions))
+         (ef-lcm (apply #'lcm denominators))
+         (nfs (mapcar* (lambda (x y) (* (/ ef-lcm x) y)) denominators numerators)))
+    (exact-fraction-create (reduce #'- nfs) ef-lcm)))
 
-(defun exact-mul (&rest args))
+;;;###autoload
+(defun exact-mul (&rest args)
+  (let* ((fractions (mapcar #'exact-fraction--simplify args))
+         (numerators (mapcar #'exact-fraction-numerator fractions))
+         (denominators (mapcar #'exact-fraction-denominator fractions)))
+    (exact-fraction-create (reduce #'* numerators) (reduce #'* denominators))))
 
 (defun exact-div (&rest args))
 
