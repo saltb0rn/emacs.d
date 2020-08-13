@@ -1,0 +1,18 @@
+;;; examples for recognizer a word 'not' or 'new'
+
+(setq finite-states '(s0 s1 s2 s3 s4 s5))
+(setq finite-alphabet '(?n ?o ?t ?e ?w))
+(defun finite-transition (state char)
+  (cond ((and (eq 's0 state) (char-equal ?n char))
+         's1)
+        ((and (eq 's1 state) (char-equal ?o char))
+         's2)
+        ((and (eq 's2 state) (char-equal ?t char))
+         's3)
+        ((and (eq 's1 state) (char-equal ?e char))
+         's4)
+        ((and (eq 's4 state) (char-equal ?w char))
+         's5)
+        (nil nil)))
+(setq finite-start-state 's0)
+(setq accepting-states '(s3 s5))
