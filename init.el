@@ -1240,9 +1240,21 @@ After creating the new empty project, go to the example/example and execute \"np
   :config
   (define-key hs-minor-mode-map (kbd "C-c -") #'hs-toggle-hiding))
 
+;; (use-package aria2
+;;   :ensure t)
+
+(use-package keyfreq
+  :ensure t
+  :config
+  (keyfreq-mode 1)
+  (keyfreq-autosave-mode 1))
+
 (use-package ispell
   :config
   (setq ispell-dictionary "english"))
+
+(use-package langtool
+  :ensure t)
 
 (use-package eshell
   :init (require 'em-smart)
