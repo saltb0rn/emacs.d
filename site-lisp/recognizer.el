@@ -16,3 +16,16 @@
         (nil nil)))
 (setq finite-start-state 's0)
 (setq accepting-states '(s3 s5))
+
+(defun recognizer (str)
+  (let ((char-list (string-to-vector str))
+        (len (length str))
+        (index 0)
+        (state 's0))
+    (while (< index len)
+      (setq
+       state (finite-transition state (aref char-list index))
+       index (+ index 1)))
+    (memq state accepting-states)))
+
+(recognizer "t")
