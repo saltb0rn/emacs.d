@@ -94,6 +94,9 @@
 (setq user-full-name "saltb0rn"
       user-mail-address "asche34@outlook.com")
 
+;; display bell, to flash the frame to represent a beeping/bell
+(setq visible-bell t)
+
 ;; Set transparency
 (set-frame-parameter (selected-frame) 'alpha '(90 85))
 (add-to-list 'default-frame-alist '(alpha 90 85))
