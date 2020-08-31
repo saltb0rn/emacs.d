@@ -2,36 +2,36 @@
 
 (defun gl-matrix-vec2-add (vec1 vec2)
   "Adds two 2-dimension vectors."
-  (let ((vec1-x (* 1.0 (elt vec1 0)))
-        (vec1-y (* 1.0 (elt vec1 1)))
-        (vec2-x (* 1.0 (elt vec2 0)))
-        (vec2-y (* 1.0 (elt vec2 1))))
+  (let ((vec1-x (float (elt vec1 0)))
+        (vec1-y (float (elt vec1 1)))
+        (vec2-x (float (elt vec2 0)))
+        (vec2-y (float (elt vec2 1))))
     (list
      (+ vec1-x vec2-x)
      (+ vec1-y vec2-y))))
 
 (defun gl-matrix-vec2-subtract (vec1 vec2)
   "Subtracts two 2-dimension vectors."
-  (let ((vec1-x (* 1.0 (elt vec1 0)))
-        (vec1-y (* 1.0 (elt vec1 1)))
-        (vec2-x (* 1.0 (elt vec2 0)))
-        (vec2-y (* 1.0 (elt vec2 1))))
+  (let ((vec1-x (float (elt vec1 0)))
+        (vec1-y (float (elt vec1 1)))
+        (vec2-x (float (elt vec2 0)))
+        (vec2-y (float (elt vec2 1))))
     (list
      (- vec1-x vec2-x)
      (- vec1-y vec2-y))))
 
 (defun gl-matrix-vec2-length (vec1)
   "Calculates length/magnitudes of the 2 dimensional vector."
-  (let ((vec1-x (* 1.0 (elt vec1 0)))
-        (vec1-y (* 1.0 (elt vec1 1))))
+  (let ((vec1-x (float (elt vec1 0)))
+        (vec1-y (float (elt vec1 1))))
     (sqrt (+
            (* vec1-x vec1-x)
            (* vec1-y vec1-y)))))
 
 (defun gl-matrix-vec2-normalize (vec1)
   "Get the unit vector of the 2 dimensional vector."
-  (let* ((vec1-x (* 1.0 (elt vec1 0)))
-         (vec1-y (* 1.0 (elt vec1 1)))
+  (let* ((vec1-x (float (elt vec1 0)))
+         (vec1-y (float (elt vec1 1)))
          (len (sqrt
                (+
                 (* vec1-x vec1-x)
@@ -46,10 +46,10 @@
   "Cross product of two 2-dimension vectors.
 
 Return a 3 dimensional vector, the normal vector."
-  (let ((vec1-x (* 1.0 (elt vec1 0)))
-        (vec1-y (* 1.0 (elt vec1 1)))
-        (vec2-x (* 1.0 (elt vec2 0)))
-        (vec2-y (* 1.0 (elt vec2 1))))
+  (let ((vec1-x (float (elt vec1 0)))
+        (vec1-y (float (elt vec1 1)))
+        (vec2-x (float (elt vec2 0)))
+        (vec2-y (float (elt vec2 1))))
     (list
      0.0
      0.0
@@ -57,10 +57,10 @@ Return a 3 dimensional vector, the normal vector."
 
 (defun gl-matrix-vec2-dot (vec1 vec2)
   "Dot product of two 2-dimension vectors"
-  (let ((vec1-x (* 1.0 (elt vec1 0)))
-        (vec1-y (* 1.0 (elt vec1 1)))
-        (vec2-x (* 1.0 (elt vec2 0)))
-        (vec2-y (* 1.0 (elt vec2 1))))
+  (let ((vec1-x (float (elt vec1 0)))
+        (vec1-y (float (elt vec1 1)))
+        (vec2-x (float (elt vec2 0)))
+        (vec2-y (float (elt vec2 1))))
     (+ (* vec1-x vec2-x)
        (* vec1-y vec2-y))))
 
@@ -83,9 +83,9 @@ More details about the linear interpolation from: https://theeducationlife.com/i
 
 
 `IP-AMOUNT' is interpolation amount, in the range [0-1]."
-  (let ((vec1-x (* 1.0 (elt vec1 0)))
-        (vec1-y (* 1.0 (elt vec1 1)))
-        (vec2-x (* 1.0 (elt vec2 0)))
+  (let ((vec1-x (float (elt vec1 0)))
+        (vec1-y (float (elt vec1 1)))
+        (vec2-x (float (elt vec2 0)))
         (vec2-y (* .10 (elt vec2 1))))
     (list
      (+ vec1-x (* ip-amount (- vec2-x vec1-x)))
@@ -93,10 +93,10 @@ More details about the linear interpolation from: https://theeducationlife.com/i
 
 (defun gl-matrix-vec2-angle (vec1 vec2)
   "Calculates angle between two 2-dimension vectors by their dot product."
-  (let* ((vec1-x (* 1.0 (elt vec1 0)))
-         (vec1-y (* 1.0 (elt vec1 1)))
-         (vec2-x (* 1.0 (elt vec2 0)))
-         (vec2-y (* 1.0 (elt vec2 1)))
+  (let* ((vec1-x (float (elt vec1 0)))
+         (vec1-y (float (elt vec1 1)))
+         (vec2-x (float (elt vec2 0)))
+         (vec2-y (float (elt vec2 1)))
          (mag1 (sqrt (+ (* vec1-x vec1-x) (* vec1-y vec1-y))))
          (mag2 (sqrt (+ (* vec2-x vec2-x) (* vec2-y vec2-y))))
          (mag (* mag1 mag2))

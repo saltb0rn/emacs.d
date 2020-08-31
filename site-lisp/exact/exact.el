@@ -154,6 +154,7 @@ https://stackoverflow.com/questions/95727/how-to-convert-floats-to-human-readabl
          (denominators (mapcar #'exact-fraction-denominator fractions)))
     (exact-fraction-create (reduce #'* numerators) (reduce #'* denominators))))
 
+;;;###autoload
 (defun exact-div (&rest args))
 
 (defun exact-fraction-reduce (num)
