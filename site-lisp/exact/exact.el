@@ -3,10 +3,6 @@
 ;;;   Inspired by https://github.com/python/cpython/blob/3.8/Lib/fractions.py
 
 ;;; Code:
-
-
-(setq lexical-binding t)
-
 (eval-and-compile
   (require 'cl-lib))
 
@@ -155,7 +151,11 @@ https://stackoverflow.com/questions/95727/how-to-convert-floats-to-human-readabl
     (exact-fraction-create (reduce #'* numerators) (reduce #'* denominators))))
 
 ;;;###autoload
-(defun exact-div (&rest args))
+(defun exact-div (&rest args)
+  (let ((dividend (car args))
+        (divisors (cdr args)))
+    )
+  )
 
 (defun exact-fraction-reduce (num)
   (let* ((snum (exact-fraction--simplify num))
