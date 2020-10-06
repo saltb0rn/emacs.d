@@ -1257,7 +1257,11 @@ After creating the new empty project, go to the example/example and execute \"np
   (setq ispell-dictionary "english"))
 
 (use-package langtool
-  :ensure t)
+  :ensure t
+  :config
+  (setq langtool-language-tool-jar "/home/saltb0rn/LanguageTool/languagetool.jar")
+  (global-set-key "\C-x4w" 'langtool-check)
+  )
 
 (use-package eshell
   :init (require 'em-smart)
