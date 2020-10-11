@@ -1123,6 +1123,18 @@ After creating the new empty project, go to the example/example and execute \"np
                       (interactive)
                       (display-buffer ilog-buffer-name))))
 
+(use-package keyfreq
+  :ensure t
+  :config
+  (keyfreq-mode 1)
+  (keyfreq-autosave-mode 1))
+
+(use-package langtool
+  :ensure t
+  :config
+  (setq langtool-language-tool-jar "/home/saltb0rn/LanguageTool/languagetool.jar")
+  (global-set-key "\C-x4w" 'langtool-check))
+
 (use-package engine-mode
   :ensure t
   :config
@@ -1246,22 +1258,20 @@ After creating the new empty project, go to the example/example and execute \"np
 ;; (use-package aria2
 ;;   :ensure t)
 
-(use-package keyfreq
-  :ensure t
+(use-package octave
+  :mode ("\\.m$'" . octave-mode)
   :config
-  (keyfreq-mode 1)
-  (keyfreq-autosave-mode 1))
+  (add-hook
+   'octave-mode-hook
+   (lambda ()
+     (abbrev-mode 1)
+     (auto-fill-mode 1)
+     (when (eq window-system 'x)
+         (font-lock-mode 1)))))
 
 (use-package ispell
   :config
   (setq ispell-dictionary "english"))
-
-(use-package langtool
-  :ensure t
-  :config
-  (setq langtool-language-tool-jar "/home/saltb0rn/LanguageTool/languagetool.jar")
-  (global-set-key "\C-x4w" 'langtool-check)
-  )
 
 (use-package eshell
   :init (require 'em-smart)

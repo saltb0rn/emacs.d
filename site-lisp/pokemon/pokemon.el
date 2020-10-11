@@ -194,20 +194,24 @@
 
 ;; https://www.trainertower.com/dawoblefets-damage-dissertation/
 
+(defconst pokemon-mod-denominator 4096.0)
 (defconst pokemon-mod-xdot25 1024)
+(defconst pokemon-mod-xdot33 1352)
 (defconst pokemon-mod-xdot5 2048)
 (defconst pokemon-mod-x2/3 2732)
 (defconst pokemon-mod-xdot75 3072)
 (defconst pokemon-mod-x1 4096)
+(defconst pokemon-mod-x1dot1 4505)
 (defconst pokemon-mod-x1dot2 4915)
 (defconst pokemon-mod-x1dot25 5120)
-(defconst pokemon-mod-x1dot3 5324)
+(defconst pokemon-mod-x1dot29 5324)
+(defconst pokemon-mod-x1dot3 5325)
+(defconst pokemon-mod-x1dot33 5448)
 (defconst pokemon-mod-x1dot4 5734)
 (defconst pokemon-mod-x1dot5 6144)
 (defconst pokemon-mod-x1dot6 6553)
 (defconst pokemon-mod-x1dot8 7372)
 (defconst pokemon-mod-x2 8192)
-(defconst pokemon-mod-denominator 4096)
 
 (defun pokemon-round (arg &optional divisor)
   (let* ((val (/ arg (or divisor 1) 1.0))
@@ -263,9 +267,9 @@
      protect-mod)
   (let* (
          (step1
-          (pokemon-round (* base-damage speard-mov-mod)))
+          (pokemon-round (* base-damage (/ speard-mov-mod pokemon-mod-denominator))))
          (step2
-          (pokemon-round (* step1 weather-mod)))
+          (pokemon-round (* step1 (/ weather-mod pokemon-mod-denominator))))
          (step3
           (let ((res nil)
                 (random-factor 0))
@@ -278,15 +282,21 @@
          (step4
           (mapcar
            (lambda (dmg)
-             (pokemon-round (* dmg same-type-atk-bouns-mod)))
+             (pokemon-round (* dmg (/ same-type-atk-bouns-mod pokemon-mod-denominator))))
            step3))
          (step5
           (mapcar
            (lambda (dmg)
-             (pokemon-flooring (* dmg type-eff-mod)))
+             (pokemon-flooring (* dmg (/ type-eff-mod pokemon-mod-denominator))))
            step4))
+         (step6
+          (let ((mod (pokemon--chain-mods (cons pokemon-mod-denominator final-mods))))
+            (mapcar
+             (lambda (dmg)
+               (pokemon-round (* dmg mod) pokemon-mod-denominator))
+             step5)))
          )
-    step5
+    step6
     ;; TODO: one damage check and #16rffff, ie, 65535, damage check
     ))
 

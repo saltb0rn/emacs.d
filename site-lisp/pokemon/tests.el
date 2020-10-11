@@ -22,6 +22,25 @@
     (pokemon-base-damage 50 255 145 150)
     118)))
 
+(ert-deftest pokemon--damage-calc-test ()
+  (let ((expectation '(47 48 48 49 49 50 50 51 52 52 53 53 54 54 55 56)))
+    (should
+     (equal
+      (pokemon--damage-calc
+       (pokemon-base-damage 50 232 109 120)
+       pokemon-mod-x1
+       pokemon-mod-x1
+       pokemon-mod-x1
+       pokemon-mod-x1
+       pokemon-mod-x1
+       pokemon-mod-x1
+       pokemon-mod-x1
+       (list pokemon-mod-xdot5 pokemon-mod-xdot75 pokemon-mod-x1dot3)
+       pokemon-mod-x1)
+      expectation
+      ))))
+
+
 (ert-deftest pokemon-base-damage-mul-mod ()
   (let ((dmg1 144)
         (dmg2 171))
