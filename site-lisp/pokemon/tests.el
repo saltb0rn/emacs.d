@@ -34,7 +34,6 @@
        pokemon-mod-x1
        pokemon-mod-x1
        pokemon-mod-x1
-       pokemon-mod-x1
        (list pokemon-mod-xdot5 pokemon-mod-xdot75 pokemon-mod-x1dot3)
        pokemon-mod-x1)
       expectation

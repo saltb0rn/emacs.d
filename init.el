@@ -274,6 +274,9 @@ FILE should be a path to file."
   :ensure t
   :hook (elpy-mode . flycheck-mode))
 
+(use-package vue-mode
+  :ensure t)
+
 (use-package web-mode
   :ensure t
   :mode ("\\.html?\\'" . web-mode)
@@ -989,6 +992,9 @@ The ROOT points to the directory where posts store on."
      ((equal nil term)
       (add-to-list 'auto-mode-alist (cons regex-pat 'racket-mode)))
      (t (setcdr (assoc regex-pat auto-mode-alist) 'racket-mode)))))
+
+(use-package glsl-mode
+  :ensure t)
 
 (use-package smarty-mode
   :ensure t)

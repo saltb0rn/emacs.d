@@ -256,10 +256,9 @@
 
 (defun pokemon--damage-calc (
      base-damage
-     speard-mov-mod
+     spread-mov-mod
      parental-bond-mod
      weather-mod
-     crit-mod
      same-type-atk-bouns-mod
      type-eff-mod
      burn-mod
@@ -267,7 +266,7 @@
      protect-mod)
   (let* (
          (step1
-          (pokemon-round (* base-damage (/ speard-mov-mod pokemon-mod-denominator))))
+          (pokemon-round (* base-damage (/ spread-mov-mod pokemon-mod-denominator))))
          (step2
           (pokemon-round (* step1 (/ weather-mod pokemon-mod-denominator))))
          (step3
@@ -275,7 +274,6 @@
                 (random-factor 0))
             (while (<= random-factor 15)
               (push
-               ;; TODO: dealing critical hit
                (pokemon-flooring (* step2 (- 100 random-factor)) 100) res)
               (setq random-factor (1+ random-factor)))
             res))
