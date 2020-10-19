@@ -100,6 +100,17 @@
 ;; Set transparency
 (set-frame-parameter (selected-frame) 'alpha '(90 85))
 (add-to-list 'default-frame-alist '(alpha 90 85))
+(let ((_ (font-family-list)))
+  (cond
+   ((string-equal system-type "windows-nt") ; Microsoft Windows
+    (when (member "Consolas" _)
+      (set-frame-font "Consolas" t t)))
+   ((string-equal system-type "darwin") ; macOS
+    (when (member "Menlo" _)
+      (set-frame-font "Menlo" t t)))
+   ((string-equal system-type "gnu/linux") ; linux
+    (when (member "DejaVu Sans Mono" _)
+      (set-frame-font "DejaVu Sans Mono" t t)))))
 
 ;; (setq debug-on-error t)
 ;; use `toggle-debug-on-error' instead
@@ -526,6 +537,7 @@ So that entire list of result will be showed."
         publish-path (concat path-to-blog output-name "/")
         todos-path (concat path-to-blog src-name "/todos/")
         about-path (concat path-to-blog src-name "/about/")
+        topic-path (concat path-to-blog src-name "/topics/")
         httpd-listings nil
         httpd-root publish-path)
 
@@ -672,7 +684,16 @@ So that entire list of result will be showed."
       :publishing-function org-publish-attachment
       ;; :exclude "site"
       :recursive t)
-     ("DarkSalt" :components ("static" "home" "about" "posts" "files" "tags" "todos")))
+     ("topics"
+      :base-directory ,topic-path
+      :publishing-directory ,(concat publish-path "topics/")
+      :publishing-function org-publish-attachment
+      :recursive t
+      )
+     ("DarkSalt" :components
+      ("static" "home" "about"
+       "posts" "files" "tags"
+       "todos" "topics")))
    )
 
   (defun publish-all-posts (project &optional force async)
