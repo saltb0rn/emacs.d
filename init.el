@@ -7,7 +7,6 @@
 ;; just comment it out by adding a semicolon to the start of the line.
 ;; You may delete these explanatory comments.
 (require 'package)
-(require 'autoload)
 
 ;;-----------------------------------------------------------------------------
 ;; packages to install manually
@@ -119,8 +118,8 @@
 (setq load-prefer-newer t)
 
 ;; Reduce the frequency of garbage collection by making it happen
-;; on each 50MB of allocated data (the default is on every 0.76MB)
-(setq gc-cons-threshold 50000000)
+;; on each 100MB of allocated data (the default is on every 0.76MB)
+(setq gc-cons-threshold (* 100 1000 1000))
 
 ;; Warn when opening files bigger than 100MB
 (setq large-file-warning-threshold 100000000)
@@ -455,6 +454,7 @@ So that entire list of result will be showed."
 ;;         ("C-c >" . #'helm-gtags-next-history)))
 
 (use-package function-args
+  :defer t
   :ensure t)
 
 (use-package sr-speedbar
@@ -494,12 +494,15 @@ So that entire list of result will be showed."
   (require 'ob-plantuml))
 
 (use-package simple-httpd
+  :defer t
   :ensure t)
 
 (use-package htmlize
+  :defer t  
   :ensure t)
 
 (use-package dash
+  :defer t  
   :ensure t)
 
 (use-package ht
@@ -513,11 +516,6 @@ So that entire list of result will be showed."
               :map global-map
               ("\C-c c" . org-capture))
   :config
-  (require 'htmlize)
-  (require 'dash)
-  (require 'ht)
-  (require 'simple-httpd)
-  (require 'plantuml-mode)
   (require 'ox-publish)
   (define-skeleton org-insert-src-block
     "Insert source block in org-mode"
