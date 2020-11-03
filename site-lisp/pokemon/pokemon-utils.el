@@ -1,0 +1,60 @@
+(require 'json)
+
+(defconst pokemon-mod-denominator 4096.0)
+(defconst pokemon-mod-xdot25 1024)
+(defconst pokemon-mod-xdot33 1352)
+(defconst pokemon-mod-xdot5 2048)
+(defconst pokemon-mod-x2/3 2732)
+(defconst pokemon-mod-xdot75 3072)
+(defconst pokemon-mod-x1 4096)
+(defconst pokemon-mod-x1dot1 4505)
+(defconst pokemon-mod-x1dot2 4915)
+(defconst pokemon-mod-x1dot25 5120)
+(defconst pokemon-mod-x1dot29 5324)
+(defconst pokemon-mod-x1dot3 5325)
+(defconst pokemon-mod-x1dot33 5448)
+(defconst pokemon-mod-x1dot4 5734)
+(defconst pokemon-mod-x1dot5 6144)
+(defconst pokemon-mod-x1dot6 6553)
+(defconst pokemon-mod-x1dot8 7372)
+(defconst pokemon-mod-x2 8192)
+
+(defun pokemon-round (arg &optional divisor)
+  (let* ((val (/ arg (or divisor 1) 1.0))
+         (int (truncate val))
+         (dec (- val int)))
+    (if (> dec 0.5)
+        (+ int 1)
+      int)))
+
+(defun pokemon-normal-round (arg &optional divisor)
+  (let* ((val (/ arg (or divisor 1) 1.0))
+         (int (truncate val))
+         (dec (- val int)))
+    (if (>= dec 0.5)
+        (+ int 1)
+      int)))
+
+(defalias 'pokemon-flooring #'truncate)
+
+(defun pokemon-load-data-from-json (file)
+  (let* ((json-object-type 'hash-table)
+         (json-array-type 'list)
+        (json (json-read-file file)))
+    json))
+
+(defun pokemon-getattr (obj attr1 &rest attrs)
+  (let ((val (gethash attr1 obj nil))
+        (err-path (list attr1)))
+    (catch 'return
+      (dolist (attr attrs val)
+        (push attr err-path)
+        (if (hash-table-p val)
+            (setq val (gethash attr val nil))
+          (throw 'return
+                 (list :error
+                       (format "can't access property \"%s\", <object>.%s is undefined"
+                               (car (reverse err-path))
+                               (string-join (reverse (cdr err-path)) ".")))))))))
+
+(provide 'pokemon-utils)

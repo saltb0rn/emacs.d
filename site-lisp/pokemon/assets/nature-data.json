@@ -1,0 +1,102 @@
+{
+    "Timid": [
+        "sp",
+        "at"
+    ],
+    "Serious": [
+        "",
+        ""
+    ],
+    "Sassy": [
+        "sd",
+        "sp"
+    ],
+    "Relaxed": [
+        "df",
+        "sp"
+    ],
+    "Rash": [
+        "sa",
+        "sd"
+    ],
+    "Quirky": [
+        "",
+        ""
+    ],
+    "Quiet": [
+        "sa",
+        "sp"
+    ],
+    "Naughty": [
+        "at",
+        "sd"
+    ],
+    "Naive": [
+        "sp",
+        "sd"
+    ],
+    "Modest": [
+        "sa",
+        "at"
+    ],
+    "Mild": [
+        "sa",
+        "df"
+    ],
+    "Lonely": [
+        "at",
+        "df"
+    ],
+    "Lax": [
+        "df",
+        "sd"
+    ],
+    "Jolly": [
+        "sp",
+        "sa"
+    ],
+    "Impish": [
+        "df",
+        "sa"
+    ],
+    "Hasty": [
+        "sp",
+        "df"
+    ],
+    "Hardy": [
+        "",
+        ""
+    ],
+    "Gentle": [
+        "sd",
+        "df"
+    ],
+    "Docile": [
+        "",
+        ""
+    ],
+    "Careful": [
+        "sd",
+        "sa"
+    ],
+    "Calm": [
+        "sd",
+        "at"
+    ],
+    "Brave": [
+        "at",
+        "sp"
+    ],
+    "Bold": [
+        "df",
+        "at"
+    ],
+    "Bashful": [
+        "",
+        ""
+    ],
+    "Adamant": [
+        "at",
+        "sa"
+    ]
+}
