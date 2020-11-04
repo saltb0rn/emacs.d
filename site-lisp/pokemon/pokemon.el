@@ -1,3 +1,4 @@
+(require 'pokemon-stat)
 (require 'pokemon-damage)
 
 ;; (defstruct specStr-baseStat spec base) ;; 种族 基础点数

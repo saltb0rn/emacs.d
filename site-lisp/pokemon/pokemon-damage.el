@@ -15,8 +15,8 @@
     (+ 2 step2)))
 
 (defun pokemon-mul-mods (val &rest mods)
-  (let* ((x_s (cons pokemon-mod-denominator mods))
-         (final-mod (pokemon--chain-mods x_s)))
+  (let ((final-mod
+         (pokemon--chain-mods (cons pokemon-mod-denominator mods))))
     (pokemon-round (* val final-mod) pokemon-mod-denominator)))
 
 (defun pokemon--chain-mods (mods)
@@ -70,23 +70,24 @@
     ))
 
 (defun pokemon-damage-calc (
-                            atker-lvl
-                            atk/spa
-                            def/spd
-                            mov-dmg
-                            spread-mov-mod
-                            parental-bond-mod
-                            weather-mod
-                            same-type-atk-bouns-mod
-                            type-eff-mod
-                            burn-mod
-                            final-mods
-                            protect-mod)
-  (let ((base-damage (pokemon-base-damage
-                      atker-lvl
-                      atk/spa
-                      def/spd
-                      mov-dmg)))
+     atker-lvl
+     atk/spa
+     def/spd
+     mov-dmg
+     spread-mov-mod
+     parental-bond-mod
+     weather-mod
+     same-type-atk-bouns-mod
+     type-eff-mod
+     burn-mod
+     final-mods
+     protect-mod)
+  (let ((base-damage
+         (pokemon-base-damage
+          atker-lvl
+          atk/spa
+          def/spd
+          mov-dmg)))
     (pokemon--damage-calc
      base-damage
      spread-mov-mod

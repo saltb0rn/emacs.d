@@ -6,20 +6,21 @@
 (defconst pokemon-mod-xdot5 2048)
 (defconst pokemon-mod-x2/3 2732)
 (defconst pokemon-mod-xdot75 3072)
-(defconst pokemon-mod-x1 4096)
+(defconst pokemon-mod-x1 #x1000)               ;; 4096
 (defconst pokemon-mod-x1dot1 4505)
 (defconst pokemon-mod-x1dot2 4915)
-(defconst pokemon-mod-x1dot25 5120)
-(defconst pokemon-mod-x1dot29 5324)
-(defconst pokemon-mod-x1dot3 5325)
-(defconst pokemon-mod-x1dot33 5448)
-(defconst pokemon-mod-x1dot4 5734)
-(defconst pokemon-mod-x1dot5 6144)
+(defconst pokemon-mod-x1dot25 #x1400)          ;; 5120
+(defconst pokemon-mod-x1dot29 #x14cc)          ;; 5324
+(defconst pokemon-mod-x1dot3 #x14cd)           ;; 5325
+(defconst pokemon-mod-x1dot33 #x1548)          ;; 5448
+(defconst pokemon-mod-x1dot4 #x1666)           ;; 5734
+(defconst pokemon-mod-x1dot5 #x1800)           ;; 6144
 (defconst pokemon-mod-x1dot6 6553)
 (defconst pokemon-mod-x1dot8 7372)
 (defconst pokemon-mod-x2 8192)
 
 (defun pokemon-round (arg &optional divisor)
+  ;; Round developed by Game Freak
   (let* ((val (/ arg (or divisor 1) 1.0))
          (int (truncate val))
          (dec (- val int)))
