@@ -1,0 +1,78 @@
+{
+  "Normal": {
+    "Fairy": 1
+  },
+  "Grass": {
+    "Fairy": 1
+  },
+  "Fire": {
+    "Fairy": 1
+  },
+  "Water": {
+    "Fairy": 1
+  },
+  "Electric": {
+    "Fairy": 1
+  },
+  "Ice": {
+    "Fairy": 1
+  },
+  "Flying": {
+    "Fairy": 1
+  },
+  "Bug": {
+    "Fairy": 0.5
+  },
+  "Poison": {
+    "Fairy": 2
+  },
+  "Ground": {
+    "Fairy": 1
+  },
+  "Rock": {
+    "Fairy": 1
+  },
+  "Fighting": {
+    "Fairy": 0.5
+  },
+  "Psychic": {
+    "Fairy": 1
+  },
+  "Ghost": {
+    "Steel": 1,
+    "Fairy": 1
+  },
+  "Dragon": {
+    "Fairy": 0
+  },
+  "Dark": {
+    "Steel": 1,
+    "Fairy": 0.5
+  },
+  "Steel": {
+    "Fairy": 2
+  },
+  "Fairy": {
+    "Normal": 1,
+    "Grass": 1,
+    "Fire": 0.5,
+    "Water": 1,
+    "Electric": 1,
+    "Ice": 1,
+    "Flying": 1,
+    "Bug": 1,
+    "Poison": 0.5,
+    "Ground": 1,
+    "Rock": 1,
+    "Fighting": 2,
+    "Psychic": 1,
+    "Ghost": 1,
+    "Dragon": 2,
+    "Dark": 2,
+    "Steel": 0.5,
+    "Fairy": 1
+  },
+  "Typeless": {
+    "Fairy": 1
+  }
+}

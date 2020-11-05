@@ -44,7 +44,30 @@
         (json (json-read-file file)))
     json))
 
-(defun pokemon-getattr (obj attr1 &rest attrs)
+(defun pokemon-data-update (data1 data2)
+  ;; `data1' is the object to update.
+  ;; no need to worry about recursion problem,
+  ;; since the depth of data won't be deep.
+  (maphash
+   (lambda (key data2-value)
+     (let ((data1-value (gethash key data1 nil)))
+       (if (and
+            (hash-table-p data1-value)            
+            (hash-table-p data2-value))
+           (pokemon-data-update data1-value data2-value)
+         (puthash key data2-value data1))))
+   data2)
+  data1)
+
+(defalias 'pokemon-data-put #'puthash)
+
+(defalias 'pokemon-data-rem #'remhash)
+
+(defalias 'pokemon-data-item-names #'hash-table-keys)
+
+(defalias 'pokemon-data-item-count #'hash-table-count)
+
+(defun pokemon-data-get (obj attr1 &rest attrs)
   (let ((val (gethash attr1 obj nil))
         (err-path (list attr1)))
     (catch 'return

@@ -1,0 +1,1 @@
+(provide 'pokemon-move-dat)
