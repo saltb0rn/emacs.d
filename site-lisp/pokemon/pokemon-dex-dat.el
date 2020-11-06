@@ -2,42 +2,42 @@
 
 (defcustom pokemon-pokedex-rby-dat
   (expand-file-name "assets/pokedex-rby.json")
-  "Path to pokedex Red, Blue & Yellow (aka Gen 1) data file,"
+  "Path to pokedex data file of Pokemon Red, Blue & Yellow (Gen 1)"
   :type 'string)
 
 (defcustom pokemon-pokedex-gsc-dat
   (expand-file-name "assets/pokedex-gsc.json")
-  "Path to pokedex Gold, Silver & Crystal (aka Gen 2) data file"
+  "Path to pokedex data file of Pokemon Gold, Silver & Crystal (Gen 2)"
   :type 'string)
 
 (defcustom pokemon-pokedex-rse-dat
   (expand-file-name "assets/pokedex-rse.json")
-  "Path to pokemon Ruby, Sapphire & Emerald (aka Gen 3) data file"
+  "Path to pokedex data file of Pokemon Ruby, Sapphire & Emerald (Gen 3)"
   :type 'string)
 
 (defcustom pokemon-pokedex-dpp-dat
   (expand-file-name "assets/pokedex-dpp.json")
-  "Path to pokedex Diamond, Pearl & Platinum (aka Gen 4) data file"
+  "Path to pokedex data file of Pokemon Diamond, Pearl & Platinum (Gen 4)"
   :type 'string)
 
 (defcustom pokemon-pokedex-bw-dat
   (expand-file-name "assets/pokedex-bw.json")
-  "Path to pokedex Black & White (aka Gen 5) data file"
+  "Path to pokedex data file of Pokemon Black & White (Gen 5)"
   :type 'string)
 
 (defcustom pokemon-pokedex-xy-dat
   (expand-file-name "assets/pokedex-xy.json")
-  "Path to pokedex X & Y (aka Gen 6) data file"
+  "Path to pokedex data file of Pokemon X & Y (Gen 6)"
   :type 'string)
 
 (defcustom pokemon-pokedex-sm-dat
   (expand-file-name "assets/pokedex-sm.json")
-  "Path to pokedex Sun & Month (aka Gen 7) data file"
+  "Path to pokedex data file of Pokemon Sun & Month (Gen 7)"
   :type 'string)
 
 (defcustom pokemon-pokedex-ss-dat
   (expand-file-name "assets/pokedex-ss.json")
-  "Path to pokedex Sword & Shild (aka Gen 8) data file"
+  "Path to pokedex data file of Pokemon Sword & Shield (Gen 8)"
   :type 'string)
 
 ;; Pokemon Ruby
