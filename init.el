@@ -210,7 +210,7 @@
 (define-key (current-global-map) (kbd "C-c C-c") #'whitespace-cleanup)
 
 ;; write to file
-(defun write-to-file (content file)
+(defun write-to-file (content file &optional coding-system)
   "Write CONTENT to FILE.
 CONTENT should be string type.
 FILE should be path to which CONTENT is written."
@@ -498,11 +498,11 @@ So that entire list of result will be showed."
   :ensure t)
 
 (use-package htmlize
-  :defer t  
+  :defer t
   :ensure t)
 
 (use-package dash
-  :defer t  
+  :defer t
   :ensure t)
 
 (use-package ht
@@ -821,10 +821,7 @@ string consisting of url and title of org-file"
                              nil t)
                             (match-string-no-properties 1 nil)
                           "")))
-              res
-              )
-
-        )))
+              res))))
 
   (defun retrieve-tags-from-post (post)
     "Retrieve tags from a post"
