@@ -1426,6 +1426,15 @@ After creating the new empty project, go to the example/example and execute \"np
   (global-set-key "\C-cs" 'dictionary-search)
   (global-set-key "\C-cm" 'dictionary-match-words))
 
+(use-package so-long
+  ;; about the problem to solve:
+  ;; https://emacs.stackexchange.com/questions/598/how-do-i-prevent-extremely-long-lines-making-emacs-slow
+  ;; about the so-long mode
+  ;; https://www.emacswiki.org/emacs/SoLong
+  :ensure t
+  :config
+  (global-so-long-mode 1))
+
 ;;-----------------------------------------------------------------------------
 ;; Libraries for development
 ;; (use-package websocket
