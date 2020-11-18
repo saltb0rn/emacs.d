@@ -264,6 +264,9 @@ FILE should be a path to file."
 
 ;; third-party packages
 
+(use-package epkg
+  :ensure t)
+
 (use-package company
   :ensure t
   :hook
