@@ -16,3 +16,6 @@
 [submodule "site-lisp/org-reveal"]
 	path = site-lisp/org-reveal
 	url = https://github.com/yjwen/org-reveal.git
+[submodule "site-lisp/vlfi"]
+	path = site-lisp/vlfi
+	url = https://github.com/m00natic/vlfi.git

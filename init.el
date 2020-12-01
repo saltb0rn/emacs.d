@@ -1441,6 +1441,12 @@ After creating the new empty project, go to the example/example and execute \"np
   :config
   (global-so-long-mode 1))
 
+(use-package vlf
+  :ensure t
+  ;; use `vlf' command open very large file
+  ;; for example, to open very large binary and turn on `hexl-mode'
+  )
+
 ;;-----------------------------------------------------------------------------
 ;; Libraries for development
 ;; (use-package websocket
