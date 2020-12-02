@@ -1234,6 +1234,7 @@ After creating the new empty project, go to the example/example and execute \"np
 ;;   )
 
 (use-package desktop
+  :disabled
   :config
   ;; to save session and kill the buffers which start with and end with '*'
   (defun kill-annoying-buffers ()
@@ -1255,6 +1256,13 @@ After creating the new empty project, go to the example/example and execute \"np
   (setq
    desktop-save t)
   (desktop-save-mode 1))
+
+(use-package recentf
+  :config
+  (recentf-mode 1)
+  (setq recentf-max-menu-items 25)
+  (setq recentf-max-saved-items 25)
+  (global-set-key "\C-x\ \C-r" 'recentf-open-files))
 
 (use-package flyspell
   :if (not (memq system-type '(windows-nt ms-dos cygwin)))
