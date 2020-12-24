@@ -1143,7 +1143,6 @@ After creating the new empty project, go to the example/example and execute \"np
   :ensure t)
 
 (use-package interaction-log
-  :if (not (memq system-type '(windows-nt ms-dos cygwin)))
   :config
   (interaction-log-mode +1)
   (global-set-key (kbd "C-h C-l")
