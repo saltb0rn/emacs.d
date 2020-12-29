@@ -306,6 +306,8 @@ FILE should be a path to file."
   (setq web-mode-enable-auto-closing t
         web-mode-enable-auto-pairing t))
 
+
+
 ;; NOTE: Bad performance for rendering on Windows, the worst part is (nyan-start-animation), you can only disable that.
 (use-package nyan-mode
   :if (not (memq system-type '(windows-nt ms-dos cygwin)))
@@ -1024,7 +1026,6 @@ The ROOT points to the directory where posts store on."
 (use-package company-php
   :ensure t)
 
-
 (use-package pyim
   :if (not (memq system-type '(windows-nt ms-dos cygwin)))
   :config
@@ -1128,6 +1129,9 @@ After creating the new empty project, go to the example/example and execute \"np
   :ensure t)
 
 (use-package elfeed
+  :ensure t)
+
+(use-package web-beautify
   :ensure t)
 
 (use-package org-pomodoro
@@ -1455,7 +1459,7 @@ After creating the new empty project, go to the example/example and execute \"np
   )
 
 ;;-----------------------------------------------------------------------------
-;; Libraries for development
+;; Libraries for development in Emacs Lisp
 ;; (use-package websocket
 ;;   :if (not (memq system-type '(windows-nt ms-dos cygwin))))
 
