@@ -1117,7 +1117,6 @@ After creating the new empty project, go to the example/example and execute \"np
          (prin1 exn))))))
 
 (use-package company-tern
-  :ensure t
   :hook
   ((js2-mode . tern-mode)
    (js2-mode . company-mode))
