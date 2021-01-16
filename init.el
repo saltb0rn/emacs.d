@@ -147,7 +147,10 @@
   (scroll-bar-mode -1))
 
 (blink-cursor-mode 0)
-(display-battery-mode 1)
+
+(condition-case err
+    (display-battery-mode 1)
+  (message "Permission to access power supply is not granted"))
 
 ;; `y-or-n-p' is more convenience than `yes-or-no-p'
 (fset 'yes-or-no-p 'y-or-n-p)
