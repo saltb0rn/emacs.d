@@ -317,6 +317,7 @@ FILE should be a path to file."
 ;; NOTE: Bad performance for rendering on Windows, the worst part is (nyan-start-animation), you can only disable that.
 (use-package nyan-mode
   :if (not (memq system-type '(windows-nt ms-dos cygwin)))
+  :ensure t
   :config
   (nyan-mode)
   (nyan-start-animation)
@@ -1153,6 +1154,7 @@ After creating the new empty project, go to the example/example and execute \"np
   :ensure t)
 
 (use-package interaction-log
+  :ensure t
   :config
   (interaction-log-mode +1)
   (global-set-key (kbd "C-h C-l")
