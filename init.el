@@ -150,7 +150,8 @@
 
 (condition-case err
     (display-battery-mode 1)
-  (message "Permission to access power supply is not granted"))
+  (file-error
+   (message "Permission to access power supply is not granted")))
 
 ;; `y-or-n-p' is more convenience than `yes-or-no-p'
 (fset 'yes-or-no-p 'y-or-n-p)
