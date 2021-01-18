@@ -967,6 +967,15 @@ The ROOT points to the directory where posts store on."
   ;; (defadvice org-publish-projects
   ;;     (after org-publish-projects-rename-theindex-to-index activate)
   ;;   (rename-theindex-to-index))
+
+  (defun file-to-base64-url (filename)
+    (format "data:%s;base64,%s"
+            (mailcap-extension-to-mime
+             (file-name-extension filename))
+            (base64-encode-string
+             (with-temp-buffer
+               (insert-file-contents filename)
+               (buffer-string)))))
   )
 
 ;; (use-package pipenv
