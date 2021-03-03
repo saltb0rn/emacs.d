@@ -219,6 +219,12 @@
 ;; set key bidings
 (define-key (current-global-map) (kbd "C-c C-c") #'whitespace-cleanup)
 
+;; calculate the checksum of a file
+(defun calc-checksum (filename alg)
+  (with-temp-buffer
+    (insert-file-contents-literally filename)
+    (secure-hash alg (current-buffer))))
+
 ;; write to file
 (defun write-to-file (content file &optional coding-system)
   "Write CONTENT to FILE.
