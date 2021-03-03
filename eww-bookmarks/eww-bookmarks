@@ -1,5 +1,6 @@
 ;; Auto-generated file; don't edit
-((:url "https://github.com/FancyVin/fun-with-graphics#math-books" :title "GitHub - FancyVin/fun-with-graphics: 这里整理了图形学相关的高校课程、书籍、教程、文章、博客、资源、开源项目。" :time "Wed Dec  9 16:26:51 2020")
+((:url "https://lodev.org/cgtutor/" :title "Lode's Computer Graphics Tutorial" :time "Wed Jan 27 15:45:53 2021")
+ (:url "https://github.com/FancyVin/fun-with-graphics#math-books" :title "GitHub - FancyVin/fun-with-graphics: 这里整理了图形学相关的高校课程、书籍、教程、文章、博客、资源、开源项目。" :time "Wed Dec  9 16:26:51 2020")
  (:url "https://www.glprogramming.com/red/chapter05.html#:~:text=Material%20Colors%20The%20OpenGL%20lighting%20model%20makes%20the,the%20green%20and%20blue%20light%20that%20strikes%20it." :title "Chapter 5 - OpenGL Programming Guide" :time "Thu Sep  3 10:59:52 2020")
  (:url "http://glprogramming.com/red/appendixf.html" :title "Appendix F - OpenGL Programming Guide" :time "Mon Aug  3 14:38:24 2020")
  (:url "https://permadi.com/1996/05/ray-casting-tutorial-5/" :title "Ray Casting Tutorial – Part 5 – permadi.com" :time "Mon Aug  3 14:37:47 2020"))
