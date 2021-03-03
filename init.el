@@ -7,6 +7,7 @@
 ;; just comment it out by adding a semicolon to the start of the line.
 ;; You may delete these explanatory comments.
 (require 'package)
+(require 'cl-lib)
 
 ;;-----------------------------------------------------------------------------
 ;; packages to install manually
@@ -539,6 +540,23 @@ So that entire list of result will be showed."
     > _ \n
     "#+END_SRC")
 
+  (org-link-set-parameters
+   "iframe"
+    :follow (lambda (path prefix)
+              (browse-url path))
+    :export (lambda (path description back-end comm-channel)
+              (pcase back-end
+                ('html
+                 (format
+                  "<iframe width=\"300\" height=\"300\" src=\"%s\">%s</iframe>"
+                  path (or description "")))
+                ('latex
+                 (format
+                  "\\href{%s}{%s}"
+                  path (or description "")))
+                ))
+    :store (lambda ()))
+
   (setq org-export-coding-system 'utf-8
         ;; path-to-blog "~/Documents/DarkSalt/"
         src-name "src"
@@ -703,12 +721,20 @@ So that entire list of result will be showed."
       :publishing-function org-publish-attachment
       :recursive t
       )
+     ("examples"
+      :base-directory ,topic-path
+      :publishing-directory ,(concat publish-path "examples/")
+      :publishing-function org-publish-attachment
+      :recursive t
+      )
      ("DarkSalt" :components
       ("static" "home" "about"
        "posts" "files" "tags"
-       "todos" "topics")))
+       "todos" "topics" "examples")))
    )
 
+  ;; TODO: skip the modified files when compiling by making use of checksum
+  ;; TODO maybe we can implement it with `buffer-hash' or functions in (`secure-hash-algorithms')
   (defun publish-all-posts (project &optional force async)
     "Now the project of blog is isolated from `org-publish-project-alist'.
 That is, when calling `org-publish-project' or `org-publish' would not see
@@ -857,7 +883,7 @@ string consisting of url and title of org-file"
           res)
       (dolist (file files res)
         (setq res (append res (retrieve-tags-from-post file))))
-      (sort (remove-duplicates res :test 'string=) 'string<)))
+      (sort (cl-remove-duplicates res :test 'string=) 'string<)))
 
   (defun posts-of-tag (tag &optional root)
     "Find the posts of tag, return a list of post.
