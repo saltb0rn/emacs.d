@@ -71,6 +71,8 @@
 
 (defcustom path-to-tern-binary-on-Windows nil "Set the path to tern binary on Windows")
 
+(defcustom path-to-x86-instruction-set-refs nil "Set the path to x86 instruction manuals")
+
 (when (and
        (memq system-type '(windows-nt ms-dos cygwim))
        path-to-tern-binary-on-Windows)
@@ -339,7 +341,6 @@ FILE should be a path to file."
 (use-package fic-mode
   :ensure t
   :hook (elpy-mode
-         geiser-mode
          lisp-interaction-mode
          racket-mode
          php-mode
@@ -489,7 +490,6 @@ So that entire list of result will be showed."
   :ensure t
   :hook ((lisp-interaction-mode
           elpy-mode
-          geiser-mode
           racket-mode) . rainbow-delimiters-mode))
 
 (use-package highlight-indentation
@@ -567,14 +567,18 @@ So that entire list of result will be showed."
         ;; path-to-blog "~/Documents/DarkSalt/"
         src-name "src"
         output-name "docs"
+        publish-path (concat path-to-blog output-name "/")
         src-path (concat path-to-blog src-name "/")
         posts-path (concat path-to-blog src-name "/posts/")
         tags-path (concat path-to-blog src-name "/tags/")
         files-path (concat path-to-blog src-name "/files/")
-        publish-path (concat path-to-blog output-name "/")
         todos-path (concat path-to-blog src-name "/todos/")
         about-path (concat path-to-blog src-name "/about/")
         topic-path (concat path-to-blog src-name "/topics/")
+        css-path (concat path-to-blog src-name "/css/")
+        js-path (concat path-to-blog src-name "/js/")
+        img-path (concat path-to-blog src-name "/img/")
+        example-path (concat path-to-blog src-name "/examples/")
         httpd-listings nil
         httpd-root publish-path)
 
@@ -658,13 +662,13 @@ So that entire list of result will be showed."
                 (read-html-tpl "page-html-head.html")))
 
    blog-alist
-   `(("static"
-      :base-directory ,src-path
-      :base-extension "js\\|css\\|png\\|jpg\\|pdf"
-      :publishing-directory ,publish-path
-      :publishing-function org-publish-attachment
-      ;; :exclude "src"
-      :recursive t)
+   `(;; ("static"
+     ;;  :base-directory ,src-path
+     ;;  :base-extension "js\\|css\\|png\\|jpg\\|pdf"
+     ;;  :publishing-directory ,publish-path
+     ;;  :publishing-function org-publish-attachment
+     ;;  ;; :exclude "src"
+     ;;  :recursive t)
      ("home"
       :base-directory ,src-path
       :base-extension "org"
@@ -724,18 +728,40 @@ So that entire list of result will be showed."
      ("topics"
       :base-directory ,topic-path
       :publishing-directory ,(concat publish-path "topics/")
-      :publishing-function org-publish-attachment
+      :publishing-function org-html-publish-to-html
       :recursive t
       )
      ("examples"
-      :base-directory ,topic-path
+      :base-directory ,example-path
+      :base-extension "css\\|js\\|html\\|png\\|jpg\\|jpeg"
       :publishing-directory ,(concat publish-path "examples/")
       :publishing-function org-publish-attachment
       :recursive t
       )
+     ("js"
+      :base-directory ,js-path
+      :base-extension "js"
+      :publishing-directory ,(concat publish-path "js/")
+      :publishing-function org-publish-attachment
+      :recursive t
+      )
+     ("css"
+      :base-directory ,css-path
+      :base-extension "css"
+      :publishing-directory ,(concat publish-path "css/")
+      :publishing-function org-publish-attachment
+      :recursive t
+      )
+     ("img"
+      :base-directory ,img-path
+      :base-extension "png\\|jpeg"
+      :publishing-directory ,(concat publish-path "img/")
+      :publishing-function org-publish-attachment
+      :recursive t
+      )
      ("DarkSalt" :components
-      ("static" "home" "about"
-       "posts" "files" "tags"
+      ("home" "about" "js" "img"
+       "posts" "files" "tags" "css"
        "todos" "topics" "examples")))
    )
 
@@ -1042,18 +1068,18 @@ The ROOT points to the directory where posts store on."
   ;;           "pipenv")
   (elpy-enable))
 
-(use-package geiser
-  :ensure t
-  :config
-  (set-default 'geiser-scheme-implementation 'racket)
-  (set-default 'geiser-active-implementations '(racket))
-  (set-default 'geiser-repl-query-on-kill-p nil)
-  (set-default 'geiser-repl-query-on-exit-p nil)
-  ;; (set-default 'geiser-racket-binary "C:/Program Files/Racket/Racket.exe")
-  (add-hook 'geiser-mode-hook #'prettify-symbols-mode))
+;; (use-package geiser
+;;   :ensure t
+;;   :config
+;;   (setq geiser-scheme-implementation 'racket)
+;;   (setq geiser-active-implementations '(racket))
+;;   (setq geiser-repl-query-on-kill-p nil)
+;;   (setq geiser-repl-query-on-exit-p nil)
+;;   ;; (set-default 'geiser-racket-binary "C:/Program Files/Racket/Racket.exe")
+;;   (add-hook 'geiser-mode-hook #'prettify-symbols-mode))
 
 (use-package racket-mode
-  :disabled
+  ;; :disabled
   :ensure t
   :config
   ;; For racket, use this mode if you prefer drracket
@@ -1067,6 +1093,20 @@ The ROOT points to the directory where posts store on."
 
 (use-package glsl-mode
   :ensure t)
+
+(use-package x86-lookup
+  :ensure t
+  :config
+  (when path-to-x86-instruction-set-refs
+    (setq x86-lookup-pdf path-to-x86-instruction-set-refs))
+  (global-set-key
+   (kbd "C-h x") #'x86-lookup))
+
+(use-package nasm-mode
+  :ensure t
+;  :config
+;  (add-hook 'asm-mode-hook 'nasm-mode))
+  )
 
 (use-package smarty-mode
   :ensure t)
