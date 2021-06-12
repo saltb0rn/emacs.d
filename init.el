@@ -874,11 +874,11 @@ string consisting of url and title of org-file"
     (let ((files (retrieve-posts root))
           res)
       (dolist (file files res)
-
         (push (format "[[file:%s][%s]]%s"
                       (url-encode-url
                        (replace-regexp-in-string
-                        "\\.org" ".html"
+                        "\\.org"
+                        (format ".html?hash=%s" (calc-checksum file 'md5))
                         (file-relative-name file src-path)))
                       (read-option-from-post
                        file "TITLE" (file-name-base file))
