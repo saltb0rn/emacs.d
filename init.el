@@ -305,9 +305,6 @@ FILE should be a path to file."
   :ensure t
   :hook (elpy-mode . flycheck-mode))
 
-(use-package vue-mode
-  :ensure t)
-
 (use-package web-mode
   :ensure t
   :mode ("\\.html?\\'" . web-mode)
@@ -720,7 +717,7 @@ So that entire list of result will be showed."
       :html-postamble ,(postamble-dispatcher 'default))
      ("files"
       :base-directory ,files-path
-      :base-extension "js\\|css\\|png\\|jpg\\|pdf\\|jpeg"
+      :base-extension "js\\|css\\|png\\|jpg\\|pdf\\|jpeg\\|gif\\|el"
       :publishing-directory ,(concat publish-path "files/")
       :publishing-function org-publish-attachment
       ;; :exclude "site"
@@ -733,7 +730,7 @@ So that entire list of result will be showed."
       )
      ("examples"
       :base-directory ,example-path
-      :base-extension "css\\|js\\|html\\|png\\|jpg\\|jpeg"
+      :base-extension "css\\|js\\|html\\|png\\|jpg\\|jpeg\\|gif\\|el"
       :publishing-directory ,(concat publish-path "examples/")
       :publishing-function org-publish-attachment
       :recursive t
@@ -1574,7 +1571,8 @@ when used as a command instead of `\\.html`."
   (add-to-list 'company-backends 'company-godot-gdscript)
   (add-hook 'godot-gdscript-mode-hook 'company-mode))
 
-(use-package vue-mode)
+(use-package vue-mode
+  :ensure t)
 
 (use-package ox-reveal
   :config

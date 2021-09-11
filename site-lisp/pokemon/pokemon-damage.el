@@ -30,6 +30,7 @@
      spread-mov-mod
      parental-bond-mod
      weather-mod
+     critical-mod
      same-type-atk-bouns-mod
      type-eff-mod
      burn-mod
@@ -93,6 +94,7 @@
      spread-mov-mod
      parental-bond-mod
      weather-mod
+     critical-mod
      same-type-atk-bouns-mod
      type-eff-mod
      burn-mod
