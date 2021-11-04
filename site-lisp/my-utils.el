@@ -1,0 +1,18 @@
+(defun epsilon (order-arr)
+  ;; Brute Force Implementation, should use Merge-sort
+  (let ((inv-sum 0)
+        (len (length order-arr)))
+    (while (null (zerop len))
+      (let* ((cursor (- len 1))
+             (curelm (nth cursor order-arr))
+             (rest-len cursor))
+        (while (null (zerop rest-len))
+          (let* ((forward (- rest-len 1))
+                 (forward-elm (nth forward order-arr)))
+            (when (> forward-elm curelm)
+              (setq inv-sum (1+ inv-sum)))
+            (setq rest-len (1- rest-len)))))
+      (setq len (- len 1)))
+    (expt -1 inv-sum)))
+
+(provide 'my-utils)
