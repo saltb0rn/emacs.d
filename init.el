@@ -102,6 +102,7 @@
 ;; Set transparency
 (set-frame-parameter (selected-frame) 'alpha '(90 85))
 (add-to-list 'default-frame-alist '(alpha 90 85))
+(set-face-attribute 'default nil :background "black" :foreground "white")
 (let ((_ (font-family-list)))
   (cond
    ((string-equal system-type "windows-nt") ; Microsoft Windows
