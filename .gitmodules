@@ -22,3 +22,6 @@
 [submodule "site-lisp/company-tern"]
 	path = site-lisp/company-tern
 	url = https://github.com/kylewaldner/company-tern.git
+[submodule "scripts/jianpu-ly"]
+	path = scripts/jianpu-ly
+	url = git@github.com:ssb22/jianpu-ly.git
