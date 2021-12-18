@@ -100,8 +100,8 @@
 (setq visible-bell t)
 
 ;; Set transparency
-(set-frame-parameter (selected-frame) 'alpha '(90 85))
-(add-to-list 'default-frame-alist '(alpha 90 85))
+(set-frame-parameter (selected-frame) 'alpha '(85 70))
+(add-to-list 'default-frame-alist '(alpha 85 70))
 (set-face-attribute 'default nil :background "black" :foreground "white")
 (let ((_ (font-family-list)))
   (cond
@@ -1112,17 +1112,31 @@ The ROOT points to the directory where posts store on."
 (use-package company-php
   :ensure t)
 
-(use-package pyim
-  :if (not (memq system-type '(windows-nt ms-dos cygwin)))
-  :config
-  (use-package pyim-basedict
-    :ensure t
-    :config (pyim-basedict-enable))
-  (setq default-input-method "pyim")
+;; (use-package pyim
+;;   :if (not (memq system-type '(windows-nt ms-dos cygwin)))
+;;   :config
+;;   (use-package pyim-basedict
+;;     :ensure t
+;;     :config (pyim-basedict-enable))
+;;   (setq default-input-method "pyim")
 
-  :bind
-  (("M-j" . pyim-convert-string-at-point) ;与 pyim-probe-dynamic-english 配合
-   ("C-;" . pyim-delete-word-from-personal-buffer)))
+;;   :bind
+;;   (("M-j" . pyim-convert-string-at-point) ;与 pyim-probe-dynamic-english 配合
+;;    ("C-;" . pyim-delete-word-from-personal-buffer)))
+
+(use-package chinese-wbim
+  :ensure t
+  :config
+  ;; Tooltip 暂时还不好用
+  (setq chinese-wbim-use-tooltip nil)
+  (register-input-method
+   "chinese-wbim" "euc-cn" 'chinese-wbim-use-package
+   "五笔" "汉字五笔输入法" "wb.txt")
+  ;; 用 ; 暂时输入英文
+  (require 'chinese-wbim-extra)
+  (global-set-key ";" 'chinese-wbim-insert-ascii)
+  ;设置默认输入法
+  (setq default-input-method 'chinese-wbim))
 
 (use-package restart-emacs
   :ensure t)
