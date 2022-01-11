@@ -152,6 +152,13 @@
 
 (blink-cursor-mode 0)
 
+;; note book style
+(set-face-attribute 'region nil
+                    :background "#e3cf56"
+                    :foreground "#333"
+                    :underline "#000"
+                    :italic t)
+
 (condition-case err
     (display-battery-mode 1)
   (file-error
@@ -528,6 +535,9 @@ So that entire list of result will be showed."
 (use-package ht
   :ensure t)
 
+(use-package maxima
+  :ensure t)
+
 (use-package org
   ;; :if (not (null path-to-blog))
   :ensure org-plus-contrib
@@ -560,6 +570,10 @@ So that entire list of result will be showed."
                   path (or description "")))
                 ))
     :store (lambda ()))
+
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((maxima . t)))
 
   (setq org-export-coding-system 'utf-8
         ;; path-to-blog "~/Documents/DarkSalt/"
@@ -1112,17 +1126,17 @@ The ROOT points to the directory where posts store on."
 (use-package company-php
   :ensure t)
 
-;; (use-package pyim
-;;   :if (not (memq system-type '(windows-nt ms-dos cygwin)))
-;;   :config
-;;   (use-package pyim-basedict
-;;     :ensure t
-;;     :config (pyim-basedict-enable))
-;;   (setq default-input-method "pyim")
+(use-package pyim
+  :if (not (memq system-type '(windows-nt ms-dos cygwin)))
+  :config
+  (use-package pyim-basedict
+    :ensure t
+    :config (pyim-basedict-enable))
+  ;; (setq default-input-method "pyim")
 
-;;   :bind
-;;   (("M-j" . pyim-convert-string-at-point) ;与 pyim-probe-dynamic-english 配合
-;;    ("C-;" . pyim-delete-word-from-personal-buffer)))
+  :bind
+  (("M-j" . pyim-convert-string-at-point) ;与 pyim-probe-dynamic-english 配合
+   ("C-;" . pyim-delete-word-from-personal-buffer)))
 
 (use-package chinese-wbim
   :ensure t
@@ -1604,3 +1618,4 @@ when used as a command instead of `\\.html`."
 (put 'with-editor-cancel 'disabled t)
 
 (provide 'init)
+(put 'list-timers 'disabled nil)
