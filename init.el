@@ -150,14 +150,16 @@
 (when (fboundp 'scroll-bar-mode)
   (scroll-bar-mode -1))
 
-(blink-cursor-mode 0)
-
 ;; note book style
 (set-face-attribute 'region nil
                     :background "#e3cf56"
-                    :foreground "#333"
+                    :foreground "#000"
                     :underline "#000"
                     :italic t)
+(setq-default cursor-type '(hbar . 2))
+(set-face-attribute 'cursor nil
+                    :background "#f00")
+(blink-cursor-mode 1)
 
 (condition-case err
     (display-battery-mode 1)
