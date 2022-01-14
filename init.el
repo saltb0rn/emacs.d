@@ -85,7 +85,7 @@
   (when (> emacs-major-version 24)
     (add-to-list 'package-archives (cons "melpa" (concat proto "://melpa.org/packages/")) t)))
 
-(add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
+;; (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
 
 (package-initialize)
 
@@ -156,9 +156,13 @@
                     :foreground "#000"
                     :underline "#000"
                     :italic t)
-(setq-default cursor-type '(hbar . 2))
+(setq-default cursor-type '(hbar . 3))
 (set-face-attribute 'cursor nil
-                    :background "#f00")
+                    :background "Gold")
+(set-face-attribute 'isearch nil
+                    :background "#f0f"
+                    :foreground "#fff"
+                    :italic t)
 (blink-cursor-mode 1)
 
 (condition-case err
@@ -542,7 +546,7 @@ So that entire list of result will be showed."
 
 (use-package org
   ;; :if (not (null path-to-blog))
-  :ensure org-plus-contrib
+  :ensure t
   :bind (:map org-mode-map
               ("C-c i" . #'org-insert-src-block)
               :map global-map
@@ -1573,6 +1577,27 @@ After creating the new empty project, go to the example/example and execute \"np
   ;; use `vlf' command open very large file
   ;; for example, to open very large binary and turn on `hexl-mode'
   )
+
+(use-package vscode-icon
+  :ensure t
+  :commands (vscode-icon-for-file))
+
+(use-package dired-sidebar
+  :bind (("C-x C-n" . dired-sidebar-toggle-sidebar))
+  :ensure t
+  :commands (dired-sidebar-toggle-sidebar)
+  :init (add-hook
+         'dired-sidebar-mode-hook
+         (lambda ()
+           (unless (file-remote-p default-directory)
+             (auto-revert-mode))))
+  :config
+  (push 'toggle-window-split dired-sidebar-toggle-hidden-commands)
+  (push 'rotate-windows dired-sidebar-toggle-hidden-commands)
+  (setq dired-sidebar-subtree-line-prefix ">> ")
+  (setq dired-sidebar-theme 'vscode)
+  (setq dired-sidebar-use-term-integration t)
+  (setq dired-sidebar-use-custom-font t))
 
 ;;-----------------------------------------------------------------------------
 ;; Libraries for development in Emacs Lisp
