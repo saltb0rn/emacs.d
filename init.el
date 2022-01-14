@@ -85,7 +85,7 @@
   (when (> emacs-major-version 24)
     (add-to-list 'package-archives (cons "melpa" (concat proto "://melpa.org/packages/")) t)))
 
-(add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
+;; (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
 
 (package-initialize)
 
@@ -150,7 +150,20 @@
 (when (fboundp 'scroll-bar-mode)
   (scroll-bar-mode -1))
 
-(blink-cursor-mode 0)
+;; note book style
+(set-face-attribute 'region nil
+                    :background "#e3cf56"
+                    :foreground "#000"
+                    :underline "#000"
+                    :italic t)
+(setq-default cursor-type '(hbar . 3))
+(set-face-attribute 'cursor nil
+                    :background "Gold")
+(set-face-attribute 'isearch nil
+                    :background "#f0f"
+                    :foreground "#fff"
+                    :italic t)
+(blink-cursor-mode 1)
 
 (condition-case err
     (display-battery-mode 1)
@@ -528,9 +541,12 @@ So that entire list of result will be showed."
 (use-package ht
   :ensure t)
 
+(use-package maxima
+  :ensure t)
+
 (use-package org
   ;; :if (not (null path-to-blog))
-  :ensure org-plus-contrib
+  :ensure t
   :bind (:map org-mode-map
               ("C-c i" . #'org-insert-src-block)
               :map global-map
@@ -560,6 +576,10 @@ So that entire list of result will be showed."
                   path (or description "")))
                 ))
     :store (lambda ()))
+
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((maxima . t)))
 
   (setq org-export-coding-system 'utf-8
         ;; path-to-blog "~/Documents/DarkSalt/"
@@ -1112,17 +1132,17 @@ The ROOT points to the directory where posts store on."
 (use-package company-php
   :ensure t)
 
-;; (use-package pyim
-;;   :if (not (memq system-type '(windows-nt ms-dos cygwin)))
-;;   :config
-;;   (use-package pyim-basedict
-;;     :ensure t
-;;     :config (pyim-basedict-enable))
-;;   (setq default-input-method "pyim")
+(use-package pyim
+  :if (not (memq system-type '(windows-nt ms-dos cygwin)))
+  :config
+  (use-package pyim-basedict
+    :ensure t
+    :config (pyim-basedict-enable))
+  ;; (setq default-input-method "pyim")
 
-;;   :bind
-;;   (("M-j" . pyim-convert-string-at-point) ;与 pyim-probe-dynamic-english 配合
-;;    ("C-;" . pyim-delete-word-from-personal-buffer)))
+  :bind
+  (("M-j" . pyim-convert-string-at-point) ;与 pyim-probe-dynamic-english 配合
+   ("C-;" . pyim-delete-word-from-personal-buffer)))
 
 (use-package chinese-wbim
   :ensure t
@@ -1558,6 +1578,27 @@ After creating the new empty project, go to the example/example and execute \"np
   ;; for example, to open very large binary and turn on `hexl-mode'
   )
 
+(use-package vscode-icon
+  :ensure t
+  :commands (vscode-icon-for-file))
+
+(use-package dired-sidebar
+  :bind (("C-x C-n" . dired-sidebar-toggle-sidebar))
+  :ensure t
+  :commands (dired-sidebar-toggle-sidebar)
+  :init (add-hook
+         'dired-sidebar-mode-hook
+         (lambda ()
+           (unless (file-remote-p default-directory)
+             (auto-revert-mode))))
+  :config
+  (push 'toggle-window-split dired-sidebar-toggle-hidden-commands)
+  (push 'rotate-windows dired-sidebar-toggle-hidden-commands)
+  (setq dired-sidebar-subtree-line-prefix ">> ")
+  (setq dired-sidebar-theme 'vscode)
+  (setq dired-sidebar-use-term-integration t)
+  (setq dired-sidebar-use-custom-font t))
+
 ;;-----------------------------------------------------------------------------
 ;; Libraries for development in Emacs Lisp
 ;; (use-package websocket
@@ -1604,3 +1645,4 @@ when used as a command instead of `\\.html`."
 (put 'with-editor-cancel 'disabled t)
 
 (provide 'init)
+(put 'list-timers 'disabled nil)
