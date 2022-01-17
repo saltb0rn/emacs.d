@@ -1599,6 +1599,10 @@ After creating the new empty project, go to the example/example and execute \"np
   (setq dired-sidebar-use-term-integration t)
   (setq dired-sidebar-use-custom-font t))
 
+(use-package ace-jump-mode
+  :ensure t
+  :bind (("C-x j" . ace-jump-mode)))
+
 ;;-----------------------------------------------------------------------------
 ;; Libraries for development in Emacs Lisp
 ;; (use-package websocket
