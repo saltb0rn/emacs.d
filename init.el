@@ -85,6 +85,11 @@
   (when (> emacs-major-version 24)
     (add-to-list 'package-archives (cons "melpa" (concat proto "://melpa.org/packages/")) t)))
 
+(when (eq system-type 'windows-nt)
+  (set-default 'process-coding-system-alist
+               '(("[pP][lL][iI][nN][kK]" gbk-dos . gbk-dos)
+                 ("[cC][mM][dD][pP][rR][oO][xX][yY]" gbk-dos . gbk-dos))))
+
 ;; (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
 
 (package-initialize)
