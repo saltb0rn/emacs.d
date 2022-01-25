@@ -34,6 +34,7 @@
 (load custom-file)
 
 ;; NOTE: about how to use bash on Windows, maybe I can try this thread: https://www.reddit.com/r/emacs/comments/4z8gpe/using_bash_on_windows_for_mx_shell/
+;; For example, I use MSYS2 so my `path-to-bash-on-Windows' will be something like 'c:/msys64/usr/bin'
 (defcustom path-to-bash-on-Windows nil "Set the path to bash while on Windows")
 
 ;; Path to blog
@@ -198,6 +199,7 @@
 (prefer-coding-system 'utf-8)
 
 (set-default-coding-systems 'utf-8)
+;; (set-default-process-coding-system 'utf-8)
 (set-language-environment 'utf-8)
 (setq locale-coding-system 'utf-8)
 (set-terminal-coding-system 'utf-8)
