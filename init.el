@@ -1662,6 +1662,6 @@ when used as a command instead of `\\.html`."
 
 ;; some commands confuse me, like `with-editor-cancel' which will sometimes "delete my file" by "accident"
 (put 'with-editor-cancel 'disabled t)
+;; (put 'list-timers 'disabled nil)
 
 (provide 'init)
-(put 'list-timers 'disabled nil)

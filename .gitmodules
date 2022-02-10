@@ -1,24 +1,24 @@
 [submodule "site-lisp/godot-gdscript.el"]
 	path = site-lisp/godot-gdscript.el
-	url = https://github.com/francogarcia/godot-gdscript.el.git
+	url = git@github.com:francogarcia/godot-gdscript.el.git
 [submodule "site-lisp/company-godot-gdscript.el"]
 	path = site-lisp/company-godot-gdscript.el
-	url = https://github.com/francogarcia/company-godot-gdscript.el.git
+	url = git@github.com:francogarcia/company-godot-gdscript.el.git
 [submodule "site-lisp/mmm-mode"]
 	path = site-lisp/mmm-mode
-	url = https://github.com/purcell/mmm-mode.git
+	url = git@github.com:purcell/mmm-mode.git
 [submodule "site-lisp/vue-mode"]
 	path = site-lisp/vue-mode
-	url = https://github.com/AdamNiederer/vue-mode.git
+	url = git@github.com:AdamNiederer/vue-mode.git
 [submodule "site-lisp/pixel-mode"]
 	path = site-lisp/pixel-mode
-	url = https://github.com/rakete/pixel-mode.git
+	url = git@github.com:rakete/pixel-mode.git
 [submodule "site-lisp/org-reveal"]
 	path = site-lisp/org-reveal
-	url = https://github.com/yjwen/org-reveal.git
+	url = git@github.com:yjwen/org-reveal.git
 [submodule "site-lisp/vlfi"]
 	path = site-lisp/vlfi
-	url = https://github.com/m00natic/vlfi.git
+	url = git@github.com:m00natic/vlfi.git
 [submodule "site-lisp/company-tern"]
 	path = site-lisp/company-tern
-	url = https://github.com/kylewaldner/company-tern.git
+	url = git@github.com:kylewaldner/company-tern.git
