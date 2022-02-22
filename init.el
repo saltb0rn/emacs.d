@@ -1618,6 +1618,9 @@ After creating the new empty project, go to the example/example and execute \"np
   :ensure t
   :bind (("C-x j" . ace-jump-mode)))
 
+(use-package extempore-mode
+  :ensure t)
+
 ;;-----------------------------------------------------------------------------
 ;; Libraries for development in Emacs Lisp
 ;; (use-package websocket
