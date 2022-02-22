@@ -96,4 +96,34 @@
                   (if (> component range-of-positive) 1 0)))
         `(,@rest-digits ,@digits)))))
 
+(defun url-copy-file-async (url newname &optional ok-if-already-exists &rest _ignored)
+  "Copy URL to NEWNAME.  Both arguments must be strings.
+Signal a `file-already-exists' error if file NEWNAME already
+exists, unless a third argument OK-IF-ALREADY-EXISTS is supplied
+and non-nil.  An integer as third argument means request
+confirmation if NEWNAME already exists."
+  (and (file-exists-p newname)
+       (or (not ok-if-already-exists)
+           (and (integerp ok-if-already-exists)
+                (not (yes-or-no-p
+                      (format "File %s already exists; copy to it anyway? "
+                              newname)))))
+       (signal 'file-already-exists (list "File already exists" newname)))
+  (url-retrieve
+   url
+   (lambda (status)
+     (print status)
+     (let ((rsp-error (plist-get status :error)))
+       (if (not (null (memq 404 rsp-error)))
+           (signal 'file-missing
+                   (list "Openning URL" "No such file or directory" url))
+         (let* ((buf (current-buffer))
+                (handle (with-current-buffer buf
+                          (mm-dissect-buffer t))))
+           (let ((mm-attachment-file-modes (default-file-modes)))
+             (mm-save-part-to-file handle newname))
+           (kill-buffer buf)
+           (mm-destroy-part handle)
+           (message (format "File from <%s> download completed!!!" url))))))))
+
 (provide 'my-utils)
