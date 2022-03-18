@@ -96,34 +96,26 @@
                   (if (> component range-of-positive) 1 0)))
         `(,@rest-digits ,@digits)))))
 
-(defun url-copy-file-async (url newname &optional ok-if-already-exists &rest _ignored)
-  "Copy URL to NEWNAME.  Both arguments must be strings.
-Signal a `file-already-exists' error if file NEWNAME already
-exists, unless a third argument OK-IF-ALREADY-EXISTS is supplied
-and non-nil.  An integer as third argument means request
-confirmation if NEWNAME already exists."
-  (and (file-exists-p newname)
-       (or (not ok-if-already-exists)
-           (and (integerp ok-if-already-exists)
-                (not (yes-or-no-p
-                      (format "File %s already exists; copy to it anyway? "
-                              newname)))))
-       (signal 'file-already-exists (list "File already exists" newname)))
-  (url-retrieve
-   url
-   (lambda (status)
-     (print status)
-     (let ((rsp-error (plist-get status :error)))
-       (if (not (null (memq 404 rsp-error)))
-           (signal 'file-missing
-                   (list "Openning URL" "No such file or directory" url))
-         (let* ((buf (current-buffer))
-                (handle (with-current-buffer buf
-                          (mm-dissect-buffer t))))
-           (let ((mm-attachment-file-modes (default-file-modes)))
-             (mm-save-part-to-file handle newname))
-           (kill-buffer buf)
-           (mm-destroy-part handle)
-           (message (format "File from <%s> download completed!!!" url))))))))
+(defun int-range-probability (from to num)
+  ;; 写该函数是目的是计算游戏"三角战略"里面的"德西玛尔"HP[num]招式可攻击敌人的概率
+  ;; 求从 from 到 to 的范围的整数里面,数字为 num 的倍数的占比为多少
+  ;; 要求 from < to, 并且 num > 0
+  ;; 可以把这个问题看做在固定步长下,求能走多少步.
+  ;; 比如说从 1 到 12 的范围内,步长为 3 的情况下能够多少步,
+  ;; 1 2 3] 4 5 6] 7 8 9] 10 11 12], 可以看到有 3, 6, 9 和 12 四个,
+  ;; 接着转换成求下标个数的问题,就变成类似求余的问题了,把问题改变一下,
+  ;; 求 21 - 30 范围内,是 7 的倍数的整数个数有多少,思路如下:
+  ;; 先求出 0 - 30 里面为 7 的倍数的整数个数 x,
+  ;; 再求出 0 - 20 里面为 7 的倍数的整数个数 y,
+  ;; 那么在 21 - 30 范围里面为 7 的把倍数的整数个数为 x - y,
+  ;; 最后用这个结果除以 21 - 30 这个范围内的数字个数 30 - 21 + 1 = 10 就能得出概率
+  ;; 如果要求为同时是 3 和 7 倍数的整数个数,则需要先求出 3 和 7 的最小公倍数 21,然后进行上面的运算
+  (let* ((trimed-range (abs (- from 1)))
+         (total-range to)
+         (total-numbers (+ (abs (- to from)) 1))
+         (trimed-times (floor (/ trimed-range num)))
+         (total-times (floor (/ total-range num)))
+         (actual-times (abs (- total-times trimed-times))))
+    (/ (* 1.0 actual-times) total-numbers)))
 
 (provide 'my-utils)
