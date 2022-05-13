@@ -1614,9 +1614,17 @@ After creating the new empty project, go to the example/example and execute \"np
   (setq dired-sidebar-use-term-integration t)
   (setq dired-sidebar-use-custom-font t))
 
-(use-package ace-jump-mode
+;; (use-package ace-jump-mode
+;;   :ensure t
+;;   :bind (("C-x j" . ace-jump-mode)))
+
+(use-package avy
   :ensure t
-  :bind (("C-x j" . ace-jump-mode)))
+  :bind (("C-:" . avy-goto-char)
+         ("C-'" . avy-goto-char-2)
+         ("M-g f" . avy-goto-line)
+         ("M-g w" . avy-goto-word-1)
+         ("M-g e" . avy-goto-word-0)))
 
 (use-package extempore-mode
   :ensure t)
