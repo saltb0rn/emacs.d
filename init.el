@@ -339,8 +339,6 @@ FILE should be a path to file."
   (setq web-mode-enable-auto-closing t
         web-mode-enable-auto-pairing t))
 
-
-
 ;; NOTE: Bad performance for rendering on Windows, the worst part is (nyan-start-animation), you can only disable that.
 (use-package nyan-mode
   :if (not (memq system-type '(windows-nt ms-dos cygwin)))
@@ -1322,6 +1320,22 @@ After creating the new empty project, go to the example/example and execute \"np
     "http://www.wikipedia.org/search-redirect.php?language=en&go=Go&search=%s"
     :keybinding "w"
     :docstring "Searchin' the wikis."))
+
+(use-package edit-server
+  :ensure t
+  :commands edit-server-start
+  :init (if after-init-time
+              (edit-server-start)
+            (add-hook 'after-init-hook
+                      #'(lambda() (edit-server-start))))
+  :config (setq edit-server-new-frame-alist
+                '((name . "Edit with Emacs FRAME")
+                  (top . 200)
+                  (left . 200)
+                  (width . 80)
+                  (height . 25)
+                  (minibuffer . t)
+                  (menu-bar-lines . t))))
 
 ;; (use-package cedet
 ;;   ;; :disabled
