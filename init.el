@@ -34,6 +34,7 @@
 (load custom-file)
 
 ;; NOTE: about how to use bash on Windows, maybe I can try this thread: https://www.reddit.com/r/emacs/comments/4z8gpe/using_bash_on_windows_for_mx_shell/
+;; For example, I use MSYS2 so my `path-to-bash-on-Windows' will be something like 'c:/msys64/usr/bin'
 (defcustom path-to-bash-on-Windows nil "Set the path to bash while on Windows")
 
 ;; Path to blog
@@ -198,6 +199,7 @@
 (prefer-coding-system 'utf-8)
 
 (set-default-coding-systems 'utf-8)
+;; (set-default-process-coding-system 'utf-8)
 (set-language-environment 'utf-8)
 (setq locale-coding-system 'utf-8)
 (set-terminal-coding-system 'utf-8)
@@ -336,8 +338,6 @@ FILE should be a path to file."
   ;;     (user-error "Don't turn on `hs-minor-mode' while using `web-mode'")))
   (setq web-mode-enable-auto-closing t
         web-mode-enable-auto-pairing t))
-
-
 
 ;; NOTE: Bad performance for rendering on Windows, the worst part is (nyan-start-animation), you can only disable that.
 (use-package nyan-mode
@@ -1321,6 +1321,22 @@ After creating the new empty project, go to the example/example and execute \"np
     :keybinding "w"
     :docstring "Searchin' the wikis."))
 
+(use-package edit-server
+  :ensure t
+  :commands edit-server-start
+  :init (if after-init-time
+              (edit-server-start)
+            (add-hook 'after-init-hook
+                      #'(lambda() (edit-server-start))))
+  :config (setq edit-server-new-frame-alist
+                '((name . "Edit with Emacs FRAME")
+                  (top . 200)
+                  (left . 200)
+                  (width . 80)
+                  (height . 25)
+                  (minibuffer . t)
+                  (menu-bar-lines . t))))
+
 ;; (use-package cedet
 ;;   ;; :disabled
 ;;   ;; TODO: write a general setup for c/c++ language
@@ -1612,9 +1628,20 @@ After creating the new empty project, go to the example/example and execute \"np
   (setq dired-sidebar-use-term-integration t)
   (setq dired-sidebar-use-custom-font t))
 
-(use-package ace-jump-mode
+;; (use-package ace-jump-mode
+;;   :ensure t
+;;   :bind (("C-x j" . ace-jump-mode)))
+
+(use-package avy
   :ensure t
-  :bind (("C-x j" . ace-jump-mode)))
+  :bind (("C-:" . avy-goto-char)
+         ("C-'" . avy-goto-char-2)
+         ("M-g f" . avy-goto-line)
+         ("M-g w" . avy-goto-word-1)
+         ("M-g e" . avy-goto-word-0)))
+
+(use-package extempore-mode
+  :ensure t)
 
 ;;-----------------------------------------------------------------------------
 ;; Libraries for development in Emacs Lisp
@@ -1660,6 +1687,6 @@ when used as a command instead of `\\.html`."
 
 ;; some commands confuse me, like `with-editor-cancel' which will sometimes "delete my file" by "accident"
 (put 'with-editor-cancel 'disabled t)
+;; (put 'list-timers 'disabled nil)
 
 (provide 'init)
-(put 'list-timers 'disabled nil)
