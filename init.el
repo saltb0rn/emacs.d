@@ -567,9 +567,9 @@ So that entire list of result will be showed."
 
   (org-link-set-parameters
    "iframe"
-    :follow (lambda (path prefix)
+    :follow (lambda (path _)
               (browse-url path))
-    :export (lambda (path description back-end comm-channel)
+    :export (lambda (path description back-end)
               (pcase back-end
                 ('html
                  (format
@@ -579,6 +579,7 @@ So that entire list of result will be showed."
                  (format
                   "\\href{%s}{%s}"
                   path (or description "")))
+                (t path)
                 ))
     :store (lambda ()))
 
