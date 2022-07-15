@@ -106,9 +106,33 @@
 (setq visible-bell t)
 
 ;; Set transparency
-(set-frame-parameter (selected-frame) 'alpha '(85 70))
-(add-to-list 'default-frame-alist '(alpha 85 70))
+(setq frame-transparency-alpha '(85 70))
+(setq is-frame-transparency t)
 (set-face-attribute 'default nil :background "black" :foreground "white")
+(add-to-list 'default-frame-alist frame-transparency-alpha)
+(defun toggle-frame-transparency ()
+  (interactive)
+  (if is-frame-transparency
+      (progn
+        (mapcar
+         #'(lambda (frame)
+             (set-frame-parameter frame 'alpha frame-transparency-alpha))
+         (frame-list))
+        (setq is-frame-transparency nil))
+    (progn
+      (mapcar
+       #'(lambda (frame)
+           (set-frame-parameter frame 'alpha '(100 100)))
+       (frame-list))
+      (setq is-frame-transparency t))))
+(toggle-frame-transparency)
+
+;; turn on/off the light
+(global-set-key (kbd "C-c f a") #'toggle-frame-transparency)
+
+;; 参考 `text-scale-adjust' 编写一个可以动态改变 `frame-transparency-alpha' 的方法
+;; 该方法也要更新 `default-frame-alist' 的值
+
 (let ((_ (font-family-list)))
   (cond
    ((string-equal system-type "windows-nt") ; Microsoft Windows
