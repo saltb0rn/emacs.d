@@ -25,3 +25,6 @@
 [submodule "scripts/jianpu-ly"]
         path = scripts/jianpu-ly
         url = git@github.com:ssb22/jianpu-ly.git
+[submodule "site-lisp/emacs-application-framework"]
+	path = site-lisp/emacs-application-framework
+	url = git@github.com:emacs-eaf/emacs-application-framework.git

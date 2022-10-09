@@ -19,7 +19,7 @@
 (let ((files (directory-files
               (expand-file-name "site-lisp" user-emacs-directory)
               t
-              "^[^.]\\(?:.*\\)\\(?:\\.elc?\\)?$")))
+              "^[^.]\\(?:.*\\)\\(?:\\.so\\|\\.elc?\\)?$")))
   (mapcar
    (lambda (file)
      (when (file-directory-p file)
@@ -308,7 +308,8 @@ FILE should be a path to file."
 (unless (package-installed-p 'use-package)
   (package-install 'use-package))
 
-(require 'use-package)
+(eval-when-compile
+  (require 'use-package))
 
 (setq use-package-verbose t)
 
@@ -573,6 +574,11 @@ So that entire list of result will be showed."
 (use-package maxima
   :ensure t)
 
+(use-package valign
+  :ensure t
+  :config
+  (add-hook 'org-mode-hook #'valign-mode))
+
 (use-package org
   ;; :if (not (null path-to-blog))
   :ensure t
@@ -775,27 +781,28 @@ So that entire list of result will be showed."
       :recursive t)
      ("topics"
       :base-directory ,topic-path
+      :base-extension "css\\|js\\|html\\|png\\|jpg\\|jpeg\\|gif\\|el"
       :publishing-directory ,(concat publish-path "topics/")
       :publishing-function org-html-publish-to-html
       :recursive t
       )
      ("examples"
       :base-directory ,example-path
-      :base-extension "css\\|js\\|html\\|png\\|jpg\\|jpeg\\|gif\\|el"
+      :base-extension "css\\|js\\|html\\|png\\|jpg\\|jpeg\\|gif\\|el\\|woff"
       :publishing-directory ,(concat publish-path "examples/")
       :publishing-function org-publish-attachment
       :recursive t
       )
      ("js"
       :base-directory ,js-path
-      :base-extension "js"
+      :base-extension "js\\|woff\\|png\\|jpg\\|jpeg\\|gif"
       :publishing-directory ,(concat publish-path "js/")
       :publishing-function org-publish-attachment
       :recursive t
       )
      ("css"
       :base-directory ,css-path
-      :base-extension "css"
+      :base-extension "css\\|png\\|woff\\|jpg\\|jpeg\\|gif"
       :publishing-directory ,(concat publish-path "css/")
       :publishing-function org-publish-attachment
       :recursive t
@@ -1696,12 +1703,34 @@ when used as a command instead of `\\.html`."
   (add-to-list 'company-backends 'company-godot-gdscript)
   (add-hook 'godot-gdscript-mode-hook 'company-mode))
 
-(use-package vue-mode
+(use-package prettier-js
   :ensure t)
+
+(use-package vue-mode
+  :mode "\\.vue\\'"
+  :hook (vue-mode . prettier-js-mode)
+  :ensure t
+  :config
+  (setq prettier-js-args '("--parser vue")))
 
 (use-package ox-reveal
   :config
   (setq org-reveal-root "https://cdn.jsdelivr.net/npm/reveal.js"))
+
+(use-package eaf
+  :load-path "~/.emacs.d/site-lisp/emacs-application-framework"
+  :custom
+  (eaf-browser-continue-where-left-off t)
+  (eaf-browser-enable-adblocker t)
+  (browse-url-browser-function 'eaf-open-browser)  
+  :config
+  (require 'eaf-system-monitor)
+  (require 'eaf-browser)
+  (require 'eaf-org-previewer)
+  (require 'eaf-netease-cloud-music)
+  
+  (defalias 'browse-web #'eaf-open-browser)
+  (eaf-bind-key nil "M-q" eaf-browser-keybinding))
 
 ;;-----------------------------------------------------------------------------
 
