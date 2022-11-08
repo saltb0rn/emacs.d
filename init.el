@@ -1718,6 +1718,7 @@ when used as a command instead of `\\.html`."
   (setq org-reveal-root "https://cdn.jsdelivr.net/npm/reveal.js"))
 
 (use-package eaf
+  :if (display-graphic-p)
   :custom
   (eaf-browser-continue-where-left-off t)
   (eaf-browser-enable-adblocker t)
