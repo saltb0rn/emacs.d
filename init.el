@@ -841,7 +841,7 @@ any project of blog, vice versa."
           (org-html-doctype "html5")
           (org-html-link-home "/")
           (org-html-link-up "/")
-          (org-export-with-toc nil)
+          (org-export-with-toc t)
           (org-export-with-author t)
           (org-export-with-email nil)
           (org-export-with-creator nil)
@@ -1718,7 +1718,6 @@ when used as a command instead of `\\.html`."
   (setq org-reveal-root "https://cdn.jsdelivr.net/npm/reveal.js"))
 
 (use-package eaf
-  :load-path "~/.emacs.d/site-lisp/emacs-application-framework"
   :custom
   (eaf-browser-continue-where-left-off t)
   (eaf-browser-enable-adblocker t)
