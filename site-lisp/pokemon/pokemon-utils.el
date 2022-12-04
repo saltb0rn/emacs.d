@@ -21,6 +21,7 @@
 
 (defun pokemon-round (arg &optional divisor)
   ;; Round developed by Game Freak
+  ;; 小数点大于 0.5 进 1
   (let* ((val (/ arg (or divisor 1) 1.0))
          (int (truncate val))
          (dec (- val int)))
@@ -29,6 +30,7 @@
       int)))
 
 (defun pokemon-normal-round (arg &optional divisor)
+  ;; 小数点大于等于 0.5 进 1
   (let* ((val (/ arg (or divisor 1) 1.0))
          (int (truncate val))
          (dec (- val int)))
