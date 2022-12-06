@@ -87,7 +87,7 @@
 
          (step-final-mods ;; final mods, wrong
           (let ((mod (pokemon--chain-mods
-                      (cons pokemon-mod-denominator final-mods))))
+                      (cons pokemon-mod-x1 final-mods))))
             (mapcar
              (lambda (dmg)
                (pokemon-round (* dmg (/ mod pokemon-mod-denominator))))
@@ -116,7 +116,7 @@
     (`nil t)
     (`(,key ,value) t)
     (`(,key ,value . ,rest)
-     (pokemon-damage-calc--mod-check rest))))
+     (pokemon--damage-calc-mod-check rest))))
 
 (defmacro pokemon-damage-calc (atker-lvl atk/spa def/spd mov-power &rest mods)
   `(if (pokemon--damage-calc-mod-check ',mods)
@@ -125,16 +125,16 @@
         atker-lvl
         atk/spa                         ;; 受到攻击 mods 影响, 包括能力升降低, 特性加成, 道具影响
         def/spd                         ;; 同攻击 mods
-        mov-power)                      ;; 受到场地和天气的影响, 有些特性也会影响, 比如妖精皮肤在同类加成 1.2 倍, 招式也会有影响, 比如帮助加成 2 倍
-      ,(or (plist-get mods :spread-mov-mod) pokemon-mod-denominator)
-      ,(or (plist-get mods :parental-bond-mod) pokemon-mod-denominator)
-      ,(or (plist-get mods :weather-mod) pokemon-mod-denominator)
+        mov-power)                      ;; 受到场地和天气的影响, 有些特性也会影响, 比如妖精皮肤在同类加成 1.2 倍, 招式也会有影响, 比如帮助加成 1.5 倍
+      ,(or (plist-get mods :spread-mov-mod) pokemon-mod-x1)
+      ,(or (plist-get mods :parental-bond-mod) pokemon-mod-x1)
+      ,(or (plist-get mods :weather-mod) pokemon-mod-x1)
       ,(or (plist-get mods :critical-mod) 1)
-      ,(or (plist-get mods :same-type-atk-bouns-mod) pokemon-mod-denominator)
+      ,(or (plist-get mods :same-type-atk-bouns-mod) pokemon-mod-x1)
       ,(or (plist-get mods :type-eff-mod) 1)
-      ,(or (plist-get mods :burn-mod) pokemon-mod-denominator)
+      ,(or (plist-get mods :burn-mod) pokemon-mod-x1)
       ,(or (plist-get mods :final-mods) nil)
-      ,(or (plist-get mods :protect-mod) pokemon-mod-denominator))
+      ,(or (plist-get mods :protect-mod) pokemon-mod-x1))
      0))
 
 ;; examples:
