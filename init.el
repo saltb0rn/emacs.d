@@ -221,7 +221,6 @@
 (set-default 'indent-tabs-mode nil)
 
 (prefer-coding-system 'utf-8)
-
 (set-default-coding-systems 'utf-8)
 ;; (set-default-process-coding-system 'utf-8)
 (set-language-environment 'utf-8)
@@ -1123,6 +1122,14 @@ The ROOT points to the directory where posts store on."
   ;;           "pipenv")
   (elpy-enable))
 
+(use-package json
+  :ensure t
+  :config
+  (add-hook 'json-mode-hook
+            #'(lambda ()
+                (make-local-variable 'js-indent-level)
+                (setq js-indent-level 2))))
+
 ;; (use-package geiser
 ;;   :ensure t
 ;;   :config
@@ -1282,9 +1289,6 @@ After creating the new empty project, go to the example/example and execute \"np
   (js2r-add-keybindings-with-prefix "C-c C-r"))
 
 (use-package xref-js2
-  :ensure t)
-
-(use-package elfeed
   :ensure t)
 
 (use-package web-beautify
@@ -1722,13 +1726,13 @@ when used as a command instead of `\\.html`."
   :custom
   (eaf-browser-continue-where-left-off t)
   (eaf-browser-enable-adblocker t)
-  (browse-url-browser-function 'eaf-open-browser)  
+  (browse-url-browser-function 'eaf-open-browser)
   :config
   (require 'eaf-system-monitor)
   (require 'eaf-browser)
   (require 'eaf-org-previewer)
   (require 'eaf-netease-cloud-music)
-  
+
   (defalias 'browse-web #'eaf-open-browser)
   (eaf-bind-key nil "M-q" eaf-browser-keybinding))
 
