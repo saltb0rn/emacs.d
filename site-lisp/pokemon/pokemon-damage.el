@@ -2,22 +2,46 @@
 
 ;; https://www.trainertower.com/dawoblefets-damage-dissertation/
 
-(defun pokemon-base-damage (atker-lvl atk/spa def/spd mov-power)
-  (let* ((step1
+(defun pokemon-base-damage (atker-lvl atk/spa def/spd mov-power &optional a-boosts/drops-lvl d-boosts/drops-lvl)
+  (let* ((a-boosts/drops-mod (cond
+                              ((null a-boosts/drops-lvl) (list 2 2 1.0))
+                              ((> a-boosts/drops-lvl 0) (list (+ a-boosts/drops-lvl 2) 2 1.0))
+                              ((< a-boosts/drops-lvl 0) (list 2 (+ a-boosts/drops-lvl 2 1.0)))
+                              (t (list 2 2 1.0))))
+         (d-boosts/drops-mod (cond
+                              ((null d-boosts/drops-lvl) (list 2 2 1.0))
+                              ((> d-boosts/drops-lvl 0) (list (+ d-boosts/drops-lvl 2) 2 1.0))
+                              ((< d-boosts/drops-lvl 0) (list 2 (+ d-boosts/drops-lvl 2 1.0)))
+                              (t (list 2 2 1.0))))
+         (step1
           (pokemon-flooring
            (*
             (pokemon-flooring (+ (* 2 atker-lvl) 10) 5)
             mov-power
-            atk/spa)
-           def/spd))
+            (pokemon-flooring (* atk/spa (apply #'/ a-boosts/drops-mod))))
+           (pokemon-flooring (* def/spd (apply #'/ d-boosts/drops-mod)))))
          (step2
           (pokemon-flooring step1 50)))
     (+ 2 step2)))
 
-;; 在不考虑小数点取整的话, 基础伤害的公式可以写成这样: (1/50 * (2 * atker-lvl + 10) / 5) * (atk/spa / def/spd) * mov-dmg + 2.
-;; 由于对战是有级别限制的, 比如在 50 级是, (1/50 * (2 * atker-lvl + 10) / 5) 是可以直接固定成 0.44.
+;; 在不考虑小数点取整的话, 基础伤害的公式可以写成这样: 1/250 * (2 * atker-lvl + 10) * (atk/spa / def/spd) * mov-dmg + 2.
+;; 由于对战是有级别限制的, 比如在 50 级是, 1/250 * (2 * atker-lvl + 10) 是可以直接固定成 0.44.
 ;; 所以 50 级别的基伤计算变成: 0.44 * mov-dmg * (atk/spa / def/spd) + 2.
 ;; 我们把 (atk/spa / def/spd) 看作一个 mod, 也就是说这个 mod 的值得达到 25 / 11, 也就是约等于 2.27 才能得到完整的招式伤害
+
+;; 作为进攻方法, 应该注意伤害攻击方法努力值的分配, 还得注意和速度努力值的平衡
+;; 如何在对战中进行伤害估算: https://www.bilibili.com/read/mobile?id=7802299
+
+;; 作为防御方, 应该注意如何平衡 hp/def/spd 三者的分配来达到最大的耐久
+
+;; 我们把 k = \fraction{(a_{0} + a_{1} + a_{2} + ... + a_{n})}{n}, 那么 k \ge nth-root(a_{0} * a_{1} * a_{2} * ... * a_{n}), 这就是 AM-GM 不等式
+;; 这条不等式可以变换成 k \ge (a_{0} * a_{1} * a_{2} * ... * a_{n})^{1/n} \rightarrow k^{n} \ge (a_{0} * a_{1} * a_{2} * ... * a_{n})
+;; 只有 a_{0} = a_{1} = a_{2} = ... = a_{n} = k 时, k^{n} = a_{0} * a_{1} * a_{2} * ... * a_{n} 达到最大值.
+;; AM-GM 不等式的介绍和证明: https://artofproblemsolving.com/wiki/index.php/AM-GM_Inequality
+
+;; https://www.gcores.com/articles/104949
+
+
 
 (defun pokemon-mul-mods (val &rest mods)
   (let ((final-mod
@@ -79,6 +103,7 @@
              (pokemon-flooring (* dmg type-eff-mod)))
            step-same-type-atk-bouns-mod))
 
+         ;; 使用特攻的宝可梦不受到该修正影响
          (step-burn-mod (mapcar
                           (lambda (dmg)
                             (pokemon-round
@@ -119,23 +144,26 @@
      (pokemon--damage-calc-mod-check rest))))
 
 (defmacro pokemon-damage-calc (atker-lvl atk/spa def/spd mov-power &rest mods)
-  `(if (pokemon--damage-calc-mod-check ',mods)
-     (pokemon--damage-calc
-      ,(pokemon-base-damage
-        atker-lvl
-        atk/spa                         ;; 受到攻击 mods 影响, 包括能力升降低, 特性加成, 道具影响
-        def/spd                         ;; 同攻击 mods
-        mov-power)                      ;; 受到场地和天气的影响, 有些特性也会影响, 比如妖精皮肤在同类加成 1.2 倍, 招式也会有影响, 比如帮助加成 1.5 倍
-      ,(or (plist-get mods :spread-mov-mod) pokemon-mod-x1)
-      ,(or (plist-get mods :parental-bond-mod) pokemon-mod-x1)
-      ,(or (plist-get mods :weather-mod) pokemon-mod-x1)
-      ,(or (plist-get mods :critical-mod) 1)
-      ,(or (plist-get mods :same-type-atk-bouns-mod) pokemon-mod-x1)
-      ,(or (plist-get mods :type-eff-mod) 1)
-      ,(or (plist-get mods :burn-mod) pokemon-mod-x1)
-      ,(or (plist-get mods :final-mods) nil)
-      ,(or (plist-get mods :protect-mod) pokemon-mod-x1))
-     0))
+    `(if (pokemon--damage-calc-mod-check (list ,@mods))
+         (pokemon--damage-calc
+          (pokemon-base-damage
+           ,atker-lvl
+           ,atk/spa                         ;; 受到攻击 mods 影响, 包括能力升降低, 特性加成, 道具影响
+           ,def/spd                         ;; 同攻击 mods
+           ,mov-power ;; 受到场地和天气的影响, 有些特性也会影响, 比如妖精皮肤在同类加成 1.2 倍, 招式也会有影响, 比如帮助加成 1.5 倍
+           (plist-get (list ,@mods) :a-boosts/drops-lvl) ;; 攻击能力升降
+           (plist-get (list ,@mods) :d-boosts/drops-lvl) ;; 防御能力升降
+           )
+          (or (plist-get (list ,@mods) :spread-mov-mod) pokemon-mod-x1)
+          (or (plist-get (list ,@mods) :parental-bond-mod) pokemon-mod-x1)
+          (or (plist-get (list ,@mods) :weather-mod) pokemon-mod-x1)
+          (or (plist-get (list ,@mods) :critical-mod) 1)
+          (or (plist-get (list ,@mods) :same-type-atk-bouns-mod) pokemon-mod-x1)
+          (or (plist-get (list ,@mods) :type-eff-mod) 1)
+          (or (plist-get (list ,@mods) :burn-mod) pokemon-mod-x1)
+          (or (plist-get (list ,@mods) :final-mods) nil)
+          (or (plist-get (list ,@mods) :protect-mod) pokemon-mod-x1))
+       0))
 
 ;; examples:
 ;; (pokemon-damage-calc 50 232 109 120
