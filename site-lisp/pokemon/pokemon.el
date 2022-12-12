@@ -1,3 +1,5 @@
+;; -*- lexical-binding: t -*-
+
 (require 'pokemon-stat)
 (require 'pokemon-damage)
 (require 'pokemon-nature-dat)

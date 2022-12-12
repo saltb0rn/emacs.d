@@ -226,9 +226,31 @@
         (with-temp-buffer
           (insert-file-contents pokemon-indices-file)
           (libxml-parse-html-region (point-min) (point-max))))
-  (setq tables (dom-by-class pokemon-indices "eplist"))
+
+  ;; 爬取特性列表
+  (setq ability-indices-file (format "%s/%s" pokemon-db-crawler--page-dirs "ability-db.html"))
+  (download-page
+   (format "%s%s" pokemon-db-crawler--root-url
+           "/wiki/特性列表")
+   ability-indices-file)
+  (setq ability-indices
+        (with-temp-buffer
+          (insert-file-contents ability-indices-file)
+          (libxml-parse-html-region (point-min) (point-max))))
+
+  ;; 爬取招式列表
+  (setq skill-indices-file (format "%s/%s" pokemon-db-crawler--page-dirs "skill-db.html"))
+  (download-page
+   (format "%s%s" pokemon-db-crawler--root-url
+           "/wiki/招式列表")
+   skill-indices-file)
+  (setq skill-indices
+        (with-temp-buffer
+          (insert-file-contents skill-indices-file)
+          (libxml-parse-html-region (point-min) (point-max))))  
 
   ;; 爬取每个宝可梦详情页面, 请求数量比较多, 因此设定每次请求间隔为 4 到 8 秒
+  (setq tables (dom-by-class pokemon-indices "eplist"))  
   (mapcar (lambda (table) (pokedex-filter table 4 8)) tables)
 
   ;; TODO: 清洗精灵页面的数据

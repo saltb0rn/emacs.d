@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (require 'pokemon-utils)
 
 (defun pokemon-hp-stat (level spec-val invidual-val effort-val)

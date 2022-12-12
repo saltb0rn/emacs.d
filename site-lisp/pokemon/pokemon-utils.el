@@ -1,3 +1,5 @@
+;; -*- lexical-binding: t -*-
+
 (require 'json)
 
 (defconst pokemon-mod-denominator 4096.0)

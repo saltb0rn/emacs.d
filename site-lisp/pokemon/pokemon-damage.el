@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (require 'pokemon-utils)
 
 ;; https://www.trainertower.com/dawoblefets-damage-dissertation/
@@ -6,12 +7,12 @@
   (let* ((a-boosts/drops-mod (cond
                               ((null a-boosts/drops-lvl) (list 2 2 1.0))
                               ((> a-boosts/drops-lvl 0) (list (+ a-boosts/drops-lvl 2) 2 1.0))
-                              ((< a-boosts/drops-lvl 0) (list 2 (+ a-boosts/drops-lvl 2 1.0)))
+                              ((< a-boosts/drops-lvl 0) (list 2 (+ (* -1 a-boosts/drops-lvl) 2) 1.0))
                               (t (list 2 2 1.0))))
          (d-boosts/drops-mod (cond
                               ((null d-boosts/drops-lvl) (list 2 2 1.0))
                               ((> d-boosts/drops-lvl 0) (list (+ d-boosts/drops-lvl 2) 2 1.0))
-                              ((< d-boosts/drops-lvl 0) (list 2 (+ d-boosts/drops-lvl 2 1.0)))
+                              ((< d-boosts/drops-lvl 0) (list 2 (* -1 (+ d-boosts/drops-lvl 2)) 1.0))
                               (t (list 2 2 1.0))))
          (step1
           (pokemon-flooring
@@ -40,13 +41,6 @@
 ;; AM-GM 不等式的介绍和证明: https://artofproblemsolving.com/wiki/index.php/AM-GM_Inequality
 
 ;; https://www.gcores.com/articles/104949
-
-
-
-(defun pokemon-mul-mods (val &rest mods)
-  (let ((final-mod
-         (pokemon--chain-mods (cons pokemon-mod-denominator mods))))
-    (pokemon-round (* val final-mod) pokemon-mod-denominator)))
 
 (defun pokemon--chain-mods (mods)
    (reduce
