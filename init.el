@@ -9,6 +9,8 @@
 (require 'package)
 (require 'cl-lib)
 
+;; https://phst.eu/emacs-modules  --  Emacs modules
+
 ;;-----------------------------------------------------------------------------
 ;; packages to install manually
 (unless (file-directory-p (expand-file-name "site-lisp" user-emacs-directory))
@@ -338,17 +340,14 @@ FILE should be a path to file."
          (null path-to-node.js-on-Windows))
     ;; dsiable js2-mode when on Windows because I can not find way to use nodejs
     '((c-mode
-       c++-mode
-       php-mode) . company-mode))
+       c++-mode) . company-mode))
    ((null nil)
     '((c-mode
        c++-mode
-       php-mode
        js2-mode) . company-mode))))
 
 (use-package flycheck
-  :ensure t
-  :hook (elpy-mode . flycheck-mode))
+  :ensure t)
 
 (use-package web-mode
   :ensure t
@@ -372,18 +371,16 @@ FILE should be a path to file."
   (nyan-start-animation)
   (nyan-toggle-wavy-trail))
 
-(use-package zenburn-theme
-  :ensure t
-  :config
-  (when (display-graphic-p)
-    (load-theme 'zenburn t)))
+;; (use-package ubuntu-theme
+;;   :ensure t
+;;   :config
+;;   (when (display-graphic-p)
+;;     (load-theme 'ubuntu t)))
 
 (use-package fic-mode
   :ensure t
-  :hook (elpy-mode
-         lisp-interaction-mode
+  :hook (lisp-interaction-mode
          racket-mode
-         php-mode
          js2-mode
          js2-jsx-mode)
   :config
@@ -499,23 +496,6 @@ So that entire list of result will be showed."
     (let ((helm-candidate-number-limit nil))
       (funcall (ad-get-orig-definition 'helm-etags-select) reinit))))
 
-;; (use-package helm-gtags
-;;   :ensure t
-;;   :hook
-;;   ((dired-mode
-;;     eshell-mode
-;;     c-mode
-;;     c++-mode) . helm-gtags-mode)
-;;   ;; :ensure-system-package (gtags . global)
-;;   :bind
-;;   (:map helm-gtags-mode-map
-;;         ("C-c g a" . #'helm-gtags-in-this-function)
-;;         ("C-j" . #'helm-gtags-select)
-;;         ("M-." . #'helm-gtags-dwim)
-;;         ("M-," . #'helm-gtags-pop-stack)
-;;         ("C-c <" . #'helm-gtags-previous-history)
-;;         ("C-c >" . #'helm-gtags-next-history)))
-
 (use-package function-args
   :defer t
   :ensure t)
@@ -529,7 +509,6 @@ So that entire list of result will be showed."
 (use-package rainbow-delimiters
   :ensure t
   :hook ((lisp-interaction-mode
-          elpy-mode
           racket-mode) . rainbow-delimiters-mode))
 
 (use-package highlight-indentation
@@ -571,7 +550,9 @@ So that entire list of result will be showed."
   :ensure t)
 
 (use-package maxima
-  :ensure t)
+  :ensure t
+  :config
+  (add-to-list 'auto-mode-alist '("\\.mx\\'" . maxima-mode)))
 
 (use-package valign
   :ensure t
@@ -1090,37 +1071,19 @@ The ROOT points to the directory where posts store on."
                (buffer-string)))))
   )
 
-;; (use-package pipenv
-;;   :ensure t
-;;   :init
-;;   (add-hook 'elpy-mode-hook #'pipenv-mode)
-;;   (setq pipenv-projectile-after-switch-function
-;;         #'pipenv-projectile-after-switch-extended))
-
-(use-package elpy
+(use-package lsp-mode
   :ensure t
-  ;; :after (flycheck
-  ;;         highlight-indentation)
-  :config
-  ;; It will be slow while you typing if the buffer size if lagger than the elpy-rpc-ignored-buffer-size
-  ;; So we need to turn off the highlight-inentation-mode
-  ;; Elpy own it hightlight-indentation
-  (add-hook 'elpy-mode-hook
-            #'(lambda ()
-                (when (> (buffer-size) elpy-rpc-ignored-buffer-size)
-                  (progn
-                    (highlight-indentation-mode 0)
-                    (message "Turn the highlight-indentation-mode off")))))
-  (setq python-shell-interpreter "python3"
-        python-shell-interpreter-args "-i"
-        elpy-rpc-backend "jedi"
-        elpy-rpc-python-command "python3")
-  ;; (setq python-shell-interpreter "pipenv"
-  ;;	python-shell-interpreter-args "run python3"
-  ;;	python-shell-prompt-detect-failure-warning nil)
-  ;; (add-to-list 'python-shell-completion-native-disabled-interpreters
-  ;;           "pipenv")
-  (elpy-enable))
+  :init
+  (setq lsp-keymap-prefix "C-c l")
+  :hook
+  (((c-mode c++-mode) . lsp)
+   (lsp-mode . lsp-enable-which-key-integration))
+  :commands lsp)
+
+(use-package lsp-ui
+  :ensure t
+  :commands
+  lsp-ui-mode)
 
 (use-package json
   :ensure t
@@ -1129,16 +1092,6 @@ The ROOT points to the directory where posts store on."
             #'(lambda ()
                 (make-local-variable 'js-indent-level)
                 (setq js-indent-level 2))))
-
-;; (use-package geiser
-;;   :ensure t
-;;   :config
-;;   (setq geiser-scheme-implementation 'racket)
-;;   (setq geiser-active-implementations '(racket))
-;;   (setq geiser-repl-query-on-kill-p nil)
-;;   (setq geiser-repl-query-on-exit-p nil)
-;;   ;; (set-default 'geiser-racket-binary "C:/Program Files/Racket/Racket.exe")
-;;   (add-hook 'geiser-mode-hook #'prettify-symbols-mode))
 
 (use-package racket-mode
   ;; :disabled
@@ -1173,9 +1126,6 @@ The ROOT points to the directory where posts store on."
 (use-package smarty-mode
   :ensure t)
 
-(use-package company-php
-  :ensure t)
-
 (use-package pyim
   :if (not (memq system-type '(windows-nt ms-dos cygwin)))
   :config
@@ -1206,14 +1156,6 @@ The ROOT points to the directory where posts store on."
   :ensure t)
 
 ;; (use-package undo-tree)
-
-(use-package realgud
-  :ensure t)
-
-(use-package company-c-headers
-  :ensure t
-  :config
-  (add-to-list 'company-c-headers-path-system "/usr/include/c++/8/"))
 
 (use-package indium
   :ensure t
@@ -1373,54 +1315,6 @@ After creating the new empty project, go to the example/example and execute \"np
                   (minibuffer . t)
                   (menu-bar-lines . t))))
 
-;; (use-package cedet
-;;   ;; :disabled
-;;   ;; TODO: write a general setup for c/c++ language
-;;   ;; http://alexott.net/en/writings/emacs-devenv/EmacsCedet.html
-;;   ;; http://tuhdo.github.io/c-ide.html
-;;   ;;
-;;   :config
-;;   (require 'ede)
-
-;;   (ede-cpp-root-project "Test"
-;;                         :name "Test Project"
-;;                         :file "~/Documents/code/c/c-demo-project/Makefile"
-;;                         :include-path '("/include1"
-;;                                         "/include2")
-;;                         :system-include-path '("/usr/include"))
-
-;;   (global-ede-mode) ;; ede-minor-mode
-
-;;   (semantic-mode 1)
-;;   (global-semantic-idle-completions-mode t) ; semantic-idle-completions-mode
-;;   (global-semantic-decoration-mode t) ; semantic-decoration-mode
-;;   (global-semantic-highlight-func-mode t) ; semantic-highlight-func-mode
-;;   (global-semantic-show-unmatched-syntax-mode t)) ; semantic-show-unmatched-syntax-mode
-
-
-;; (use-package ggtags
-;;   :ensure t
-;;   :bind
-;;   (:map ggtags-mode-map
-;;         ("C-c g s" . #'ggtags-find-other-symbol)
-;;         ("C-c g h" . #'ggtags-view-tag-history)
-;;         ("C-c g r" . #'ggtags-find-reference)
-;;         ("C-c g f" . #'ggtags-find-file)
-;;         ("C-c g c" . #'ggtags-create-tags)
-;;         ("C-c g u" . #'ggtags-update-tags))
-;;   :config
-;;   (add-hook 'c-mode-common-hook
-;;             (lambda ()
-;;               (when (derived-mode-p 'c-mode 'c++-mode)
-;;                 (ggtags-mode 1)))))
-
-;; built-in libraries
-
-;; (use-package auto-insert
-;;   :config
-;;   TODO js and html
-;;   )
-
 (use-package desktop
   :disabled
   :config
@@ -1454,8 +1348,7 @@ After creating the new empty project, go to the example/example and execute \"np
 
 (use-package flyspell
   :if (not (memq system-type '(windows-nt ms-dos cygwin)))
-  :hook ((elpy-mode. flyspell-prog-mode)
-         (org-mode . flyspell-mode)))
+  :hook ((org-mode . flyspell-mode)))
 
 (use-package tramp
   :config
@@ -1473,14 +1366,9 @@ After creating the new empty project, go to the example/example and execute \"np
 
 (use-package hideshow
   :hook ((lisp-interaction-mode
-          elpy-mode
-          php-mode
           web-mode) . hs-minor-mode)
   :config
   (define-key hs-minor-mode-map (kbd "C-c -") #'hs-toggle-hiding))
-
-;; (use-package aria2
-;;   :ensure t)
 
 (use-package octave
   :mode ("\\.m$'" . octave-mode)
@@ -1518,32 +1406,17 @@ After creating the new empty project, go to the example/example and execute \"np
     (setq eww-bookmarks-directory eww-bookmarks-path))
   (setq eww-search-prefix "https://cn.bing.com/search?ensearch=1&q="))
 
-;; (use-package etags
-;;   :config
-;;   ;; TODO: use `helm-etags-select' to navigate tags
-;;   (defun generate-or-update-ctags-of-current-buffer ()
-;;     (when (derived-mode-p 'prog-mode)
-;;       (shell-command
-;;        (string-join
-;;         (list "ctags" "-e" "-f" tag-path buffer-file-name) " "))))
-;;   ;; TODO: to check if the major-mode is derived from `prog-mode'
-;;   ;; (derived-mode-p prog-mode)
-;;   ;; TODO: find-file-hook, create ctags file
-;;   ;; TODO: after-save-hook, refresh ctags file
-;;   )
-
 (use-package browse-url
   :config
   (when (executable-find browse-url-chrome-program)
     (setq browse-url-browser-function 'browse-url-chrome)))
 
 (use-package socks
-  :disabled
   :init (setq socks-server-on nil)
   :config
   ;; BUG: `toggle-socks-proxy' does not work quite.
   (setq	socks-noproxy '("localhost")
-        socks-server '("Default Server" "127.0.0.1" 1080 5)
+        socks-server '("Default Server" "127.0.0.1" 10808 5)
         socks-address (format
                        "%s://%s:%s" "socks"
                        (cadr socks-server)
@@ -1562,26 +1435,6 @@ After creating the new empty project, go to the example/example and execute \"np
             socks-server-on t)))
 
   (toggle-socks-proxy))
-
-;; (use-package go-mode
-;;   :ensure t
-;;   :init (add-to-list 'auto-mode-alist '("\\.go\\'" . go-mode))
-;;   :config
-;;   (require 'company)
-;;   (require 'company-go)
-;;   (setq company-tooltip-limit 20)
-;;   (setq company-idle-delay .3)
-;;   (setq company-echo-delay 0)
-;;   (setq company-begin-commands '(self-insert-command))
-;;   (add-hook 'go-mode-hook
-;;             (lambda ()
-;;               (unless (getenv "GOPATH")
-;;                 (setenv "GOPATH" (expand-file-name "~/go/bin")))
-;;               (unless (string-match (getenv "GOPATH") (getenv "PATH"))
-;;                 (setenv "PATH" (concat (getenv "PATH") ":" (getenv "GOPATH"))))
-;;               (set (make-local-variable 'company-backends) '(company-go))
-;;               (setq tab-width 4)
-;;               (company-mode))))
 
 ;; NOTE: To show the path to init file you can view either variable `user-init-file' or `M-:' (expand-file-name "~/.emacs.d/init.el")
 
@@ -1735,6 +1588,8 @@ when used as a command instead of `\\.html`."
 
   (defalias 'browse-web #'eaf-open-browser)
   (eaf-bind-key nil "M-q" eaf-browser-keybinding))
+
+(use-package face-list)
 
 ;;-----------------------------------------------------------------------------
 
