@@ -363,13 +363,13 @@ FILE should be a path to file."
         web-mode-enable-auto-pairing t))
 
 ;; NOTE: Bad performance for rendering on Windows, the worst part is (nyan-start-animation), you can only disable that.
-(use-package nyan-mode
-  :if (not (memq system-type '(windows-nt ms-dos cygwin)))
-  :ensure t
-  :config
-  (nyan-mode)
-  (nyan-start-animation)
-  (nyan-toggle-wavy-trail))
+;; (use-package nyan-mode
+;;   :if (not (memq system-type '(windows-nt ms-dos cygwin)))
+;;   :ensure t
+;;   :config
+;;   (nyan-mode)
+;;   (nyan-start-animation)
+;;   (nyan-toggle-wavy-trail))
 
 ;; (use-package ubuntu-theme
 ;;   :ensure t
@@ -1071,6 +1071,7 @@ The ROOT points to the directory where posts store on."
                (buffer-string)))))
   )
 
+;; https://emacs-lsp.github.io/lsp-mode/page/installation/
 (use-package lsp-mode
   :ensure t
   :init
