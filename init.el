@@ -314,14 +314,14 @@ FILE should be a path to file."
 
 (setq use-package-verbose t)
 
-(unless (memq system-type '(windows-nt ms-dos cygwin))
-  (defadvice async-shell-command (around
-                                  async-shell-command-ask-password
-                                  (command &optional output-buffer error-buffer)
-                                  activate)
-    (let ((default-directory "/sudo::"))
-      (funcall (ad-get-orig-definition 'async-shell-command)
-               command output-buffer error-buffer))))
+;; (unless (memq system-type '(windows-nt ms-dos cygwin))
+;;   (defadvice async-shell-command (around
+;;                                   async-shell-command-ask-password
+;;                                   (command &optional output-buffer error-buffer)
+;;                                   activate)
+;;     (let ((default-directory "/sudo::"))
+;;       (funcall (ad-get-orig-definition 'async-shell-command)
+;;                command output-buffer error-buffer))))
 
 ;; this package would install system packages if they were missing.
 ;; (use-package use-package-ensure-system-package
@@ -480,21 +480,6 @@ BUFFER is the buffer to list the lines where keywords located in."
           (when fic-mode
             (fic--append-line-to-buffer buffer)))))))
 
-(use-package helm
-  :disabled
-  :ensure t
-  :bind (("M-x" . helm-M-x)
-         ("C-x C-f" . helm-find-files)
-         ([f10] . helm-buffers-list))
-  :config
-  (helm-mode 1)
-  (defadvice helm-etags-select (around unlimited-candidate-number
-                                       (reinit)
-                                       activate)
-    "Set `helm-candidate-number-limit' to nil while calling ’helm-etags-select’.
-So that entire list of result will be showed."
-    (let ((helm-candidate-number-limit nil))
-      (funcall (ad-get-orig-definition 'helm-etags-select) reinit))))
 
 (use-package function-args
   :defer t
@@ -1358,10 +1343,10 @@ After creating the new empty project, go to the example/example and execute \"np
                 (cadr (assoc 'tramp-login-args (assoc "ssh" tramp-methods))))))
 
 (use-package lisp-interaction-mode
-  :init
+ :init
   (setcdr (assoc "\\.el\\'" auto-mode-alist) 'lisp-interaction-mode)
-  (defadvice eval-buffer (after eval-buffer-with-message activate)
-    (message "Buffer evaluation finished!!!"))
+  ;; (defadvice eval-buffer (after eval-buffer-with-message activate)
+  ;;   (message "Buffer evaluation finished!!!"))
   :bind (:map lisp-interaction-mode-map
               ("C-c C-a" . eval-buffer)))
 
@@ -1370,17 +1355,6 @@ After creating the new empty project, go to the example/example and execute \"np
           web-mode) . hs-minor-mode)
   :config
   (define-key hs-minor-mode-map (kbd "C-c -") #'hs-toggle-hiding))
-
-(use-package octave
-  :mode ("\\.m$'" . octave-mode)
-  :config
-  (add-hook
-   'octave-mode-hook
-   (lambda ()
-     (abbrev-mode 1)
-     (auto-fill-mode 1)
-     (when (eq window-system 'x)
-         (font-lock-mode 1)))))
 
 (use-package ispell
   :config
@@ -1412,30 +1386,30 @@ After creating the new empty project, go to the example/example and execute \"np
   (when (executable-find browse-url-chrome-program)
     (setq browse-url-browser-function 'browse-url-chrome)))
 
-(use-package socks
-  :init (setq socks-server-on nil)
-  :config
-  ;; BUG: `toggle-socks-proxy' does not work quite.
-  (setq	socks-noproxy '("localhost")
-        socks-server '("Default Server" "127.0.0.1" 10808 5)
-        socks-address (format
-                       "%s://%s:%s" "socks"
-                       (cadr socks-server)
-                       (caddr socks-server))
-        url-proxy-services `(("http" . ,socks-address)
-                             ("https" . ,socks-address)
-                             ("no_proxy" . "127.0.0.1")
-                             ("no_proxy" . "^.*\\(?:baidu\\|zhihu\\)\\.com")))
+;; (use-package socks
+;;   :init (setq socks-server-on nil)
+;;   :config
+;;   ;; BUG: `toggle-socks-proxy' does not work quite.
+;;   (setq	socks-noproxy '("localhost")
+;;         socks-server '("Default Server" "127.0.0.1" 10808 5)
+;;         socks-address (format
+;;                        "%s://%s:%s" "socks"
+;;                        (cadr socks-server)
+;;                        (caddr socks-server))
+;;         url-proxy-services `(("http" . ,socks-address)
+;;                              ("https" . ,socks-address)
+;;                              ("no_proxy" . "127.0.0.1")
+;;                              ("no_proxy" . "^.*\\(?:baidu\\|zhihu\\)\\.com")))
 
-  (defun toggle-socks-proxy ()
-    (interactive)
-    (if socks-server-on
-        (setq url-gateway-method 'native
-              socks-server-on nil)
-      (setq url-gateway-method 'socks
-            socks-server-on t)))
+;;   (defun toggle-socks-proxy ()
+;;     (interactive)
+;;     (if socks-server-on
+;;         (setq url-gateway-method 'native
+;;               socks-server-on nil)
+;;       (setq url-gateway-method 'socks
+;;             socks-server-on t)))
 
-  (toggle-socks-proxy))
+;;   (toggle-socks-proxy))
 
 ;; NOTE: To show the path to init file you can view either variable `user-init-file' or `M-:' (expand-file-name "~/.emacs.d/init.el")
 
@@ -1517,10 +1491,6 @@ After creating the new empty project, go to the example/example and execute \"np
   (setq dired-sidebar-theme 'vscode)
   (setq dired-sidebar-use-term-integration t)
   (setq dired-sidebar-use-custom-font t))
-
-;; (use-package ace-jump-mode
-;;   :ensure t
-;;   :bind (("C-x j" . ace-jump-mode)))
 
 (use-package avy
   :ensure t
