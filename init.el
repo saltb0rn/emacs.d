@@ -10,6 +10,7 @@
 (require 'cl-lib)
 
 ;; https://phst.eu/emacs-modules  --  Emacs modules
+(setq debug-on-error t)
 
 ;;-----------------------------------------------------------------------------
 ;; packages to install manually
@@ -35,9 +36,41 @@
   (write-region "" "" custom-file))
 (load custom-file)
 
-;; NOTE: about how to use bash on Windows, maybe I can try this thread: https://www.reddit.com/r/emacs/comments/4z8gpe/using_bash_on_windows_for_mx_shell/
-;; For example, I use MSYS2 so my `path-to-bash-on-Windows' will be something like 'c:/msys64/usr/bin'
-(defcustom path-to-bash-on-Windows nil "Set the path to bash while on Windows")
+;; Utils -----------------------------------------------------------------------
+;; calculate the checksum of a file
+(defun calc-checksum (filename alg)
+  (with-temp-buffer
+    (insert-file-contents-literally filename)
+    (secure-hash alg (current-buffer))))
+
+;; write to file
+(defun write-to-file (content file &optional coding-system)
+  "Write CONTENT to FILE.
+CONTENT should be string type.
+FILE should be path to which CONTENT is written."
+  (with-temp-buffer
+    (insert content)
+    (write-region (buffer-string) nil file)))
+
+;; read from file
+(defun read-from-file (file)
+  "Read Content from FILE.
+FILE should be a path to file."
+  (with-temp-buffer
+    (insert-file-contents-literally (expand-file-name file))
+    (buffer-string)))
+
+;; Utils end -----------------------------------------------------------------------
+
+;; config exec-path
+(when (file-exists-p
+       (concat user-emacs-directory "exec-path.txt"))
+  (let ((lines
+         (string-split
+          (read-from-file (concat user-emacs-directory "exec-path.txt")))))
+    (mapcar (lambda (path)
+              (add-to-list 'exec-path path))
+            lines)))
 
 ;; Path to blog
 (defcustom path-to-blog nil "Set the path to Blog"
@@ -45,41 +78,6 @@
          (if (string-suffix-p "/" value)
              (set-default variable value)
            (set-default variable (concat value "/")))))
-
-;; NOTE: this one will improve performance while on Windows compared to CMD
-(when (memq system-type '(windows-nt ms-dos cygwim))
-  (when path-to-bash-on-Windows
-    (setq shell-file-name (concat
-                           path-to-bash-on-Windows
-                           (if (string-suffix-p "/" path-to-bash-on-Windows)
-                               "bash.exe"
-                             (concat "/" "bash.exe"))))
-    (setenv "PATH" (concat
-                    path-to-bash-on-Windows
-                    ";"
-                    (getenv "PATH")))))
-
-;; Git on Windows, you'll need to specify path for it.
-(defcustom path-to-git-on-Windows nil "Set the path to Git while on Windows")
-
-(when (memq system-type '(windows-nt ms-dos cygwim))
-  (when path-to-git-on-Windows
-    (add-to-list 'exec-path path-to-git-on-Windows)))
-
-(defcustom path-to-node.js-on-Windows nil "Set the path to node.js on Windows")
-
-(when (memq system-type '(window-nt ms-dos cygwim))
-  (when path-to-node.js-on-Windows
-    (add-to-list 'exec-path path-to-node.js-on-Windows)))
-
-(defcustom path-to-tern-binary-on-Windows nil "Set the path to tern binary on Windows")
-
-(defcustom path-to-x86-instruction-set-refs nil "Set the path to x86 instruction manuals")
-
-(when (and
-       (memq system-type '(windows-nt ms-dos cygwim))
-       path-to-tern-binary-on-Windows)
-  (setq tern-command (list path-to-tern-binary-on-Windows "--no-port-file")))
 
 
 (let* ((no-ssl (and (memq system-type '(windows-nt ms-dos cygwin))
@@ -108,29 +106,30 @@
 (setq visible-bell t)
 
 ;; Set transparency
-(setq frame-transparency-alpha '(85 70))
-(setq is-frame-transparency t)
 (set-face-attribute 'default nil :background "black" :foreground "white")
-(add-to-list 'default-frame-alist frame-transparency-alpha)
-(defun toggle-frame-transparency ()
-  (interactive)
-  (if is-frame-transparency
-      (progn
-        (mapcar
-         #'(lambda (frame)
-             (set-frame-parameter frame 'alpha frame-transparency-alpha))
-         (frame-list))
-        (setq is-frame-transparency nil))
-    (progn
-      (mapcar
-       #'(lambda (frame)
-           (set-frame-parameter frame 'alpha '(100 100)))
-       (frame-list))
-      (setq is-frame-transparency t))))
-(toggle-frame-transparency)
 
-;; turn on/off the light
-(global-set-key (kbd "C-c f a") #'toggle-frame-transparency)
+;; (setq frame-transparency-alpha (list 85 70))
+;; (setq is-frame-transparency t)
+;; (add-to-list 'default-frame-alist frame-transparency-alpha)
+;; (defun toggle-frame-transparency ()
+;;   (interactive)
+;;   (if is-frame-transparency
+;;       (progn
+;;         (mapcar
+;;          #'(lambda (frame)
+;;              (set-frame-parameter frame 'alpha frame-transparency-alpha))
+;;          (frame-list))
+;;         (setq is-frame-transparency nil))
+;;     (progn
+;;       (mapcar
+;;        #'(lambda (frame)
+;;            (set-frame-parameter frame 'alpha '(100 100)))
+;;        (frame-list))
+;;       (setq is-frame-transparency t))))
+;; (toggle-frame-transparency)
+
+;; ;; turn on/off the light
+;; (global-set-key (kbd "C-c f a") #'toggle-frame-transparency)
 
 ;; 参考 `text-scale-adjust' 编写一个可以动态改变 `frame-transparency-alpha' 的方法
 ;; 该方法也要更新 `default-frame-alist' 的值
@@ -267,28 +266,6 @@
 ;; set key bidings
 (define-key (current-global-map) (kbd "C-c C-c") #'whitespace-cleanup)
 
-;; calculate the checksum of a file
-(defun calc-checksum (filename alg)
-  (with-temp-buffer
-    (insert-file-contents-literally filename)
-    (secure-hash alg (current-buffer))))
-
-;; write to file
-(defun write-to-file (content file &optional coding-system)
-  "Write CONTENT to FILE.
-CONTENT should be string type.
-FILE should be path to which CONTENT is written."
-  (with-temp-buffer
-    (insert content)
-    (write-region (buffer-string) nil file)))
-
-;; read from file
-(defun read-from-file (file)
-  "Read Content from FILE.
-FILE should be a path to file."
-  (with-temp-buffer
-    (insert-file-contents-literally (expand-file-name file))
-    (buffer-string)))
 
 (defun get-path-to-asset-file (file)
   (expand-file-name (concat user-emacs-directory "assets/" file)))
@@ -329,22 +306,10 @@ FILE should be a path to file."
 
 ;; third-party packages
 
-(use-package epkg
-  :ensure t)
-
 (use-package company
   :ensure t
   :hook
-  (cond
-   ((and (memq system-type '(windows-nt ms-dos cygwin))
-         (null path-to-node.js-on-Windows))
-    ;; dsiable js2-mode when on Windows because I can not find way to use nodejs
-    '((c-mode
-       c++-mode) . company-mode))
-   ((null nil)
-    '((c-mode
-       c++-mode
-       js2-mode) . company-mode))))
+  (c-mode c++-mode))
 
 (use-package flycheck
   :ensure t)
@@ -380,9 +345,9 @@ FILE should be a path to file."
 (use-package fic-mode
   :ensure t
   :hook (lisp-interaction-mode
-         racket-mode
-         js2-mode
-         js2-jsx-mode)
+         c-mode
+         c++-mode
+         racket-mode)
   :config
   (setq fic-highlighted-words
         (quote ("FIXME" "TODO" "BUG" "NOTE" "FIXED")))
@@ -461,7 +426,7 @@ By default, BUFFER is named \"*Fic-Jump*\"."
                   (insert " ")
                   (insert (format "Buffer: %s  "(buffer-name (marker-buffer marker))))
                   (insert (format "Line: %s " (fic--lineno-in-position marker)))
-                  (insert (format "%s " (fic--content-in-line-in-position marker)))
+                  ;; (insert (format "%s " (fic--content-in-line-in-position marker)))
                   (insert "\n"))))
             (view-buffer (get-buffer newbuf)))
         (message "The fic-mode is disabled in this buffer."))))
@@ -493,8 +458,8 @@ BUFFER is the buffer to list the lines where keywords located in."
 
 (use-package rainbow-delimiters
   :ensure t
-  :hook ((lisp-interaction-mode
-          racket-mode) . rainbow-delimiters-mode))
+  :hook (lisp-interaction-mode
+         racket-mode))
 
 (use-package highlight-indentation
   :ensure t)
@@ -562,21 +527,21 @@ BUFFER is the buffer to list the lines where keywords located in."
 
   (org-link-set-parameters
    "iframe"
-    :follow (lambda (path _)
-              (browse-url path))
-    :export (lambda (path description back-end)
-              (pcase back-end
-                ('html
-                 (format
-                  "<iframe width=\"300\" height=\"300\" src=\"%s\">%s</iframe>"
-                  path (or description "")))
-                ('latex
-                 (format
-                  "\\href{%s}{%s}"
-                  path (or description "")))
-                (t path)
-                ))
-    :store (lambda ()))
+   :follow (lambda (path _)
+             (browse-url path))
+   :export (lambda (path description back-end)
+             (pcase back-end
+               ('html
+                (format
+                 "<iframe width=\"300\" height=\"300\" src=\"%s\">%s</iframe>"
+                 path (or description "")))
+               ('latex
+                (format
+                 "\\href{%s}{%s}"
+                 path (or description "")))
+               (_ path)
+               ))
+   :store (lambda ()))
 
   (org-babel-do-load-languages
    'org-babel-load-languages
@@ -601,9 +566,12 @@ BUFFER is the buffer to list the lines where keywords located in."
         httpd-listings nil
         httpd-root publish-path)
 
+  
   (setf
    (cdr (assoc 'path org-html-mathjax-options))
-   (list "../../../js/mathjax/es5/tex-mml-chtml.js"))
+   (list (expand-file-name
+          "assets/mathjax/es5/tex-mml-chtml.js"
+          user-emacs-directory)))
 
   ;; `publish-all-posts' to publish
   ;; the rest of configuration of `org' is all about the blogging with Emacs.
@@ -654,15 +622,15 @@ BUFFER is the buffer to list the lines where keywords located in."
 
    postambles (ht
                ('default
-                 `(("en"
-                    ,(read-html-tpl "default-postamble.html"))))
+                `(("en"
+                   ,(read-html-tpl "default-postamble.html"))))
                ('disqus
                 `(("en"
                    ,(read-html-tpl "disqus-postamble.html")))))
 
    home/up-formats (ht
                     ('default
-                      (read-html-tpl "default-home-up-format.html"))
+                     (read-html-tpl "default-home-up-format.html"))
                     ('single
                      (read-html-tpl "single-home-up-format.html"))
                     ('index
@@ -672,7 +640,7 @@ BUFFER is the buffer to list the lines where keywords located in."
 
    html-heads (ht
                ('default
-                 (read-html-tpl "default-html-head.html"))
+                (read-html-tpl "default-html-head.html"))
                ('single
                 (read-html-tpl "single-html-head.html"))
                ('index
@@ -811,7 +779,20 @@ any project of blog, vice versa."
           (org-export-with-email nil)
           (org-export-with-creator nil)
           (org-export-with-date nil)
-          (org-export-with-section-numbers nil))
+          (org-export-with-section-numbers nil)
+          (org-html-mathjax-options
+           '((path "../../../js/mathjax/es5/tex-mml-chtml.js")
+             (scale 1.0)
+             (align "center")
+             (font "mathjax-modern")
+             (overflow "overflow")
+             (tags "ams")
+             (indent "0em")
+             (multlinewidth "85%")
+             (tagindent ".8em")
+             (tagside "right")))
+          (recentf-exclude (list ".*\\.org"))
+          )
       (org-publish project))
     (rename-theindex-to-index))
 
@@ -1057,19 +1038,27 @@ The ROOT points to the directory where posts store on."
   )
 
 ;; https://emacs-lsp.github.io/lsp-mode/page/installation/
-(use-package lsp-mode
-  :ensure t
-  :init
-  (setq lsp-keymap-prefix "C-c l")
-  :hook
-  (((c-mode c++-mode) . lsp)
-   (lsp-mode . lsp-enable-which-key-integration))
-  :commands lsp)
+;; (use-package lsp-mode
+;;   :ensure t
+;;   :init
+;;   (setq lsp-keymap-prefix "C-c l")
+;;   :hook
+;;   (((c-mode c++-mode) . lsp)
+;;    (lsp-mode . lsp-enable-which-key-integration))
+;;   :commands lsp)
 
-(use-package lsp-ui
+;; (use-package lsp-ui
+;;   :ensure t
+;;   :commands
+;;   lsp-ui-mode)
+
+;; Eglot is the another lsp client less code than lsp-mode.
+(use-package eglot
   :ensure t
-  :commands
-  lsp-ui-mode)
+  :hook
+  ((c-mode . eglot-ensure)
+   (c++-mode . eglot-ensure)
+   (js-mode . eglot-ensure)))
 
 (use-package json
   :ensure t
@@ -1095,143 +1084,24 @@ The ROOT points to the directory where posts store on."
 (use-package glsl-mode
   :ensure t)
 
-(use-package x86-lookup
-  :ensure t
-  :config
-  (when path-to-x86-instruction-set-refs
-    (setq x86-lookup-pdf path-to-x86-instruction-set-refs))
-  (global-set-key
-   (kbd "C-h x") #'x86-lookup))
-
 (use-package nasm-mode
   :ensure t
-;  :config
-;  (add-hook 'asm-mode-hook 'nasm-mode))
+  ;; :config
+  ;; (add-hook 'asm-mode-hook 'nasm-mode)
   )
 
 (use-package smarty-mode
   :ensure t)
-
-(use-package pyim
-  :if (not (memq system-type '(windows-nt ms-dos cygwin)))
-  :config
-  (use-package pyim-basedict
-    :ensure t
-    :config (pyim-basedict-enable))
-  ;; (setq default-input-method "pyim")
-
-  :bind
-  (("M-j" . pyim-convert-string-at-point) ;与 pyim-probe-dynamic-english 配合
-   ("C-;" . pyim-delete-word-from-personal-buffer)))
-
-(use-package chinese-wbim
-  :ensure t
-  :config
-  ;; Tooltip 暂时还不好用
-  (setq chinese-wbim-use-tooltip nil)
-  (register-input-method
-   "chinese-wbim" "euc-cn" 'chinese-wbim-use-package
-   "五笔" "汉字五笔输入法" "wb.txt")
-  ;; 用 ; 暂时输入英文
-  (require 'chinese-wbim-extra)
-  (global-set-key ";" 'chinese-wbim-insert-ascii)
-  ;设置默认输入法
-  (setq default-input-method 'chinese-wbim))
 
 (use-package restart-emacs
   :ensure t)
 
 ;; (use-package undo-tree)
 
-(use-package indium
-  :ensure t
-  ;; :ensure-system-package
-  ;; ((indium . "npm install -g indium"))
-  :hook (js2-mode . indium-interaction-mode)
-  :config
-  ;; to define a skeleton to auto insert .indium config file
-  )
-
-(use-package js2-mode
-  :ensure t
-  :mode ("\\.js\\'" . js2-mode)
-  ;; :ensure-system-package
-  ;; ((node . nodejs)
-  ;;  npm)
-  :bind (:map js-mode-map
-              ("M-." . nil)
-              :map js2-mode-map
-              ("C-k" . #'js2r-kill))
-  :config
-  (add-hook 'js2-mode-hook
-            #'(lambda ()
-                (add-hook 'xref-backend-functions
-                          #'xref-js2-xref-backend nil t)))
-
-  (defun create-web-project (parent name)
-    "Create a empty project using webpack to develop.
-
-After creating the new empty project, go to the example/example and execute \"npm run init\" to install dev dependencies and start to develop your project."
-    (interactive (list (read-directory-name "Input location of new project: " nil "" t)
-                       (read-string "Input the name of the project: ")))
-    (let ((webpack-project-root (format "%s%s/"
-                                        (if (char-equal (car (last (string-to-list parent))) ?\c)
-                                            parent
-                                          (concat parent "/"))
-                                        name)))
-      (condition-case exn
-          (progn
-            (copy-directory
-             (get-path-to-asset-file "web-conf")
-             webpack-project-root nil nil t)
-            (write-to-file
-             (format (read-from-file (get-path-to-asset-file "web-conf/.gitignore-tpl")) name name)
-             (concat webpack-project-root "/" ".gitignore"))
-
-            (write-to-file
-             (format (read-from-file (get-path-to-asset-file "web-conf/webpack/.package-json-tpl")) name)
-             (concat webpack-project-root "webpack/package.json"))
-            (rename-file (concat webpack-project-root "webpack")
-                         (concat webpack-project-root name))
-            ;; NOTE: avoid the name already exists in root
-            ;; (shell-command (format "cd %s && npm init -y" webpack-project-root) nil nil)
-            )
-        (error
-         (when (file-directory-p webpack-project-root)
-           (delete-directory webpack-project-root t))
-         (prin1 exn))))))
-
-(use-package company-tern
-  :hook
-  ((js2-mode . tern-mode)
-   (js2-mode . company-mode))
-  :config
-  (add-to-list 'company-backends 'company-tern)
-  (define-key tern-mode-keymap (kbd "M-.") nil)
-  (define-key tern-mode-keymap (kbd "M-,") nil))
-
-(use-package js2-refactor
-  :ensure t
-  :hook (js2-mode . js2-refactor-mode)
-  :config
-  (js2r-add-keybindings-with-prefix "C-c C-r"))
-
-(use-package xref-js2
-  :ensure t)
-
 (use-package web-beautify
   :ensure t)
 
 (use-package org-pomodoro
-  :ensure t)
-
-(use-package magit
-  :if (not (and
-            (memq system-type '(windows-nt ms-dos cygwin))
-            (null path-to-git-on-Windows)))
-  :bind
-  (("C-x g" . #'magit-status))
-  ;; :ensure-system-package git
   :ensure t)
 
 (use-package multiple-cursors
@@ -1289,9 +1159,9 @@ After creating the new empty project, go to the example/example and execute \"np
   :ensure t
   :commands edit-server-start
   :init (if after-init-time
-              (edit-server-start)
-            (add-hook 'after-init-hook
-                      #'(lambda() (edit-server-start))))
+            (edit-server-start)
+          (add-hook 'after-init-hook
+                    #'(lambda() (edit-server-start))))
   :config (setq edit-server-new-frame-alist
                 '((name . "Edit with Emacs FRAME")
                   (top . 200)
@@ -1343,7 +1213,7 @@ After creating the new empty project, go to the example/example and execute \"np
                 (cadr (assoc 'tramp-login-args (assoc "ssh" tramp-methods))))))
 
 (use-package lisp-interaction-mode
- :init
+  :init
   (setcdr (assoc "\\.el\\'" auto-mode-alist) 'lisp-interaction-mode)
   ;; (defadvice eval-buffer (after eval-buffer-with-message activate)
   ;;   (message "Buffer evaluation finished!!!"))
@@ -1413,42 +1283,42 @@ After creating the new empty project, go to the example/example and execute \"np
 
 ;; NOTE: To show the path to init file you can view either variable `user-init-file' or `M-:' (expand-file-name "~/.emacs.d/init.el")
 
-(use-package url
-  :ensure t
-  :config
-  (defun guid-generater (&optional guidNum chr2 chr13)
-    (interactive (let* ((arg1
-                         (read-string "Amount of guids (default 1): "))
-                        (arg2
-                         (read-string (format "The concat char for guid%s (default as none): "
-                                              (if (or
-                                                   (string-equal arg1 "1")
-                                                   (string-equal arg1 ""))
-                                                  ""
-                                                "s"))))
-                        (arg3
-                         (read-string "Do you need {} around the guid (input anything if you want so): ")))
-                   `(,arg1 ,arg2 ,arg3)))
-    (let ((url-request-data
-           (mapconcat (lambda (arg)
-                        (when (cadr arg)
-                          (concat (url-hexify-string (car arg))
-                                  "="
-                                  (url-hexify-string (cadr arg)))))
-                      `(("guidNum" ,(if (string-equal guidNum "") "1" guidNum))
-                        ("chr2" ,(or chr2 ""))
-                        ("chr13" ,(or chr13 "")))
-                      "&"))
-          (url-request-method "POST")
-          (url-request-extra-headers
-           '(("Content-Type" . "application/x-www-form-urlencoded; charset=UTF-8")
-             ("Accept" . "text/html, application/json, text/javascript, */*; q=0.01")
-             ("User-Agent" .
-              "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:67.0) Gecko/20100101 Firefox/67.0"))))
-      (url-retrieve "https://www.qvdv.com/tools/qvdv-guid-_index.html"
-                    (lambda (status)
-                      (let ((buf (current-buffer)))
-                        (switch-to-buffer buf)))))))
+;; (use-package url
+;;   :ensure t
+;;   :config
+;;   (defun guid-generater (&optional guidNum chr2 chr13)
+;;     (interactive (let* ((arg1
+;;                          (read-string "Amount of guids (default 1): "))
+;;                         (arg2
+;;                          (read-string (format "The concat char for guid%s (default as none): "
+;;                                               (if (or
+;;                                                    (string-equal arg1 "1")
+;;                                                    (string-equal arg1 ""))
+;;                                                   ""
+;;                                                 "s"))))
+;;                         (arg3
+;;                          (read-string "Do you need {} around the guid (input anything if you want so): ")))
+;;                    `(,arg1 ,arg2 ,arg3)))
+;;     (let ((url-request-data
+;;            (mapconcat (lambda (arg)
+;;                         (when (cadr arg)
+;;                           (concat (url-hexify-string (car arg))
+;;                                   "="
+;;                                   (url-hexify-string (cadr arg)))))
+;;                       `(("guidNum" ,(if (string-equal guidNum "") "1" guidNum))
+;;                         ("chr2" ,(or chr2 ""))
+;;                         ("chr13" ,(or chr13 "")))
+;;                       "&"))
+;;           (url-request-method "POST")
+;;           (url-request-extra-headers
+;;            '(("Content-Type" . "application/x-www-form-urlencoded; charset=UTF-8")
+;;              ("Accept" . "text/html, application/json, text/javascript, */*; q=0.01")
+;;              ("User-Agent" .
+;;               "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:67.0) Gecko/20100101 Firefox/67.0"))))
+;;       (url-retrieve "https://www.qvdv.com/tools/qvdv-guid-_index.html"
+;;                     (lambda (status)
+;;                       (let ((buf (current-buffer)))
+;;                         (switch-to-buffer buf)))))))
 
 (use-package dictionary
   :ensure t
@@ -1474,6 +1344,10 @@ After creating the new empty project, go to the example/example and execute \"np
 (use-package vscode-icon
   :ensure t
   :commands (vscode-icon-for-file))
+
+(use-package paredit
+  :ensure t
+  :hook (lisp-interaction-mode . paredit-mode))
 
 (use-package dired-sidebar
   :bind (("C-x C-n" . dired-sidebar-toggle-sidebar))
@@ -1531,15 +1405,9 @@ when used as a command instead of `\\.html`."
   (add-to-list 'company-backends 'company-godot-gdscript)
   (add-hook 'godot-gdscript-mode-hook 'company-mode))
 
-(use-package prettier-js
-  :ensure t)
-
 (use-package vue-mode
   :mode "\\.vue\\'"
-  :hook (vue-mode . prettier-js-mode)
-  :ensure t
-  :config
-  (setq prettier-js-args '("--parser vue")))
+  :ensure t)
 
 (use-package ox-reveal
   :config

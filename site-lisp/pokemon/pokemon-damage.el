@@ -137,6 +137,7 @@
     (`(,key ,value . ,rest)
      (pokemon--damage-calc-mod-check rest))))
 
+;;;###autoload
 (defmacro pokemon-damage-calc (atker-lvl atk/spa def/spd mov-power &rest mods)
     `(if (pokemon--damage-calc-mod-check (list ,@mods))
          (pokemon--damage-calc

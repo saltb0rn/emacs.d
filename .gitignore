@@ -10,6 +10,7 @@
 !/init.el
 !/assets
 !/site-lisp
+!/dyn-modules
 !/non-lisp
 !/scripts
 !/eww-bookmarks
