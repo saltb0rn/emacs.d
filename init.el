@@ -316,6 +316,7 @@ FILE should be a path to file."
 
 (use-package web-mode
   :ensure t
+  ;; :mode ("\\.\\(html?\\|vue\\)\\'" . web-mode)
   :mode ("\\.html?\\'" . web-mode)
   :config
   ;; (if (null (assoc "\\.html?\\'" auto-mode-alist))
@@ -324,6 +325,8 @@ FILE should be a path to file."
   ;;   (interactive)
   ;;   (when (equal major-mode 'web-mode)
   ;;     (user-error "Don't turn on `hs-minor-mode' while using `web-mode'")))
+
+  
   (setq web-mode-enable-auto-closing t
         web-mode-enable-auto-pairing t))
 
@@ -566,7 +569,7 @@ BUFFER is the buffer to list the lines where keywords located in."
         httpd-listings nil
         httpd-root publish-path)
 
-  
+
   (setf
    (cdr (assoc 'path org-html-mathjax-options))
    (list (expand-file-name
@@ -1405,16 +1408,13 @@ when used as a command instead of `\\.html`."
   (add-to-list 'company-backends 'company-godot-gdscript)
   (add-hook 'godot-gdscript-mode-hook 'company-mode))
 
-(use-package vue-mode
-  :mode "\\.vue\\'"
-  :ensure t)
-
 (use-package ox-reveal
   :config
   (setq org-reveal-root "https://cdn.jsdelivr.net/npm/reveal.js"))
 
 (use-package eaf
-  :if (display-graphic-p)
+  ;; :if (display-graphic-p)
+  :if nil
   :custom
   (eaf-browser-continue-where-left-off t)
   (eaf-browser-enable-adblocker t)
@@ -1428,7 +1428,11 @@ when used as a command instead of `\\.html`."
   (defalias 'browse-web #'eaf-open-browser)
   (eaf-bind-key nil "M-q" eaf-browser-keybinding))
 
-(use-package face-list)
+(use-package genehack-vue
+  )
+
+;; (use-package face-list
+;;   :if (display-graphic-p))
 
 ;;-----------------------------------------------------------------------------
 
