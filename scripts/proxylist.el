@@ -1,11 +1,18 @@
 #!emacs --script
 ;; -*- lexical-binding: t -*-
 
-;; Description: Convert R0ZXTElTVA== (base64 decode please) into another format that used in Rm94eVByb3h5 (base64 decode please).
+;; Description:
+;;     This script inspired by another project named Zm94eWdmdw== (base64 decode please).
+;;     And some errors in Zm94eWdmdw== (base64 decode please) are fixed.
+;;     Convert R0ZXTElTVA== (base64 decode please) into another format
+;;     that used in Rm94eVByb3h5 (base64 decode please).
 
-;; Usage: emacs -Qq --script proxylist.el
-;; You may need modified the dash library path,
-;; and proxy to access the source.
+;; Usage:
+;;     emacs -Qq --script proxylist.el
+
+;; NOTICE:
+;;     You may need modified the `dash' library path to make it work,
+;;     and also need a proxy to access the source.
 
 (require 'cl-lib)
 (require 'json)
