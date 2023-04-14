@@ -74,6 +74,8 @@ as argument of `json-encode'"
 
           (setq black t)
 
+          ;; Determine if black pattern
+          ;; black patterns are ones that start with "@@"
           (if (string-match "^@@" pattern)
               (setq pattern
                     (substring
@@ -129,10 +131,12 @@ as argument of `json-encode'"
 
       ;; handler list
       (error
-       (message "Unexpection pattern: %s " original-pattern)
-       (print e)
-       '((black . nil)
-         (alist nil))))))
+       (message
+        "%S"
+        `((:unexpected-pattern . ,original-pattern)
+          (:error . e)))
+       '((black)
+         (alist))))))
 
 (defun main ()
   (let (rsp
