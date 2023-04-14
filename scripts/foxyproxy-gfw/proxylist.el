@@ -12,6 +12,8 @@
 ;; or
 ;;     chmod u+x ./proxylist.el
 ;;     ./proxylist.el
+;;
+;; After script executed, that will generate a output.json 
 
 ;; NOTICE:
 ;;     You may need modified the `dash' library path to make it work,
