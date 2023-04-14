@@ -1,4 +1,4 @@
-#!emacs --script
+#!/usr/bin/emacs --script
 ;; -*- lexical-binding: t -*-
 
 ;; Description:
@@ -9,10 +9,13 @@
 
 ;; Usage:
 ;;     emacs -Qq --script proxylist.el
+;; or
+;;     chmod u+x ./proxylist.el
+;;     ./proxylist.el
 
 ;; NOTICE:
 ;;     You may need modified the `dash' library path to make it work,
-;;     and also need a proxy to access the source.
+;;     and also need a proxy (like proxychains) to access the source.
 
 (require 'cl-lib)
 (require 'json)
