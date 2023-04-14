@@ -64,71 +64,75 @@ REPLACEMENT, and return the new content."
 (defun pattern-to-alist (pattern)
   "Convert PATTERN into alist which will be used
 as argument of `json-encode'"
-  (condition-case e
-      (let (white
-            protocol
-            alist
-            (original-pattern pattern))
 
-        (setq white t)
-        (setq protocol 1)
+  (let ((original-pattern pattern))
 
-        (if (string-match "^@@" pattern)
+    (condition-case e
+        (let ((black nil)
+              (protocol 1)
+              alist)
+
+          (setq black t)
+
+          (if (string-match "^@@" pattern)
+              (setq pattern
+                    (substring
+                     pattern
+                     2
+                     (length pattern)))
+            (setq black nil))
+
+          ;; Get protocol
+          ;; Some patterns HTTP pattern will looks like
+          ;; this:
+          ;; ^|?https?://
+          (cond
+           ((string-match "^|?http://" pattern)
+            (setq protocol 2)
             (setq pattern
-                  (substring
-                   "@@ab" 2
-                   (length "@@ab")))
-          (setq white nil))
+                  (regex-replace-in-string
+                   "^|?http://" "|" pattern)))
 
-        ;; Get protocol
-        ;; Some patterns HTTP pattern will looks like
-        ;; this:
-        ;; ^|?https?://
-        (cond
-         ((string-match "^|?http://" pattern)
-          (setq protocol 2)
+           ((string-match "^|?https://" pattern)
+            (setq protocol 4)
+            (setq pattern
+                  (regex-replace-in-string
+                   "^|?https://" "||" pattern))))
+
+          ;; Get match type
+          (cond
+           ((string-match "^||" pattern)
+            (setq pattern
+                  (format
+                   "*.%s"
+                   (substring pattern 2 (length pattern)))))
+
+           ((string-match "^|" pattern)
+            (setq pattern
+                  (substring pattern 1 (length pattern)))))
+
+          ;; Format the pattern
           (setq pattern
-                (regex-replace-in-string
-                 "^|?http://" "|" pattern)))
+                (car (split-string pattern "/")))
 
-         ((string-match "^|?https://" pattern)
-          (setq protocol 4)
-          (setq pattern
-                (regex-replace-in-string
-                 "^|?https://" "||" pattern))))
+          (unless (string-match "\\." pattern)
+            (setq pattern (format "*%s*" pattern)))
 
-        ;; Get match type
-        (cond
-         ((string-match "^||" pattern)
-          (setq pattern
-                (format
-                 "*.%s"
-                 (substring pattern 2 (length pattern)))))
+          `((black . ,black)
+            (alist
+             (original . ,original-pattern) ;; used for debug
+             (title . ,pattern)
+             (pattern . ,pattern)
+             (type . 1)
+             (protocols . ,protocol)
+             (active . t))))
 
-         ((string-match "^|" pattern)
-          (setq pattern
-                (substring pattern 1 (length pattern)))))
-
-        ;; Format the pattern
-        (setq pattern
-              (car (split-string pattern "/")))
-
-        (unless (string-match "\\." pattern)
-          (setq pattern (format "*%s*" pattern)))
-
-        `((white ,white)
-          (alist
-           (original . ,original-pattern) ;; used for debug
-           (title . ,pattern)
-           (pattern . ,pattern)
-           (type . 1)
-           (protocols . ,protocol)
-           (active . t))))
-
-    ;; handler list
-    (error
-     `((white nil)
-       (alist nil)))))
+      ;; handler list
+      (error
+       (message "Unexpection pattern: %s " original-pattern)
+       (print e)
+       '((black . nil)
+         (alist nil))))))
 
 (defun main ()
   (let (rsp
@@ -172,9 +176,10 @@ as argument of `json-encode'"
                    (throw 'return nil))
 
                  (let ((key
-                        (if (alist-get 'white pattern-alist)
-                            'whitePatterns
-                          'blackPatterns)))
+                        (if (alist-get
+                             'black pattern-alist)
+                            'blackPatterns
+                          'whitePatterns)))
                    (setf
                     (alist-get key config)
                     (append
