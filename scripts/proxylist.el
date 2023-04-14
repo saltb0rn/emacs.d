@@ -2,7 +2,7 @@
 ;; -*- lexical-binding: t -*-
 
 ;; Description:
-;;     This script inspired by another project named Zm94eWdmdw== (base64 decode please).
+;;     This script is inspired by another project named Zm94eWdmdw== (base64 decode please).
 ;;     And some errors in Zm94eWdmdw== (base64 decode please) are fixed.
 ;;     Convert R0ZXTElTVA== (base64 decode please) into another format
 ;;     that used in Rm94eVByb3h5 (base64 decode please).
