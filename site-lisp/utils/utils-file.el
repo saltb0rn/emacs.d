@@ -1,3 +1,5 @@
+;; -*- lexical-binding: t -*-
+
 (defun utils-write-to-file (content file &optional coding-system)
   "Write CONTENT to FILE.
 CONTENT should be string type.

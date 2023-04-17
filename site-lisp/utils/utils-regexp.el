@@ -1,3 +1,5 @@
+;; -*- lexical-binding: t -*-
+
 (defun utils-regex-replace-in-string (regexp replacement string)
   "Replace content which matches REGEXP with
 REPLACEMENT, and return the new content.
