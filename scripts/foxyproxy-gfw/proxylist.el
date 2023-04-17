@@ -13,7 +13,7 @@
 ;;     chmod u+x ./proxylist.el
 ;;     ./proxylist.el
 ;;
-;; After script executed, that will generate a output.json 
+;; After script executed, that will generate a output.json
 
 ;; NOTICE:
 ;;     You may need modified the `dash' library path to make it work,
@@ -51,6 +51,13 @@ FILE should be path to which CONTENT is written."
   (with-temp-buffer
     (insert content)
     (write-region (buffer-string) nil file)))
+
+(defun read-from-file (file)
+  "Read Content from FILE.
+FILE should be a path to file."
+  (with-temp-buffer
+    (insert-file-contents-literally (expand-file-name file))
+    (buffer-string)))
 
 (defun regex-replace-in-string (regexp replacement string)
   "Replace content which matches REGEXP with
@@ -144,6 +151,7 @@ as argument of `json-encode'"
   (let (rsp
         content
         patterns
+        user-patterns
         (config
          (json-read-file "./proxylist-base.json")))
 
@@ -164,6 +172,16 @@ as argument of `json-encode'"
                 (-filter
                  (lambda (str) (> (length str) 0))
                  (split-string content "\n")))
+
+          (when (file-exists-p "./user-patterns")
+            (setq patterns
+                  (append
+                   patterns
+                   (-filter
+                    (lambda (str) (> (length str) 0))
+                    (split-string
+                     (read-from-file "./user-patterns")
+                     "\n")))))
 
           (mapcar
            ;; func
