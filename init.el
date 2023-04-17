@@ -1205,9 +1205,9 @@ The ROOT points to the directory where posts store on."
   (setq recentf-max-saved-items 25)
   (global-set-key "\C-x\ \C-r" 'recentf-open-files))
 
-(use-package flyspell
-  :if (not (memq system-type '(windows-nt ms-dos cygwin)))
-  :hook ((org-mode . flyspell-mode)))
+;; (use-package flyspell
+;;   :if (not (memq system-type '(windows-nt ms-dos cygwin)))
+;;   :hook ((org-mode . flyspell-mode)))
 
 (use-package tramp
   :config
