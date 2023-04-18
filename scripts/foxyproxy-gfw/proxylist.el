@@ -19,10 +19,15 @@
 ;;     You may need modified the `dash' library path to make it work,
 ;;     and also need a proxy (like proxychains) to access the source.
 
+;; https://github.com/gfwlist/gfwlist/wiki/Syntax
+;; https://help.getfoxyproxy.org/index.php/knowledge-base/url-patterns/
+
+(package-initialize)
+
 (require 'cl-lib)
 (require 'json)
 (require 'url)
-(require 'dash "~/.emacs.d/elpa/dash-20230304.2223/dash.el")
+(require 'dash)
 
 (defconst URL
   "https://raw.githubusercontent.com/gfwlist/gfwlist/master/gfwlist.txt")
