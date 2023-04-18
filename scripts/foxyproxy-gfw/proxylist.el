@@ -16,8 +16,7 @@
 ;; After script executed, that will generate a output.json
 
 ;; NOTICE:
-;;     You may need modified the `dash' library path to make it work,
-;;     and also need a proxy (like proxychains) to access the source.
+;;     You may need a proxy (like proxychains) to access the source.
 
 ;; https://github.com/gfwlist/gfwlist/wiki/Syntax
 ;; https://help.getfoxyproxy.org/index.php/knowledge-base/url-patterns/
