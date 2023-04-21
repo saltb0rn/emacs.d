@@ -8,7 +8,7 @@
 ;;     that used in Rm94eVByb3h5 (base64 decode please).
 
 ;; Usage:
-;;     emacs -Qq --script proxylist.el
+;;     emacs -Qq --script ./proxylist.el
 ;; or
 ;;     chmod u+x ./proxylist.el
 ;;     ./proxylist.el
