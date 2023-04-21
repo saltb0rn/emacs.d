@@ -6,6 +6,9 @@
 ;; installed packages.  Don't delete this line.  If you don't want it,
 ;; just comment it out by adding a semicolon to the start of the line.
 ;; You may delete these explanatory comments.
+
+(package-initialize)
+
 (require 'package)
 (require 'cl-lib)
 
@@ -92,8 +95,6 @@ FILE should be a path to file."
                  ("[cC][mM][dD][pP][rR][oO][xX][yY]" gbk-dos . gbk-dos))))
 
 ;; (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
-
-(package-initialize)
 
 ;; update the package metadata if the local cache is missing
 (cond ((null package-archive-contents) (package-refresh-contents))
@@ -326,7 +327,7 @@ FILE should be a path to file."
   ;;   (when (equal major-mode 'web-mode)
   ;;     (user-error "Don't turn on `hs-minor-mode' while using `web-mode'")))
 
-  
+
   (setq web-mode-enable-auto-closing t
         web-mode-enable-auto-pairing t))
 
@@ -1040,20 +1041,9 @@ The ROOT points to the directory where posts store on."
                (buffer-string)))))
   )
 
-;; https://emacs-lsp.github.io/lsp-mode/page/installation/
-;; (use-package lsp-mode
-;;   :ensure t
-;;   :init
-;;   (setq lsp-keymap-prefix "C-c l")
-;;   :hook
-;;   (((c-mode c++-mode) . lsp)
-;;    (lsp-mode . lsp-enable-which-key-integration))
-;;   :commands lsp)
-
-;; (use-package lsp-ui
-;;   :ensure t
-;;   :commands
-;;   lsp-ui-mode)
+;; Dart mode
+(use-package dart-mode
+  :ensure t)
 
 ;; Eglot is the another lsp client less code than lsp-mode.
 (use-package eglot
@@ -1061,7 +1051,8 @@ The ROOT points to the directory where posts store on."
   :hook
   ((c-mode . eglot-ensure)
    (c++-mode . eglot-ensure)
-   (js-mode . eglot-ensure)))
+   (js-mode . eglot-ensure)
+   (dart-mode . eglot-ensure)))
 
 (use-package json
   :ensure t
