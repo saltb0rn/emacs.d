@@ -188,7 +188,11 @@ FILE should be a path to file."
                     :foreground "#000"
                     :underline "#000"
                     :italic t)
-(setq-default cursor-type '(hbar . 3))
+
+;; (setq-default cursor-type '(hbar . 3))
+;; box makes more clear
+(setq-default cursor-type 'box)
+
 (set-face-attribute 'cursor nil
                     :background "Gold")
 (set-face-attribute 'isearch nil
@@ -460,13 +464,18 @@ BUFFER is the buffer to list the lines where keywords located in."
   (setq sr-speedbar-skip-other-window-p t  ; use windmove to move
         sr-speedbar-right-side nil))
 
-(use-package rainbow-delimiters
-  :ensure t
-  :hook (lisp-interaction-mode
-         racket-mode))
-
 (use-package highlight-indentation
   :ensure t)
+
+(use-package rainbow-delimiters
+  :ensure t
+  :hook ((lisp-interaction-mode
+          racket-mode) . rainbow-delimiters-mode))
+
+(use-package smart-mode-line
+  :ensure t
+  :config
+  (smart-mode-line-enable))
 
 (use-package plantuml-mode
   :ensure t
@@ -506,7 +515,8 @@ BUFFER is the buffer to list the lines where keywords located in."
 (use-package maxima
   :ensure t
   :config
-  (add-to-list 'auto-mode-alist '("\\.mx\\'" . maxima-mode)))
+  (add-to-list 'auto-mode-alist '("\\.mac\\'" . maxima-mode))
+  (add-to-list 'interpreter-mode-alist '("maxima" . maxima-mode)))
 
 (use-package valign
   :ensure t
@@ -521,6 +531,9 @@ BUFFER is the buffer to list the lines where keywords located in."
               :map global-map
               ("\C-c c" . org-capture))
   :config
+  (require 'ox-latex)
+  (setq org-latex-compiler "xelatex")
+
   (require 'ox-publish)
   (define-skeleton org-insert-src-block
     "Insert source block in org-mode"
@@ -534,17 +547,32 @@ BUFFER is the buffer to list the lines where keywords located in."
    :follow (lambda (path _)
              (browse-url path))
    :export (lambda (path description back-end)
+             (let ((components (split-string path "|"))
+                   tpl
+                   _path)
+               (if (= (length components) 1)
+                 (progn
+                   (setq tpl "<iframe width=\"300\" height=\"300\" src=\"%s\">%s</iframe>")
+                   (setq _path (string-trim (car components))))
+                 (progn
+                   (setq tpl
+                         (concat
+                          "<iframe style=\""
+                          (string-trim (car components))
+                          "\" " "src=\"%s\">%s</iframe>"))
+                   (setq _path (string-trim (cadr components)))))
+
              (pcase back-end
                ('html
                 (format
-                 "<iframe width=\"300\" height=\"300\" src=\"%s\">%s</iframe>"
-                 path (or description "")))
+                 ;; "<iframe width=\"300\" height=\"300\" src=\"%s\">%s</iframe>"
+                 tpl
+                 _path (or description "")))
                ('latex
                 (format
                  "\\href{%s}{%s}"
-                 path (or description "")))
-               (_ path)
-               ))
+                 _path (or description "")))
+               (_ _path))))
    :store (lambda ()))
 
   (org-babel-do-load-languages
@@ -826,6 +854,7 @@ the `org-capture-templates'. "
                     "#+date: %<%Y-%m-%d>"
                     "#+index: %^{Concept Index Entry}"
                     "#+tags: %^{Tags}"
+                    "#+status: wd"
                     "#+begin_abstract"
                     "%^{Abstract}"
                     "#+end_abstract"
@@ -1040,6 +1069,8 @@ The ROOT points to the directory where posts store on."
                (insert-file-contents filename)
                (buffer-string)))))
   )
+
+(use-package wat-mode)
 
 ;; Dart mode
 (use-package dart-mode
@@ -1341,7 +1372,8 @@ The ROOT points to the directory where posts store on."
 
 (use-package paredit
   :ensure t
-  :hook (lisp-interaction-mode . paredit-mode))
+  :hook ((lisp-interaction-mode . paredit-mode)
+         (wat-mode . paredit-mode)))
 
 (use-package dired-sidebar
   :bind (("C-x C-n" . dired-sidebar-toggle-sidebar))
@@ -1419,8 +1451,7 @@ when used as a command instead of `\\.html`."
   (defalias 'browse-web #'eaf-open-browser)
   (eaf-bind-key nil "M-q" eaf-browser-keybinding))
 
-(use-package genehack-vue
-  )
+(use-package genehack-vue)
 
 ;; (use-package face-list
 ;;   :if (display-graphic-p))
