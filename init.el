@@ -314,7 +314,7 @@ FILE should be a path to file."
 (use-package company
   :ensure t
   :hook
-  (c-mode c++-mode))
+  ((c-mode c++-mode) . company-mode))
 
 (use-package flycheck
   :ensure t)
