@@ -28,3 +28,6 @@
 [submodule "site-lisp/wat-mode"]
 	path = site-lisp/wat-mode
 	url = git@github.com:devonsparks/wat-mode.git
+[submodule "site-lisp/kana"]
+	path = site-lisp/kana
+	url = git@github.com:saltb0rn/kana.git

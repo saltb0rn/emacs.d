@@ -1,7 +1,6 @@
 ;; -*- lexical-binding: t -*-
 ;; I put all configurations into a single file and `use-package' to configure packages.
 
-
 ;; Added by Package.el.  This must come before configurations of
 ;; installed packages.  Don't delete this line.  If you don't want it,
 ;; just comment it out by adding a semicolon to the start of the line.
@@ -33,12 +32,6 @@
    files))
 ;;-----------------------------------------------------------------------------
 
-;; Put the customized variables into another file to "protect" "init.el" file
-(setq custom-file (expand-file-name "emacs-custom.el" user-emacs-directory))
-(unless (file-exists-p custom-file)
-  (write-region "" "" custom-file))
-(load custom-file)
-
 ;; Utils -----------------------------------------------------------------------
 ;; calculate the checksum of a file
 (defun calc-checksum (filename alg)
@@ -65,15 +58,26 @@ FILE should be a path to file."
 
 ;; Utils end -----------------------------------------------------------------------
 
-;; config exec-path
+;; Put the customized variables into another file to "protect" "init.el" file
+(setq custom-file (expand-file-name "emacs-custom.el" user-emacs-directory))
+(unless (file-exists-p custom-file)
+  (write-region "" "" custom-file))
+(load custom-file)
+
+;; https://www.emacswiki.org/emacs/ExecPath
+;; watch out the difference between PATH and `exec-path'
 (when (file-exists-p
        (concat user-emacs-directory "exec-path.txt"))
   (let ((lines
-         (string-split
+         (split-string
           (read-from-file (concat user-emacs-directory "exec-path.txt")))))
     (mapcar (lambda (path)
               (add-to-list 'exec-path path))
-            lines)))
+            lines)
+    (setenv "PATH"
+            (concat (getenv "PATH")
+                    (format ":%s" (string-join lines ":"))))
+    ))
 
 ;; Path to blog
 (defcustom path-to-blog nil "Set the path to Blog"
@@ -81,7 +85,6 @@ FILE should be a path to file."
          (if (string-suffix-p "/" value)
              (set-default variable value)
            (set-default variable (concat value "/")))))
-
 
 (let* ((no-ssl (and (memq system-type '(windows-nt ms-dos cygwin))
                     (not (gnutls-available-p))))
@@ -330,7 +333,6 @@ FILE should be a path to file."
   ;;   (interactive)
   ;;   (when (equal major-mode 'web-mode)
   ;;     (user-error "Don't turn on `hs-minor-mode' while using `web-mode'")))
-
 
   (setq web-mode-enable-auto-closing t
         web-mode-enable-auto-pairing t))
@@ -1076,6 +1078,17 @@ The ROOT points to the directory where posts store on."
 (use-package dart-mode
   :ensure t)
 
+;; CC mode
+(use-package cc-mode
+  :ensure t
+  :config
+  (defun cc-mode-hook ()
+    (c-set-offset 'case-label '+))
+  (add-hook 'c-mode-hook
+            'cc-mode-hook)
+  (add-hook 'c++-mode-hook
+            'cc-mode-hook))
+
 ;; Eglot is the another lsp client less code than lsp-mode.
 (use-package eglot
   :ensure t
@@ -1083,7 +1096,16 @@ The ROOT points to the directory where posts store on."
   ((c-mode . eglot-ensure)
    (c++-mode . eglot-ensure)
    (js-mode . eglot-ensure)
-   (dart-mode . eglot-ensure)))
+   (dart-mode . eglot-ensure))
+
+  :config
+  (add-hook 'eglot-managed-mode-hook
+            (lambda () (setq eldoc-documentation-functions
+                             '(flymake-eldoc-function
+                               eglot-signature-eldoc-function
+                               eglot-hover-eldoc-function))))
+  ;; use C-h . to show function doc buffer
+  )
 
 (use-package json
   :ensure t
@@ -1159,6 +1181,7 @@ The ROOT points to the directory where posts store on."
   (global-set-key "\C-x4w" 'langtool-check))
 
 (use-package engine-mode
+  :disabled
   :ensure t
   :config
   (engine-mode t)
@@ -1452,6 +1475,8 @@ when used as a command instead of `\\.html`."
   (eaf-bind-key nil "M-q" eaf-browser-keybinding))
 
 (use-package genehack-vue)
+
+(use-package kana)
 
 ;; (use-package face-list
 ;;   :if (display-graphic-p))
