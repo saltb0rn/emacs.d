@@ -1089,6 +1089,12 @@ The ROOT points to the directory where posts store on."
   (add-hook 'c++-mode-hook
             'cc-mode-hook))
 
+;; typescript-mode
+(use-package typescript-mode
+  :ensure t
+  :config
+  (setq typescript-indent-level 2))
+
 ;; Eglot is the another lsp client less code than lsp-mode.
 (use-package eglot
   :ensure t
@@ -1096,7 +1102,9 @@ The ROOT points to the directory where posts store on."
   ((c-mode . eglot-ensure)
    (c++-mode . eglot-ensure)
    (js-mode . eglot-ensure)
-   (dart-mode . eglot-ensure))
+   (dart-mode . eglot-ensure)
+   (typescript-mode . eglot-ensure)
+   (gdscript-mode . eglot-ensure))
 
   :config
   (add-hook 'eglot-managed-mode-hook
@@ -1448,11 +1456,12 @@ when used as a command instead of `\\.html`."
 
 ;;-----------------------------------------------------------------------------
 ;; configurations for packages which needs to be installed manually
-(use-package godot-gdscript
-  :config
-  (require 'company-godot-gdscript)
-  (add-to-list 'company-backends 'company-godot-gdscript)
-  (add-hook 'godot-gdscript-mode-hook 'company-mode))
+(use-package gdscript-mode
+  ;; :config
+  ;; (require 'company-godot-gdscript)
+  ;; (add-to-list 'company-backends 'company-godot-gdscript)
+  ;; (add-hook 'godot-gdscript-mode-hook 'company-mode)
+  )
 
 (use-package ox-reveal
   :config

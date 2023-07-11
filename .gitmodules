@@ -1,9 +1,3 @@
-[submodule "site-lisp/godot-gdscript.el"]
-        path = site-lisp/godot-gdscript.el
-        url = git@github.com:francogarcia/godot-gdscript.el.git
-[submodule "site-lisp/company-godot-gdscript.el"]
-        path = site-lisp/company-godot-gdscript.el
-        url = git@github.com:francogarcia/company-godot-gdscript.el.git
 [submodule "site-lisp/mmm-mode"]
         path = site-lisp/mmm-mode
         url = git@github.com:purcell/mmm-mode.git
@@ -31,3 +25,6 @@
 [submodule "site-lisp/kana"]
 	path = site-lisp/kana
 	url = git@github.com:saltb0rn/kana.git
+[submodule "site-lisp/emacs-gdscript-mode"]
+	path = site-lisp/emacs-gdscript-mode
+	url = git@github.com:godotengine/emacs-gdscript-mode.git
