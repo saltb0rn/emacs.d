@@ -1107,6 +1107,11 @@ The ROOT points to the directory where posts store on."
    (gdscript-mode . eglot-ensure))
 
   :config
+  (let ((clangd-conf
+         (assoc '(c-mode c-ts-mode c++-mode c++-ts-mode) eglot-server-programs)))
+    (when clangd-conf
+      (setcdr clangd-conf
+              (list "clangd" "-header-insertion=never"))))
   (add-hook 'eglot-managed-mode-hook
             (lambda () (setq eldoc-documentation-functions
                              '(flymake-eldoc-function
