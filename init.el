@@ -1111,7 +1111,7 @@ The ROOT points to the directory where posts store on."
          (assoc '(c-mode c-ts-mode c++-mode c++-ts-mode) eglot-server-programs)))
     (when clangd-conf
       (setcdr clangd-conf
-              (list "clangd" "-header-insertion=never"))))
+              (list "clangd" "-header-insertion=never" "--enable-config"))))
   (add-hook 'eglot-managed-mode-hook
             (lambda () (setq eldoc-documentation-functions
                              '(flymake-eldoc-function
@@ -1127,6 +1127,9 @@ The ROOT points to the directory where posts store on."
             #'(lambda ()
                 (make-local-variable 'js-indent-level)
                 (setq js-indent-level 2))))
+
+(use-package yaml-mode
+  :ensure t)
 
 (use-package racket-mode
   ;; :disabled
@@ -1162,6 +1165,9 @@ The ROOT points to the directory where posts store on."
   :ensure t)
 
 (use-package org-pomodoro
+  :ensure t)
+
+(use-package subed
   :ensure t)
 
 (use-package multiple-cursors
