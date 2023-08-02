@@ -5,6 +5,12 @@
 (define-derived-mode genehack-vue-mode web-mode "ghVue"
   "A major mode derived from web-mode, for editing .vue files with LSP support.")
 (add-to-list 'auto-mode-alist '("\\.vue\\'" . genehack-vue-mode))
+(add-hook 'genehack-vue-mode-hook #'(lambda ()
+                                      (setq-local web-mode-code-indent-offset 2
+                                                  web-mode-script-padding 0
+                                                  web-mode-markup-indent-offset 2
+                                                  web-mode-css-indent-offset 2
+                                                  web-mode-style-padding 0)))
 (add-hook 'genehack-vue-mode-hook #'eglot-ensure)
 (add-to-list 'eglot-server-programs '(genehack-vue-mode "vls"))
 
