@@ -28,3 +28,6 @@
 [submodule "site-lisp/emacs-gdscript-mode"]
 	path = site-lisp/emacs-gdscript-mode
 	url = git@github.com:godotengine/emacs-gdscript-mode.git
+[submodule "site-lisp/org-cv"]
+	path = site-lisp/org-cv
+	url = https://gitlab.com/Titan-C/org-cv.git
