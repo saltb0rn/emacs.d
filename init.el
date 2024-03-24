@@ -1104,7 +1104,8 @@ The ROOT points to the directory where posts store on."
    (js-mode . eglot-ensure)
    (dart-mode . eglot-ensure)
    (typescript-mode . eglot-ensure)
-   (gdscript-mode . eglot-ensure))
+   (gdscript-mode . eglot-ensure)
+   (go-mode . eglot-ensure))
 
   :config
   (let ((clangd-conf
@@ -1146,6 +1147,14 @@ The ROOT points to the directory where posts store on."
 
 (use-package glsl-mode
   :ensure t)
+
+(use-package go-mode
+  :ensure t
+  :config
+  (add-hook
+   'go-mode-hook
+   #'(lambda () (setq-local tab-width 4)))
+  )
 
 (use-package nasm-mode
   :ensure t
