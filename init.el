@@ -299,6 +299,14 @@ FILE should be a path to file."
 
 (setq use-package-verbose t)
 
+(use-package exec-path-from-shell
+  :ensure t
+  :config
+  (when (memq window-system '(mac ns x))
+    (exec-path-from-shell-initialize))
+  (when (daemonp)
+    (exec-path-from-shell-initialize)))
+
 ;; (unless (memq system-type '(windows-nt ms-dos cygwin))
 ;;   (defadvice async-shell-command (around
 ;;                                   async-shell-command-ask-password
@@ -317,7 +325,7 @@ FILE should be a path to file."
 (use-package company
   :ensure t
   :hook
-  ((c-mode c++-mode) . company-mode))
+  ((c-mode c++-mode csharp-mode) . company-mode))
 
 (use-package flycheck
   :ensure t)
@@ -553,9 +561,9 @@ BUFFER is the buffer to list the lines where keywords located in."
                    tpl
                    _path)
                (if (= (length components) 1)
-                 (progn
-                   (setq tpl "<iframe width=\"300\" height=\"300\" src=\"%s\">%s</iframe>")
-                   (setq _path (string-trim (car components))))
+                   (progn
+                     (setq tpl "<iframe width=\"300\" height=\"300\" src=\"%s\">%s</iframe>")
+                     (setq _path (string-trim (car components))))
                  (progn
                    (setq tpl
                          (concat
@@ -564,17 +572,17 @@ BUFFER is the buffer to list the lines where keywords located in."
                           "\" " "src=\"%s\">%s</iframe>"))
                    (setq _path (string-trim (cadr components)))))
 
-             (pcase back-end
-               ('html
-                (format
-                 ;; "<iframe width=\"300\" height=\"300\" src=\"%s\">%s</iframe>"
-                 tpl
-                 _path (or description "")))
-               ('latex
-                (format
-                 "\\href{%s}{%s}"
-                 _path (or description "")))
-               (_ _path))))
+               (pcase back-end
+                 ('html
+                  (format
+                   ;; "<iframe width=\"300\" height=\"300\" src=\"%s\">%s</iframe>"
+                   tpl
+                   _path (or description "")))
+                 ('latex
+                  (format
+                   "\\href{%s}{%s}"
+                   _path (or description "")))
+                 (_ _path))))
    :store (lambda ()))
 
   (org-babel-do-load-languages
@@ -1089,11 +1097,15 @@ The ROOT points to the directory where posts store on."
   (add-hook 'c++-mode-hook
             'cc-mode-hook))
 
+;; C# mode
+(use-package csharp-mode
+  :mode ("\\.cs\\'" . csharp-mode))
+
 ;; typescript-mode
 (use-package typescript-mode
   :ensure t
   :config
-  (setq typescript-indent-level 2))
+  (setq typescript-indent-level 4))
 
 ;; Eglot is the another lsp client less code than lsp-mode.
 (use-package eglot
@@ -1101,6 +1113,7 @@ The ROOT points to the directory where posts store on."
   :hook
   ((c-mode . eglot-ensure)
    (c++-mode . eglot-ensure)
+   (csharp-mode . eglot-ensure)
    (js-mode . eglot-ensure)
    (dart-mode . eglot-ensure)
    (typescript-mode . eglot-ensure)
@@ -1121,13 +1134,18 @@ The ROOT points to the directory where posts store on."
   ;; use C-h . to show function doc buffer
   )
 
+(use-package eglot-x
+  :requires eglot 
+  :config
+  (eglot-x-setup))
+
 (use-package json
   :ensure t
   :config
   (add-hook 'json-mode-hook
             #'(lambda ()
                 (make-local-variable 'js-indent-level)
-                (setq js-indent-level 2))))
+                (setq js-indent-level 4))))
 
 (use-package yaml-mode
   :ensure t)
@@ -1421,7 +1439,7 @@ The ROOT points to the directory where posts store on."
   :ensure t
   :commands (vscode-icon-for-file))
 
-(use-package paredit
+(use-package paredit ;; http://danmidwood.com/content/2014/11/21/animated-paredit.html
   :ensure t
   :hook ((lisp-interaction-mode . paredit-mode)
          (wat-mode . paredit-mode)))
@@ -1477,7 +1495,8 @@ when used as a command instead of `\\.html`."
 ;;-----------------------------------------------------------------------------
 ;; configurations for packages which needs to be installed manually
 (use-package gdscript-mode
-  ;; :config
+  :config
+  (setq gdscript-use-tab-indents nil)
   ;; (require 'company-godot-gdscript)
   ;; (add-to-list 'company-backends 'company-godot-gdscript)
   ;; (add-hook 'godot-gdscript-mode-hook 'company-mode)
