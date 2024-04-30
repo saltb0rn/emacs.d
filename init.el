@@ -112,28 +112,27 @@ FILE should be a path to file."
 ;; Set transparency
 (set-face-attribute 'default nil :background "black" :foreground "white")
 
-;; (setq frame-transparency-alpha (list 85 70))
-;; (setq is-frame-transparency t)
-;; (add-to-list 'default-frame-alist frame-transparency-alpha)
-;; (defun toggle-frame-transparency ()
-;;   (interactive)
-;;   (if is-frame-transparency
-;;       (progn
-;;         (mapcar
-;;          #'(lambda (frame)
-;;              (set-frame-parameter frame 'alpha frame-transparency-alpha))
-;;          (frame-list))
-;;         (setq is-frame-transparency nil))
-;;     (progn
-;;       (mapcar
-;;        #'(lambda (frame)
-;;            (set-frame-parameter frame 'alpha '(100 100)))
-;;        (frame-list))
-;;       (setq is-frame-transparency t))))
-;; (toggle-frame-transparency)
+(setq frame-transparency-alpha '(85 70))
+(setq is-frame-transparency nil)
+(defun toggle-frame-transparency ()
+  (interactive)
+  (if (not is-frame-transparency)
+      (progn
+        (mapcar
+         #'(lambda (frame)
+             (set-frame-parameter frame 'alpha frame-transparency-alpha))
+         (frame-list))
+        (setq is-frame-transparency nil))
+    (progn
+      (mapcar
+       #'(lambda (frame)
+           (set-frame-parameter frame 'alpha '(100 100)))
+       (frame-list))
+      (setq is-frame-transparency t))))
+(toggle-frame-transparency)
 
-;; ;; turn on/off the light
-;; (global-set-key (kbd "C-c f a") #'toggle-frame-transparency)
+;; turn on/off the light
+(global-set-key (kbd "C-c f a") #'toggle-frame-transparency)
 
 ;; 参考 `text-scale-adjust' 编写一个可以动态改变 `frame-transparency-alpha' 的方法
 ;; 该方法也要更新 `default-frame-alist' 的值
@@ -1135,7 +1134,7 @@ The ROOT points to the directory where posts store on."
   )
 
 (use-package eglot-x
-  :requires eglot 
+  :requires eglot
   :config
   (eglot-x-setup))
 
