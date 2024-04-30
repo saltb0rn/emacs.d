@@ -112,7 +112,7 @@ FILE should be a path to file."
 ;; Set transparency
 (set-face-attribute 'default nil :background "black" :foreground "white")
 
-(setq frame-transparency-alpha '(85 70))
+(setq frame-transparency-alpha '(100 85))
 (setq is-frame-transparency nil)
 (defun toggle-frame-transparency ()
   (interactive)
