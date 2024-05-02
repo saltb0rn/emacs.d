@@ -1106,6 +1106,10 @@ The ROOT points to the directory where posts store on."
   :config
   (setq typescript-indent-level 4))
 
+;; ElDoc
+(use-package eldoc
+  :ensure t)
+
 ;; Eglot is the another lsp client less code than lsp-mode.
 (use-package eglot
   :ensure t
