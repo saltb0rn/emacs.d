@@ -1110,6 +1110,15 @@ The ROOT points to the directory where posts store on."
 (use-package eldoc
   :ensure t)
 
+(use-package languagetool
+  :ensure t
+  :bind (("C-x t c" . languagetool-check))
+  :config
+  (setq languagetool-java-arguments '("-Dfile.encoding=UTF-8"
+                                      "-cp" "/usr/share/languagetool:/usr/share/java/languagetool/*")
+        languagetool-console-command "org.languagetool.commandline.Main"
+        languagetool-server-command "org.languagetool.server.HTTPServer"))
+
 ;; Eglot is the another lsp client less code than lsp-mode.
 (use-package eglot
   :ensure t
@@ -1222,12 +1231,6 @@ The ROOT points to the directory where posts store on."
   :config
   (keyfreq-mode 1)
   (keyfreq-autosave-mode 1))
-
-(use-package langtool
-  :ensure t
-  :config
-  (setq langtool-language-tool-jar "/home/saltb0rn/LanguageTool/languagetool.jar")
-  (global-set-key "\C-x4w" 'langtool-check))
 
 (use-package engine-mode
   :disabled
