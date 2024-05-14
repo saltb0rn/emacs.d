@@ -8,6 +8,7 @@
 
 (package-initialize)
 
+;;; Get args left but "--"
 (setq args-list (cdr command-line-args-left))
 
 (setq input-file (plist-get args-list "-f" #'equal))
