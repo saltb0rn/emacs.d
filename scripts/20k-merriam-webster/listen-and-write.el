@@ -3,6 +3,8 @@
 
 (package-initialize)
 
+(require 'dom)
+
 (setq args-list (cdr command-line-args-left))
 (setq range (plist-get args-list "-r" #'equal))
 (setq cnt (plist-get args-list "-c" #'equal))
@@ -38,7 +40,9 @@
                     (point))))
              (mapcar
               (lambda (line)
-                (car (string-split line ":" t)))
+                (string-split line ":" t)
+                ;; (car (string-split line ":" t))
+                )
               (string-split
                (buffer-substring-no-properties p1 p2)
                "\n" t))))))
@@ -78,6 +82,10 @@
                       error-records)
               "\n==============================\n"))))
 
+;;
+(defun download-syllables-and-pronounces ()
+  )
+
 (defun main ()
   ;; display summary
   (add-hook 'kill-emacs-hook #'quit-handler)
@@ -90,18 +98,20 @@
            (string-match "^[[:digit:]]+$" cnt))
     (show-help-info 22))
 
-  (let* ((start-end-pair (mapcar #'string-to-number
+  (let* ((total-words (with-temp-buffer
+                        (insert-file-contents-literally "progress.yaml")
+                        (count-lines (point-min) (point-max))))
+         (start-end-pair (mapcar #'string-to-number
                                  (string-split
                                   (or range (format
                                              "%d,%d" 1
-                                             (with-temp-buffer
-                                               (insert-file-contents-literally "progress.yaml")
-                                               (count-lines (point-min) (point-max)))))
+                                             total-words))
                                   "," t)))
          (start (car start-end-pair))
          (end (cadr start-end-pair))
          (count (string-to-number cnt))
          (i 0)
+         full-words
          words)
 
     (unless (> end start)
@@ -116,20 +126,25 @@
       (message "COUNT is REQUIRED to be larger than 0")
       (kill-emacs 22))
 
-    (setq words (get-words "progress.yaml" start end))
+    (setq full-words (get-words "progress.yaml" 1 total-words))
 
     (catch 'quit
       (while (< i count)
-        (message (format "\n============================== Word %d ==============================" i))
-        (let ((guess (string-trim
-                      (nth
-                       (if study-mode
-                           i
-                         (random end)) words)))
-              input)
+        (message (format "\n============================== Word %d ==============================" (1+ i)))
+        (let* ((word-and-syllable-pron (nth
+                                        (if study-mode
+                                            (% (+ (- start 1) i) (+ 1 (- end start)))
+                                          (+ (- start 1) (random end)))
+                                        full-words))
+               (guess (string-trim (car word-and-syllable-pron)))
+               (syllable-pron (string-split (cadr word-and-syllable-pron) ";"))
+               input)
 
           (when study-mode
-            (message "%s\n" guess))
+            (message "WORD: %s, SYLLABLES: %s, PRONOUNCE: %s\n"
+                     guess
+                     (string-trim (car syllable-pron))
+                     (string-trim (cadr syllable-pron))))
 
           (play-audio guess)
 
@@ -149,7 +164,15 @@
                ((string-equal "d" (downcase input))
                 (let ((word-to-compare (string-trim (read-string "Input the audio of word to play: "))))
                   (if (file-exists-p (format "./word-audios/%s.mp3" word-to-compare))
-                      (play-audio word-to-compare)
+                      (progn
+                        (play-audio word-to-compare)
+                        (when study-mode
+                          (let* ((word-info (assoc word-to-compare full-words))
+                                 (word-syllable-pron (string-split (cadr word-info) ";" t)))
+                            (message "%sSYLLABLES: %s, PRONOUNCE: %s"
+                                     shell-color-cyan
+                                     (string-trim (car word-syllable-pron))
+                                     (string-trim (cadr word-syllable-pron))))))
                     (message "No audio file of %s" word-to-compare))))
                (t (throw 'break nil)))))
 
