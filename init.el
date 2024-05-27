@@ -364,7 +364,8 @@ FILE should be a path to file."
   :hook (lisp-interaction-mode
          c-mode
          c++-mode
-         racket-mode)
+         ;; racket-mode
+         )
   :config
   (setq fic-highlighted-words
         (quote ("FIXME" "TODO" "BUG" "NOTE" "FIXED")))
@@ -479,7 +480,8 @@ BUFFER is the buffer to list the lines where keywords located in."
 (use-package rainbow-delimiters
   :ensure t
   :hook ((lisp-interaction-mode
-          racket-mode) . rainbow-delimiters-mode))
+          ;; racket-mode
+          ) . rainbow-delimiters-mode))
 
 (use-package smart-mode-line
   :ensure t
@@ -1163,7 +1165,7 @@ The ROOT points to the directory where posts store on."
   :ensure t)
 
 (use-package racket-mode
-  ;; :disabled
+  :disabled
   :ensure t
   :config
   ;; For racket, use this mode if you prefer drracket
