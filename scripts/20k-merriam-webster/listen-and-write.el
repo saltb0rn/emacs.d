@@ -82,10 +82,6 @@
                       error-records)
               "\n==============================\n"))))
 
-;;
-(defun download-syllables-and-pronounces ()
-  )
-
 (defun main ()
   ;; display summary
   (add-hook 'kill-emacs-hook #'quit-handler)
@@ -182,10 +178,7 @@
            (t
             (record-error guess input)
             (message "the answer is %s%s%s"
-                     shell-color-red guess shell-color-no-color)))
-          )
+                     shell-color-red guess shell-color-no-color))))
 
         ;; next word
-        (setq i (+ i 1))))
-    )
-  )
+        (setq i (+ i 1))))))
