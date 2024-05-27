@@ -166,13 +166,12 @@
                   (if (file-exists-p (format "./word-audios/%s.mp3" word-to-compare))
                       (progn
                         (play-audio word-to-compare)
-                        (when study-mode
-                          (let* ((word-info (assoc word-to-compare full-words))
-                                 (word-syllable-pron (string-split (cadr word-info) ";" t)))
-                            (message "%sSYLLABLES: %s, PRONOUNCE: %s"
-                                     shell-color-cyan
-                                     (string-trim (car word-syllable-pron))
-                                     (string-trim (cadr word-syllable-pron))))))
+                        (let* ((word-info (assoc word-to-compare full-words))
+                               (word-syllable-pron (string-split (cadr word-info) ";" t)))
+                          (message "%sSYLLABLES: %s, PRONOUNCE: %s"
+                                   shell-color-cyan
+                                   (string-trim (car word-syllable-pron))
+                                   (string-trim (cadr word-syllable-pron)))))
                     (message "No audio file of %s" word-to-compare))))
                (t (throw 'break nil)))))
 
