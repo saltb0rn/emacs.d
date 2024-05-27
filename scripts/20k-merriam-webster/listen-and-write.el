@@ -86,12 +86,16 @@
   ;; display summary
   (add-hook 'kill-emacs-hook #'quit-handler)
 
-  (unless (and cnt)
-    (show-help-info 22))
+  ;; (unless (and cnt)
+  ;;   (show-help-info 22))
 
   (unless (and
            (if range (string-match "^[[:digit:]]+,[[:digit:]]+$" range) t)
-           (string-match "^[[:digit:]]+$" cnt))
+           ;; (string-match "^[[:digit:]]+$" cnt)
+           )
+    (show-help-info 22))
+
+  (when (and cnt (null (string-match "^[[:digit:]]+$" cnt)))
     (show-help-info 22))
 
   (let* ((total-words (with-temp-buffer
@@ -105,7 +109,7 @@
                                   "," t)))
          (start (car start-end-pair))
          (end (cadr start-end-pair))
-         (count (string-to-number cnt))
+         (count (if cnt (string-to-number cnt) (- end start)))
          (i 0)
          full-words
          words)
@@ -129,7 +133,7 @@
         (message (format "\n============================== Word %d ==============================" (1+ i)))
         (let* ((word-and-syllable-pron (nth
                                         (if study-mode
-                                            (% (+ (- start 1) i) (+ 1 (- end start)))
+                                            (+ (- start 1) (% i (- end start)))
                                           (+ (- start 1) (random end)))
                                         full-words))
                (guess (string-trim (car word-and-syllable-pron)))
