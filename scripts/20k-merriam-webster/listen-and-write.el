@@ -134,7 +134,7 @@
         (let* ((word-and-syllable-pron (nth
                                         (if study-mode
                                             (+ (- start 1) (% i (- end start)))
-                                          (+ (- start 1) (random end)))
+                                          (+ (- start 1) (random (- end start))))
                                         full-words))
                (guess (string-trim (car word-and-syllable-pron)))
                (syllable-pron (string-split (cadr word-and-syllable-pron) ";"))
