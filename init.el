@@ -1428,6 +1428,25 @@ The ROOT points to the directory where posts store on."
   (global-set-key "\C-cs" 'dictionary-search)
   (global-set-key "\C-cm" 'dictionary-match-words))
 
+(use-package wordreference
+  :ensure t
+  :config
+  (setq wordreference-source-lang "en"
+        wordreference-target-lang "zh")
+  ;; (advice-add
+  ;;  'wordreference-print-translation-buffer
+  ;;  :after
+  ;;  #'(lambda (word html-parsed &optional source target buffer)
+  ;;      (with-current-buffer (get-buffer "*wordreference*")
+  ;;        (let ((cont (buffer-string))
+  ;;              (path (format
+  ;;                     (expand-file-name "scripts/20k-merriam-webster/word-translations/%s" user-emacs-directory)
+  ;;                     word)))
+  ;;          (unless (file-exists-p path)
+  ;;            (write-to-file cont path)))
+  ;;        )))
+  )
+
 (use-package so-long
   ;; about the problem to solve:
   ;; https://emacs.stackexchange.com/questions/598/how-do-i-prevent-extremely-long-lines-making-emacs-slow

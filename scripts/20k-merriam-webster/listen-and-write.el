@@ -4,6 +4,8 @@
 (package-initialize)
 
 (require 'dom)
+(require 'nadvice)
+(require 'wordreference)
 
 (setq args-list (cdr command-line-args-left))
 (setq range (plist-get args-list "-r" #'equal))
@@ -82,6 +84,93 @@
                       error-records)
               "\n==============================\n"))))
 
+;; get translations from wordreference.com
+;;; ============================== based on wordreference.el ==============================
+(defun retrieve-translation (word &optional source target collins)
+  "Query wordreference.com for WORD, and parse the HTML response.
+Optionally specify SOURCE and TARGET languages.
+COLLINS means we are fetching collins dictionary data instead.
+
+Return nil if the WORD not found."
+  (let* ((url (wordreference--construct-url source target word collins))
+         (url-user-agent wordreference-user-agent)
+         (rsp (url-retrieve-synchronously url)))
+    (with-temp-buffer
+      (wordreference--parse-sync rsp word source target (current-buffer) collins))))
+
+(defun wordreference--parse-sync (rsp word source target buffer &optional collins)
+  "Parse query response for WORD from SOURCE to TARGET language.
+Callback for `wordreference--retrieve-parse-html'.
+BUFFER is the buffer that was current when we invoked the wordreference command.
+COLLINS means we are fetching collins dictionary data instead."
+  (let ((parsed (with-current-buffer rsp
+                  (goto-char (point-min))
+                  (libxml-parse-html-region
+                   (search-forward "\n\n") (point-max)))))
+    (if collins
+        ;; (progn (setq wr-parsed-coll parsed)
+        (wordreference-print-collins-dict parsed)
+      (wordreference-print-translation-buffer word parsed source target buffer))))
+
+(defun my-wordreference-print-translation-buffer (word html-parsed &optional source target buffer)
+  "Get translation results.
+WORD is the search query, HTML-PARSED is what our query returned.
+SOURCE and TARGET are languages.
+BUFFER is the buffer that was current when we invoked the wordreference command."
+  (catch 'quit
+    (with-current-buffer (get-buffer-create "*wordreference*")
+      (let* ((inhibit-read-only t)
+             (tables (wordreference--get-tables html-parsed))
+             (word-tables (wordreference--get-word-tables tables))
+             (pr-table (car word-tables))
+             (pr-trs (wordreference--get-trs pr-table))
+             (pr-trs-results-list (wordreference-collect-trs-results-list pr-trs))
+             (post-article (dom-by-id html-parsed "postArticle"))
+             (other-dicts (dom-by-id html-parsed "otherDicts"))
+             (forum-heading (dom-by-id post-article "threadsHeader"))
+             (forum-heading-string (dom-texts forum-heading))
+             (forum-links (dom-children (dom-by-id post-article "lista_link")))
+             (forum-links-propertized
+              (wordreference-process-forum-links forum-links))
+             (source-lang (or (plist-get (car pr-trs-results-list) :source)
+                              source
+                              wordreference-source-lang))
+             (target-lang (or (plist-get (car pr-trs-results-list) :target)
+                              target
+                              wordreference-target-lang)))
+        (erase-buffer)
+        ;; print principle, supplementary, particule verbs, and compound tables:
+        (if word-tables
+            (wordreference-print-tables word-tables)
+          ;; no result
+          (throw 'quit nil))
+        (wordreference--print-other-dicts other-dicts)
+        ;; print list of term also found in these entries
+        (wordreference-print-also-found-entries html-parsed)
+        ;; print forums
+        (wordreference-print-heading forum-heading-string)
+        (if (dom-by-class forum-links "noThreads")
+            ;; no propertize if no threads:
+            (insert "\n\n" (dom-texts (car forum-links)))
+          (wordreference-print-forum-links forum-links-propertized))
+        ;; collins dictionary:
+        (wordreference--retrieve-parse-html word source-lang target-lang :collins)
+        (buffer-string)))))
+
+(advice-add 'wordreference-print-translation-buffer :override #'my-wordreference-print-translation-buffer)
+
+;;; ============================================================
+(defun display-trans-info (word)
+  (let ((trans-from-local (format "./word-translations/%s" word)))
+    (if (file-exists-p trans-from-local)
+        (with-temp-buffer
+          (insert-file-contents-literally trans-from-local)
+          (message (buffer-string)))
+      (let ((trans (retrieve-translation word "en" "zh")))
+        (when trans
+          (write-region trans nil trans-from-local)
+          (message trans))))))
+
 (defun main ()
   ;; display summary
   (add-hook 'kill-emacs-hook #'quit-handler)
@@ -138,6 +227,7 @@
                                         full-words))
                (guess (string-trim (car word-and-syllable-pron)))
                (syllable-pron (string-split (cadr word-and-syllable-pron) ";"))
+               ;; (word-translation (format "./word-translations/%s" guess))
                input)
 
           (when study-mode
@@ -152,15 +242,26 @@
             (while (string-match
                     "\\(\\|d|D\\)?"
                     (setq input
-                          (string-trim
-                           (read-string (format
-                                         "%sENTER%s to replay,\n%sQ|q%s to quit,\n%sD|d%s to play another audio file,\nthe word you listened: "
-                                         shell-color-cyan shell-color-no-color
-                                         shell-color-green shell-color-no-color
-                                         shell-color-purple shell-color-no-color)))))
+                          (if study-mode
+                            (string-trim
+                             (read-string (format
+                                           "%sENTER%s to replay,\n%sQ|q%s to quit,\n%sD|d%s to play another audio file,\nT|t to show translations,\nthe word you listened: "
+                                           shell-color-cyan shell-color-no-color
+                                           shell-color-green shell-color-no-color
+                                           shell-color-purple shell-color-no-color)))
+                            (string-trim
+                             (read-string (format
+                                           "%sENTER%s to replay,\n%sQ|q%s to quit,\n%sD|d%s to play another audio file,\nthe word you listened: "
+                                           shell-color-cyan shell-color-no-color
+                                           shell-color-green shell-color-no-color
+                                           shell-color-purple shell-color-no-color))))))
               ;; play-audio
               (cond
                ((zerop (length input)) (play-audio guess))
+               ((string-equal "t" (downcase input))
+                (if study-mode
+                    (display-trans-info guess)
+                  (message "\nCheating is not allowed!!!\n")))
                ((string-equal "d" (downcase input))
                 (let ((word-to-compare (string-trim (read-string "Input the audio of word to play: "))))
                   (if (file-exists-p (format "./word-audios/%s.mp3" word-to-compare))
@@ -171,7 +272,8 @@
                           (message "%sSYLLABLES: %s, PRONOUNCE: %s"
                                    shell-color-cyan
                                    (string-trim (car word-syllable-pron))
-                                   (string-trim (cadr word-syllable-pron)))))
+                                   (string-trim (cadr word-syllable-pron)))
+                          (display-trans-info word-to-compare)))
                     (message "No audio file of %s" word-to-compare))))
                (t (throw 'break nil)))))
 
