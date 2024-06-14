@@ -6,6 +6,7 @@
 (require 'dom)
 (require 'nadvice)
 (require 'wordreference)
+(require 'cl-lib)
 
 (setq args-list (cdr command-line-args-left))
 (setq range (plist-get args-list "-r" #'equal))
@@ -165,11 +166,11 @@ BUFFER is the buffer that was current when we invoked the wordreference command.
     (if (file-exists-p trans-from-local)
         (with-temp-buffer
           (insert-file-contents-literally trans-from-local)
-          (message (buffer-string)))
+          (message "%s%s%s" shell-color-cyan (buffer-string) shell-color-no-color))
       (let ((trans (retrieve-translation word "en" "zh")))
         (when trans
           (write-region trans nil trans-from-local)
-          (message trans))))))
+          (message "%s%s%s" shell-color-cyan trans shell-color-no-color))))))
 
 (defun main ()
   ;; display summary
@@ -220,10 +221,11 @@ BUFFER is the buffer that was current when we invoked the wordreference command.
     (catch 'quit
       (while (< i count)
         (message (format "\n============================== Word %d ==============================" (1+ i)))
-        (let* ((word-and-syllable-pron (nth
-                                        (if study-mode
-                                            (+ (- start 1) (% i (- end start)))
-                                          (+ (- start 1) (random (- end start))))
+        (let* ((order (if study-mode
+                          (+ (- start 1) (% i (- end start)))
+                        (+ (- start 1) (random (- end start)))))
+               (word-and-syllable-pron (nth
+                                        order
                                         full-words))
                (guess (string-trim (car word-and-syllable-pron)))
                (syllable-pron (string-split (cadr word-and-syllable-pron) ";"))
@@ -231,8 +233,9 @@ BUFFER is the buffer that was current when we invoked the wordreference command.
                input)
 
           (when study-mode
-            (message "WORD: %s, SYLLABLES: %s, PRONOUNCE: %s\n"
+            (message "WORD: %s, ORDER: %d, SYLLABLES: %s, PRONOUNCE: %s\n"
                      guess
+                     (1+ order)
                      (string-trim (car syllable-pron))
                      (string-trim (cadr syllable-pron))))
 
@@ -267,10 +270,15 @@ BUFFER is the buffer that was current when we invoked the wordreference command.
                   (if (file-exists-p (format "./word-audios/%s.mp3" word-to-compare))
                       (progn
                         (play-audio word-to-compare)
-                        (let* ((word-info (assoc word-to-compare full-words))
+                        (let* ((order-of-word-to-compare
+                                (cl-position word-to-compare full-words
+                                             :test #'(lambda (a b)
+                                                       (string-equal a (car b)))))
+                               (word-info (assoc word-to-compare full-words))
                                (word-syllable-pron (string-split (cadr word-info) ";" t)))
-                          (message "%sSYLLABLES: %s, PRONOUNCE: %s"
+                          (message "%sOrder: %d, SYLLABLES: %s, PRONOUNCE: %s"
                                    shell-color-cyan
+                                   (1+ order-of-word-to-compare)
                                    (string-trim (car word-syllable-pron))
                                    (string-trim (cadr word-syllable-pron)))
                           (display-trans-info word-to-compare)))
@@ -282,8 +290,8 @@ BUFFER is the buffer that was current when we invoked the wordreference command.
            ((string-equal input guess) nil)
            (t
             (record-error guess input)
-            (message "the answer is %s%s%s"
-                     shell-color-red guess shell-color-no-color))))
+            (message "the answer is %s%s(%d)%s"
+                     shell-color-red guess (1+ order) shell-color-no-color))))
 
         ;; next word
         (setq i (+ i 1))))))
