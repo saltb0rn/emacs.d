@@ -59,11 +59,14 @@
   ;; (print (download-syllables-and-pronounces "specific"))
 
   (with-current-buffer (find-file-noselect "progress.yaml")
-    (goto-char (point-min))
     (let ((state t)
           (i 0)
+          (buf-name (buffer-file-name (current-buffer)))
           cur-line
           append)
+      (unless (file-name-p buf-name)
+        (lock-file buf-name))
+      (goto-char (point-min))
       (while state
         (setq cur-line (buffer-substring-no-properties (line-beginning-position) (line-end-position)))
         (when (string-match "^\\(.*\\) *: *$" cur-line)
@@ -76,6 +79,11 @@
         (print (buffer-substring-no-properties (line-beginning-position) (line-end-position)))
         (setq i (+ 1 i))
         (when (= 0 (% i 20))
-          (save-buffer))
+          (save-buffer) ;; eveytime save the file will unlock the file
+          (unless (file-name-p buf-name)
+            (lock-file buf-name)))
         (setq state (= 0 (forward-line)))))
-    (save-buffer)))
+    (save-buffer)
+    (when (file-locked-p buf-name)
+      (unlock-file))
+    ))

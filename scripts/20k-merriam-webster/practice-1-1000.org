@@ -1,0 +1,24 @@
+============================== STATISTICS: ==============================
+The answer:
+sort
+
+Your wrong answers:
+short
+==============================
+The answer:
+pressure
+
+Your wrong answers:
+presure
+==============================
+The answer:
+accept
+
+Your wrong answers:
+exact
+==============================
+The answer:
+son
+
+Your wrong answers:
+d some

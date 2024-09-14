@@ -8,6 +8,22 @@
 
 (package-initialize)
 
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name
+        "straight/repos/straight.el/bootstrap.el"
+        (or (bound-and-true-p straight-base-dir)
+            user-emacs-directory)))
+      (bootstrap-version 7))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+
 (require 'package)
 (require 'cl-lib)
 
@@ -321,10 +337,34 @@ FILE should be a path to file."
 
 ;; third-party packages
 
+(use-package maple-translate
+  :straight (maple-translate :type git :host github :repo "honmaple/emacs-maple-translate")
+  :ensure t
+  :commands (maple-translate maple-translate+)
+  :bind ("C-x y" . maple-translate+)
+  :config
+  ;; (add-to-list 'maple-translate-alist '(custom . custom-translate-function))
+  ;; (setq maple-translate-engine 'custom)
+  ;; or use multi engines
+  (setq maple-translate-engine '(sdcv youdao dictcn ))
+
+  ;; with google translate
+  (setq maple-translate-google-url "https://translate.googleapis.com/translate_a/single")
+  (setq maple-translate-google-proxies
+        '(("http" . "127.0.0.1:1086")
+          ("https" . "127.0.0.1:1086")))
+
+  ;; with offline sdcv
+  (setq maple-translate-sdcv-dir (expand-file-name "assets/stardicts" user-emacs-directory))
+  (setq maple-translate-sdcv-dicts
+        '(("lazyworm-ec" . "stardict-lazyworm-ec-2.4.2")
+          ("lazyworm-ce" . "stardict-lazyworm-ce-2.4.2"))))
+
+
 (use-package company
   :ensure t
   :hook
-  ((c-mode c++-mode csharp-mode) . company-mode))
+  ((c-mode c++-mode csharp-mode gdshader-mode) . company-mode))
 
 (use-package flycheck
   :ensure t)
@@ -364,7 +404,6 @@ FILE should be a path to file."
   :hook (lisp-interaction-mode
          c-mode
          c++-mode
-         ;; racket-mode
          )
   :config
   (setq fic-highlighted-words
@@ -480,7 +519,6 @@ BUFFER is the buffer to list the lines where keywords located in."
 (use-package rainbow-delimiters
   :ensure t
   :hook ((lisp-interaction-mode
-          ;; racket-mode
           ) . rainbow-delimiters-mode))
 
 (use-package smart-mode-line
@@ -544,6 +582,14 @@ BUFFER is the buffer to list the lines where keywords located in."
   :config
   (require 'ox-latex)
   (setq org-latex-compiler "xelatex")
+
+  (setq org-latex-pdf-process
+      '("xelatex -interaction nonstopmode -output-directory %o %f"
+        "xelatex -interaction nonstopmode -output-directory %o %f"
+        "xelatex -interaction nonstopmode -output-directory %o %f"))
+
+  (add-to-list 'org-latex-packages-alist
+             '("UTF8,fontset=macnew" "ctex" t))
 
   (require 'ox-publish)
   (define-skeleton org-insert-src-block
@@ -1100,7 +1146,11 @@ The ROOT points to the directory where posts store on."
 
 ;; C# mode
 (use-package csharp-mode
-  :mode ("\\.cs\\'" . csharp-mode))
+  :mode ("\\.cs\\'" . csharp-mode)
+  ;; :config
+  ;; (add-to-list 'eglot-server-programs
+  ;;              '(csharp-mode . ("csharp-ls")))
+  )
 
 ;; typescript-mode
 (use-package typescript-mode
@@ -1121,9 +1171,15 @@ The ROOT points to the directory where posts store on."
         languagetool-console-command "org.languagetool.commandline.Main"
         languagetool-server-command "org.languagetool.server.HTTPServer"))
 
+
 ;; Eglot is the another lsp client less code than lsp-mode.
 (use-package eglot
   :ensure t
+  :commands
+  (eglot-find-declaration
+   eglot-find-implementation
+   eglot-find-typeDefinition
+   eglot-rename)
   :hook
   ((c-mode . eglot-ensure)
    (c++-mode . eglot-ensure)
@@ -1133,7 +1189,11 @@ The ROOT points to the directory where posts store on."
    (typescript-mode . eglot-ensure)
    (gdscript-mode . eglot-ensure)
    (go-mode . eglot-ensure))
-
+  :bind (:map eglot-mode-map
+              ("C-x r d" . eglot-find-declaration)
+              ("C-x r i" . eglot-find-implementation)
+              ("C-x r t" . eglot-find-typeDefinition)
+              ("C-x r r" . eglot-rename))
   :config
   (let ((clangd-conf
          (assoc '(c-mode c-ts-mode c++-mode c++-ts-mode) eglot-server-programs)))
@@ -1163,19 +1223,6 @@ The ROOT points to the directory where posts store on."
 
 (use-package yaml-mode
   :ensure t)
-
-(use-package racket-mode
-  :disabled
-  :ensure t
-  :config
-  ;; For racket, use this mode if you prefer drracket
-  (add-hook 'racket-mode-hook #'prettify-symbols-mode)
-  (let* ((regex-pat "\\.\\(rkt\\|scm\\|ss\\)\\'")
-         (term (assoc regex-pat auto-mode-alist)))
-    (cond
-     ((equal nil term)
-      (add-to-list 'auto-mode-alist (cons regex-pat 'racket-mode)))
-     (t (setcdr (assoc regex-pat auto-mode-alist) 'racket-mode)))))
 
 (use-package glsl-mode
   :ensure t)
@@ -1471,6 +1518,10 @@ The ROOT points to the directory where posts store on."
   :hook ((lisp-interaction-mode . paredit-mode)
          (wat-mode . paredit-mode)))
 
+(use-package dired
+  :config
+  (setq dired-listing-switches "-alFh"))
+
 (use-package dired-sidebar
   :bind (("C-x C-n" . dired-sidebar-toggle-sidebar))
   :ensure t
@@ -1528,6 +1579,24 @@ when used as a command instead of `\\.html`."
   ;; (add-to-list 'company-backends 'company-godot-gdscript)
   ;; (add-hook 'godot-gdscript-mode-hook 'company-mode)
   )
+
+(use-package gdshader-mode
+  :ensure t
+  :straight (gdshader-mode :type git :host github :repo "saltb0rn/gdshader-mode")
+
+  ;; Optional customisations for company-mode completion.
+  :init
+  (defun gdshader-config()
+    (interactive)
+    (setq-local company-dabbrev-downcase nil)
+    (setq-local company-backends
+                '((company-keywords company-dabbrev))))
+
+  :hook (gdshader-mode . gdshader-config)
+  :config
+  (with-eval-after-load 'company-keywords
+    (unless (alist-get 'gdshader-mode company-keywords-alist)
+      (add-to-list 'company-keywords-alist (append '(gdshader-mode) gdshader-all-keywords)))))
 
 (use-package ox-reveal
   :config

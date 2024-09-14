@@ -8,7 +8,7 @@
 ;;     that used in Rm94eVByb3h5 (base64 decode please).
 
 ;; Usage:
-;;     emacs -Qq --script ./proxylist.el
+;;     emacs -Q -q --script ./proxylist.el
 ;; or
 ;;     chmod u+x ./proxylist.el
 ;;     ./proxylist.el
@@ -73,7 +73,6 @@ REPLACEMENT, and return the new content."
        string)
     string))
 
-
 (defun pattern-to-alist (pattern)
   "Convert PATTERN into alist which will be used
 as argument of `json-encode'"
@@ -133,14 +132,13 @@ as argument of `json-encode'"
           (unless (string-match "\\." pattern)
             (setq pattern (format "*%s*" pattern)))
 
-          `((black . ,black)
-            (alist
-             (original . ,original-pattern) ;; used for debug
-             (title . ,pattern)
-             (pattern . ,pattern)
-             (type . 1)
-             (protocols . ,protocol)
-             (active . t))))
+          `((alist
+            (original . ,original-pattern) ;; used for debug
+            (include . ,(if black "exclude" "include"))
+            (title . ,pattern)
+            (pattern . ,pattern)
+            (type . "wildcard")
+            (active . t))))
 
       ;; handler list
       (error
@@ -148,18 +146,14 @@ as argument of `json-encode'"
         "%S"
         `((:unexpected-pattern . ,original-pattern)
           (:error . e)))
-       '((black)
-         (alist))))))
+       '((alist))))))
 
 (defun main ()
   (let (rsp
         content
         patterns
         user-patterns
-        (config
-         (json-read-file "./proxylist-base.json")))
-
-    (setf (alist-get 'whitePatterns config) nil)
+        config)
 
     (condition-case e
         (progn
@@ -203,17 +197,19 @@ as argument of `json-encode'"
                  (unless (alist-get 'alist pattern-alist)
                    (throw 'return nil))
 
-                 (let ((key
-                        (if (alist-get
-                             'black pattern-alist)
-                            'blackPatterns
-                          'whitePatterns)))
-                   (setf
-                    (alist-get key config)
-                    (append
-                     (alist-get key config)
-                     (list
-                      (alist-get 'alist pattern-alist))))))))
+                 (push (alist-get 'alist pattern-alist) config)
+                 ;; (let ((key
+                 ;;        (if (alist-get
+                 ;;             'black pattern-alist)
+                 ;;            'blackPatterns
+                 ;;          'whitePatterns)))
+                 ;;   (setf
+                 ;;    (alist-get key config)
+                 ;;    (append
+                 ;;     (alist-get key config)
+                 ;;     (list
+                 ;;      (alist-get 'alist pattern-alist)))))
+                 )))
            ;; seq
            patterns))
 

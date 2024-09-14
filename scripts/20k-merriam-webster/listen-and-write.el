@@ -11,6 +11,7 @@
 (setq args-list (cdr command-line-args-left))
 (setq range (plist-get args-list "-r" #'equal))
 (setq cnt (plist-get args-list "-c" #'equal))
+(setq show-usage (member "-h" args-list))
 (setq study-mode (when (plist-get args-list "-s" #'equal) t))
 (setq error-records nil)
 
@@ -176,6 +177,8 @@ BUFFER is the buffer that was current when we invoked the wordreference command.
   ;; display summary
   (add-hook 'kill-emacs-hook #'quit-handler)
 
+  (when show-usage
+    (show-help-info 0))
   ;; (unless (and cnt)
   ;;   (show-help-info 22))
 

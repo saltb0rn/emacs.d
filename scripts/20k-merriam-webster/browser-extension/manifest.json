@@ -1,0 +1,18 @@
+{
+    "manifest_version": 3,
+    "name": "merriam-webster-copy-syllables-and-prons",
+    "version": "1.0",
+    "description": "Copy Syllables And Prons from Merriam Webster Dictionary",
+ 
+    "icons": {
+        "48": "icons/icon.png",
+        "96": "icons/icon.png"
+    },
+
+    "content_scripts": [
+        {
+            "matches": ["*://www.merriam-webster.com/dictionary/*"],
+            "js": ["main.js"]
+        }
+    ]
+}
