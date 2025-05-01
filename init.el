@@ -360,6 +360,29 @@ FILE should be a path to file."
         '(("lazyworm-ec" . "stardict-lazyworm-ec-2.4.2")
           ("lazyworm-ce" . "stardict-lazyworm-ce-2.4.2"))))
 
+(use-package
+  diminish :ensure t)
+
+(use-package
+  async :ensure t)
+
+(use-package dict-line
+  ;; https://github.com/ISouthRain/dict-line?tab=readme-ov-file
+  :straight (dict-line :type git :host github :repo "ISouthRain/dict-line")
+  :after (diminish async)
+  :ensure t
+  :diminish
+  (dict-line-mode "🗺️")
+  :defer 2
+  :custom
+  (dict-line-dict-directory (expand-file-name "assets/vscode-ec-dict" user-emacs-directory))
+  (dict-line-audio-root-dir (expand-file-name "assets/vscode-ec-audio/" user-emacs-directory))
+  (dict-line-idle-time 1)
+  (dict-line-audio t)
+  (dict-line-audio-play-program "mpv")
+  ;; :config
+  ;; (dict-line-mode)
+  )
 
 (use-package company
   :ensure t
@@ -796,7 +819,7 @@ BUFFER is the buffer to list the lines where keywords located in."
       :html-postamble ,(postamble-dispatcher 'default))
      ("files"
       :base-directory ,files-path
-      :base-extension "js\\|css\\|png\\|jpg\\|pdf\\|jpeg\\|gif\\|el"
+      :base-extension "js\\|css\\|png\\|jpg\\|pdf\\|jpeg\\|gif\\|el\\|svg"
       :publishing-directory ,(concat publish-path "files/")
       :publishing-function org-publish-attachment
       ;; :exclude "site"
@@ -1195,6 +1218,7 @@ The ROOT points to the directory where posts store on."
               ("C-x r t" . eglot-find-typeDefinition)
               ("C-x r r" . eglot-rename))
   :config
+  (setq eglot-send-changes-idle-time 0.7)
   (let ((clangd-conf
          (assoc '(c-mode c-ts-mode c++-mode c++-ts-mode) eglot-server-programs)))
     (when clangd-conf
@@ -1618,7 +1642,7 @@ when used as a command instead of `\\.html`."
   (defalias 'browse-web #'eaf-open-browser)
   (eaf-bind-key nil "M-q" eaf-browser-keybinding))
 
-(use-package genehack-vue)
+(use-package vue-mode)
 
 (use-package kana)
 
