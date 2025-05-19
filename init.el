@@ -1249,7 +1249,14 @@ The ROOT points to the directory where posts store on."
   :ensure t)
 
 (use-package glsl-mode
-  :ensure t)
+  :ensure t
+  :after (eglot)
+  :config
+  ;; https://github.com/nolanderc/glsl_analyzer
+  (add-to-list 'eglot-server-programs
+               `(glsl-mode . ("glsl_analyzer")))
+
+  (add-hook 'glsl-mode-hook (lambda () (eglot-ensure))))
 
 (use-package go-mode
   :ensure t
@@ -1541,6 +1548,12 @@ The ROOT points to the directory where posts store on."
   :ensure t
   :hook ((lisp-interaction-mode . paredit-mode)
          (wat-mode . paredit-mode)))
+
+(use-package yasnippet
+  :ensure t
+  :config
+  (yas-global-mode 1)
+  )
 
 (use-package dired
   :config
