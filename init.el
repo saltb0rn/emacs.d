@@ -387,7 +387,7 @@ FILE should be a path to file."
 (use-package company
   :ensure t
   :hook
-  ((c-mode c++-mode csharp-mode gdshader-mode) . company-mode))
+  ((c-mode c++-mode csharp-mode gdshader-mode python-mode) . company-mode))
 
 (use-package flycheck
   :ensure t)
@@ -607,9 +607,8 @@ BUFFER is the buffer to list the lines where keywords located in."
   (setq org-latex-compiler "xelatex")
 
   (setq org-latex-pdf-process
-      '("xelatex -interaction nonstopmode -output-directory %o %f"
-        "xelatex -interaction nonstopmode -output-directory %o %f"
-        "xelatex -interaction nonstopmode -output-directory %o %f"))
+      '("xelatex -interaction nonstopmode %f"
+        "xelatex -interaction nonstopmode %f"))
 
   (add-to-list 'org-latex-packages-alist
              '("UTF8,fontset=macnew" "ctex" t))
@@ -1258,6 +1257,28 @@ The ROOT points to the directory where posts store on."
 
   (add-hook 'glsl-mode-hook (lambda () (eglot-ensure))))
 
+(use-package pyvenv
+  :ensure t
+  :config
+  (setq pyvenv-post-activate-hooks
+        (list (lambda ()
+                (setq python-shell-interpreter (concat pyvenv-virtual-env "bin/python"))
+                )))
+
+  (setq pyvenv-post-deactivate-hooks
+        (list (lambda ()
+                 (setq python-shell-interpreter "python")))))
+
+(use-package python-mode
+  :ensure t
+  :after (eglot pyvenv)
+  :config
+  (add-to-list 'eglot-server-programs
+               `(python-mode . ("pylsp")))
+
+  (add-hook 'python-mode-hook (lambda ()
+                                (eglot-ensure))))
+
 (use-package go-mode
   :ensure t
   :config
@@ -1499,6 +1520,31 @@ The ROOT points to the directory where posts store on."
 ;;                     (lambda (status)
 ;;                       (let ((buf (current-buffer)))
 ;;                         (switch-to-buffer buf)))))))
+
+(use-package image
+  :ensure t
+  :config
+  ;; Credit the source: https://emacs.stackexchange.com/questions/20574/default-inline-image-background-in-org-mode/37927#37927
+  ;; An option to override the color for transparency
+  (defcustom image-background-override-color nil
+    "The color used as the default background for images.
+When nil, use the default face background."
+    :group 'org
+    :type '(choice color (const nil)))
+
+  (defun create-image-with-background-color (args)
+    "Specify background color of Org-mode inline image through modify `ARGS'."
+    (let* ((file (car args))
+           (type (cadr args))
+           (data-p (caddr args))
+           (props (cdddr args)))
+      ;; Get this return result style from `create-image'.
+      (append (list file type data-p)
+              (list :background (or image-background-override-color (face-background 'default)))
+              props)))
+
+  (advice-add 'create-image :filter-args
+              #'create-image-with-background-color))
 
 (use-package dictionary
   :ensure t

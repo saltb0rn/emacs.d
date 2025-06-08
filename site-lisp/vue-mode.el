@@ -36,6 +36,7 @@
   :safe #'integerp
   :group 'vue-mode)
 
+;; https://github.com/archer-n/emacs.d/blob/feature/2024/lisp/init-vue.el
 ;; https://github.com/joaotavora/eglot/discussions/1395
 ;; https://genehack.blog/2020/08/web-mode-eglot-vetur-vue-js-happy
 
@@ -45,22 +46,14 @@
 (add-to-list 'auto-mode-alist '("\\.vue\\'" . vue-mode))
 
 (add-hook 'vue-mode-hook (lambda ()
-                                      ;; (setq-local
-                                      ;;  web-mode-code-indent-offset vue-mode-script-indent-offset
-                                      ;;  web-mode-script-padding vue-mode-script-padding
-                                      ;;  web-mode-markup-indent-offset vue-mode-template-indent-offset
-                                      ;;  web-mode-css-indent-offset vue-mode-style-indent-offset
-                                      ;;  web-mode-style-padding vue-mode-style-padding)
-                                      (eglot-ensure)
-                                      ))
-
-;; (add-to-list 'eglot-server-programs
-;;              `(vue-mode . ("typescript-language-server" "--stdio"
-;;                                     :initializationOptions
-;;                                     (:plugins [(:name "@vue/typescript-plugin"
-;;                                                 :location ,(string-trim-right (shell-command-to-string "npm list --global --parseable @vue/typescript-plugin | head -n1"))
-;;                                                 :languages ["vue"])])))
-;;              )
+                           (setq-local
+                            web-mode-code-indent-offset vue-mode-script-indent-offset
+                            web-mode-script-padding vue-mode-script-padding
+                            web-mode-markup-indent-offset vue-mode-template-indent-offset
+                            web-mode-css-indent-offset vue-mode-style-indent-offset
+                            web-mode-style-padding vue-mode-style-padding)
+                           (eglot-ensure)
+                           ))
 
 (add-to-list 'eglot-server-programs
              `(vue-mode . ("typescript-language-server" "--stdio" :initializationOptions
